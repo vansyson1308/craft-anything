@@ -15,7 +15,7 @@ server, không API bên ngoài, không tải ảnh (mọi hình vẽ bằng code
 
 ```sh
 rustup target add wasm32-unknown-unknown
-cargo install wasm-bindgen-cli --version 0.2.129 --locked
+cargo install wasm-bindgen-cli --version 0.2.130 --locked
 ./build.sh                                   # ra thư mục dist/
 python3 -m http.server 8000 --directory dist  # mở http://localhost:8000
 ```

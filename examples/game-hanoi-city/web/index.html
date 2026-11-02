@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Hanoi City: lẻn vào phố cổ Hoàn Kiếm thật (bản đồ OpenStreetMap) để giải cứu những chú chó bị bắt trộm. 3D, chạy ngay trên trình duyệt, cả điện thoại.">
+<title>Hanoi City: Giải Cứu Cún</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  html, body { margin: 0; height: 100%; background: #14161a; overflow: hidden; overscroll-behavior: none; }
+  #wrap { position: fixed; inset: 0; }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  #boot { position: fixed; inset: 0; display: grid; place-items: center; color: #fbbf24; pointer-events: none;
+    font: 700 18px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 24px; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="game"></canvas></div>
+<div id="boot">Đang tải Hanoi City… (lần đầu khoảng 30–40 MB)</div>
+<script type="module">
+  import init from "./hanoi-city.js";
+  const boot = document.getElementById("boot");
+  init().then(() => boot.remove()).catch((e) => {
+    // Bevy hands control to the browser's event loop by throwing; that's not a failure.
+    if (String(e).includes("Using exceptions for control flow")) { boot.remove(); return; }
+    boot.textContent = "Không tải được game: " + e;
+  });
+  setTimeout(() => { if (document.getElementById("boot")) boot.remove(); }, 15000);
+</script>
+</body>
+</html>

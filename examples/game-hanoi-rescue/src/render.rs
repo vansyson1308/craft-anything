@@ -5,7 +5,7 @@ use std::f32::consts::{PI, TAU};
 use crate::content::BREEDS;
 use crate::draw::Canvas;
 use crate::geom::{V2, hash2, v2};
-use crate::map::{ExitId, Map, RAIL_X, Tile};
+use crate::map::{ExitId, Map, Tile};
 use crate::raid::{Context, DogState, PickupKind, Raid, TRAIN_LEN, TState, ThiefKind};
 
 pub struct Cam {
@@ -165,19 +165,27 @@ pub fn draw_map(cv: &mut Canvas, map: &Map, cam: &Cam, t: f32, open_exits: &[Exi
     }
 
     // The railway, with the warning lights when a train is coming.
-    if (RAIL_X - cam.c.x).abs() * p < cam.w {
-        let (rx, _) = cam.s(v2(RAIL_X, 0.0));
-        let (top, bottom) = (0.0, cam.h);
-        let mut y = ((cam.c.y - cam.h / 2.0 / p).floor()).max(0.0);
-        while cam.s(v2(0.0, y)).1 < bottom {
-            let (_, sy) = cam.s(v2(0.0, y));
-            cv.rect(rx - p * 0.85, sy, p * 1.7, p * 0.14, 0x6b4f3a, 1.0);
-            y += 0.5;
-        }
-        cv.line(rx - p * 0.5, top, rx - p * 0.5, bottom, 3.0, 0xb8bcc2, 1.0);
-        cv.line(rx + p * 0.5, top, rx + p * 0.5, bottom, 3.0, 0xb8bcc2, 1.0);
-        if train_warning && (t * 4.0) as i32 % 2 == 0 {
-            cv.rect(rx - p, 0.0, p * 2.0, cam.h, 0xff3b3b, 0.18);
+    if let Some(rail) = &map.rail {
+        let mut d = 0.0;
+        while d < rail.len {
+            let (q, dir) = rail.at(d);
+            if cam.visible(q, 1.0) {
+                let n = V2 { x: -dir.y, y: dir.x };
+                let (ax, ay) = cam.s(q + n * 0.85);
+                let (bx, by) = cam.s(q - n * 0.85);
+                cv.line(ax, ay, bx, by, (p * 0.14).max(2.0), 0x6b4f3a, 1.0);
+                let (cx, cy) = cam.s(q + dir * 0.5 + n * 0.5);
+                let (ex, ey) = cam.s(q + n * 0.5);
+                cv.line(ex, ey, cx, cy, 3.0, 0xb8bcc2, 1.0);
+                let (cx, cy) = cam.s(q + dir * 0.5 - n * 0.5);
+                let (ex, ey) = cam.s(q - n * 0.5);
+                cv.line(ex, ey, cx, cy, 3.0, 0xb8bcc2, 1.0);
+                if train_warning && (t * 4.0) as i32 % 2 == 0 {
+                    let (sx, sy) = cam.s(q);
+                    cv.circle(sx, sy, p, 0xff3b3b, 0.12);
+                }
+            }
+            d += 0.5;
         }
     }
 
@@ -206,9 +214,9 @@ pub fn draw_map(cv: &mut Canvas, map: &Map, cam: &Cam, t: f32, open_exits: &[Exi
         }
         let (sx, sy) = cam.s(l.at);
         if l.big {
-            cv.label(sx, sy, l.text, (p * 0.62).clamp(15.0, 30.0), 0xfdf6e3, 0.85, true);
+            cv.label(sx, sy, l.text.clone(), (p * 0.62).clamp(15.0, 30.0), 0xfdf6e3, 0.85, true);
         } else {
-            cv.label(sx, sy, l.text, (p * 0.36).clamp(11.0, 16.0), 0xe5e7eb, 0.75, false);
+            cv.label(sx, sy, l.text.clone(), (p * 0.36).clamp(11.0, 16.0), 0xe5e7eb, 0.75, false);
         }
     }
 }
@@ -444,22 +452,26 @@ pub fn draw_raid(cv: &mut Canvas, map: &Map, raid: &Raid, cam: &Cam, t: f32) {
         cv.circle(fx, fy, p * 0.06, 0xfff3a0, 1.0);
     }
 
-    // The train.
-    if raid.train.active {
-        let (head, tail) = (raid.train.y, raid.train.y - TRAIN_LEN);
-        if cam.visible(v2(RAIL_X, (head + tail) / 2.0), TRAIN_LEN) {
-            let (sx, sy) = cam.s(v2(RAIL_X - 0.8, tail));
-            cv.rrect(sx, sy, p * 1.6, TRAIN_LEN * p, 4.0, 0x2d5c9e, 1.0);
-            cv.rect(sx + p * 0.65, sy, p * 0.3, TRAIN_LEN * p, 0xf1f5f9, 1.0);
-            let mut y = tail + 2.6;
-            while y < head - 0.2 {
-                let (cx, cy) = cam.s(v2(RAIL_X - 0.8, y));
-                cv.line(cx, cy, cx + p * 1.6, cy, 2.0, 0x1b2b45, 1.0);
-                y += 2.6;
+    // The train: a blue car every few tiles along the railway.
+    if let (true, Some(rail)) = (raid.train.active, &map.rail) {
+        let mut k = 0.0;
+        while k <= TRAIN_LEN {
+            let d = raid.train.s - k;
+            if d >= 0.0 && d <= rail.len {
+                let (q, dir) = rail.at(d);
+                if cam.visible(q, 2.0) {
+                    let n = V2 { x: -dir.y, y: dir.x };
+                    let corner = |a: f32, b: f32| cam.s(q + dir * a + n * b);
+                    cv.poly(vec![corner(0.55, 0.8), corner(0.55, -0.8), corner(-0.55, -0.8), corner(-0.55, 0.8)], 0x2d5c9e, 1.0);
+                    cv.poly(vec![corner(0.55, 0.15), corner(0.55, -0.15), corner(-0.55, -0.15), corner(-0.55, 0.15)], 0xf1f5f9, 1.0);
+                    if k == 0.0 {
+                        let (hx, hy) = cam.s(q + dir * 0.5);
+                        cv.circle(hx, hy, p * 0.2, 0xfde68a, 1.0);
+                        cv.wedge(hx, hy, p * 4.0, dir.angle() - 0.3, dir.angle() + 0.3, 0xfff7c2, 0.12);
+                    }
+                }
             }
-            let (hx, hy) = cam.s(v2(RAIL_X, head));
-            cv.circle(hx, hy - p * 0.1, p * 0.2, 0xfde68a, 1.0);
-            cv.wedge(hx, hy, p * 4.0, PI / 2.0 - 0.3, PI / 2.0 + 0.3, 0xfff7c2, 0.12);
+            k += 1.0;
         }
     }
 
@@ -614,7 +626,7 @@ mod tests {
     fn a_frame_draws_and_stays_on_budget() {
         let map = Map::hoan_kiem();
         let stats = PlayerStats { max_hp: 100.0, speed: 4.0, bag: 6, leash: 2, slippers: 3 };
-        let raid = Raid::new(&map, RaidSetup::free(6, stats, 3));
+        let raid = Raid::new(&map, RaidSetup::free(&map, 6, stats, 3));
         for (w, h) in [(390.0, 844.0), (844.0, 390.0), (1440.0, 900.0)] {
             let mut cv = Canvas::default();
             let cam = Cam::new(raid.player.pos, w, h);

@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod city;
 pub mod content;
 pub mod draw;
 pub mod game;
@@ -15,5 +16,5 @@ pub mod meta;
 pub mod raid;
 pub mod render;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", feature = "web"))]
 mod web;

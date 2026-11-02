@@ -1,12 +1,15 @@
-# Builds the browser game in examples/game-hanoi-rescue and publishes it on GitHub Pages.
+# Builds the browser games in examples/ and publishes them on GitHub Pages:
+#   /     Hanoi City, the 3D game on Hoàn Kiếm's real streets (examples/game-hanoi-city)
+#   /2d/  Giải Cứu Cún, the light 2D version (examples/game-hanoi-rescue)
 # One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
-name: Game on GitHub Pages
+name: Games on GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
       - "examples/game-hanoi-rescue/**"
+      - "examples/game-hanoi-city/**"
       - ".github/workflows/game-pages.yml"
   workflow_dispatch:
 
@@ -22,25 +25,36 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: examples/game-hanoi-rescue
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Rust for the web
         run: |
           rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
           rustup default stable
-      - name: wasm-bindgen (the version pinned in Cargo.toml)
-        run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
-      - name: Test the game
-        run: cargo test --locked
-      - name: Build the site
+      - name: wasm-bindgen (the version both games pin)
+        run: cargo install wasm-bindgen-cli --version 0.2.130 --locked
+      - name: wasm-opt
+        run: npm install -g binaryen@132.0.0
+      - name: Test the game core (including the real-streets self-play)
+        working-directory: examples/game-hanoi-rescue
+        run: cargo test --locked --release
+      - name: Build the 2D game
+        working-directory: examples/game-hanoi-rescue
         run: ./build.sh
+      - name: Build the 3D game
+        working-directory: examples/game-hanoi-city
+        run: ./build.sh
+      - name: Put them together
+        run: |
+          mkdir -p site
+          cp -r examples/game-hanoi-city/dist/. site/
+          mkdir -p site/2d
+          cp -r examples/game-hanoi-rescue/dist/. site/2d/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: examples/game-hanoi-rescue/dist
+          path: site
 
   deploy:
     needs: build

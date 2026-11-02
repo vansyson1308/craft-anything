@@ -10,7 +10,7 @@ fn main() {
     let (ch, seed, who) = (args.first().copied().unwrap_or(0), args.get(1).copied().unwrap_or(1), args.get(2).copied().unwrap_or(0));
     let map = Map::hoan_kiem();
     let stats = PlayerStats { max_hp: 100.0, speed: 4.0, bag: 6, leash: 2, slippers: 3 };
-    let mut raid = Raid::new(&map, RaidSetup::story(ch, stats, seed as u64));
+    let mut raid = Raid::new(&map, RaidSetup::story(&map, ch, stats, seed as u64));
     for _ in 0..30 {
         raid.update(&map, 1.0 / 30.0, &Controls::default());
     }

@@ -5,7 +5,7 @@ use std::f32::consts::PI;
 
 use crate::content::{self, BREEDS, CHAPTERS, DOG_NAMES, Difficulty, LOOT_TABLE, LootKind};
 use crate::geom::{Rng, V2, angle_diff, v2};
-use crate::map::{ExitId, H, Map, RAIL_X, Tile};
+use crate::map::{ExitId, Map, Tile};
 
 pub const PLAYER_R: f32 = 0.3;
 const THIEF_R: f32 = 0.32;
@@ -78,8 +78,11 @@ pub struct RaidSetup {
 }
 
 impl RaidSetup {
-    pub fn story(ch: usize, stats: PlayerStats, seed: u64) -> RaidSetup {
+    pub fn story(map: &Map, ch: usize, stats: PlayerStats, seed: u64) -> RaidSetup {
         let diff = content::CURVE.get(ch).or(content::CURVE.last()).copied().unwrap_or(content::free_difficulty(1));
+        let sc = &map.scenario;
+        let zone = sc.zones.get(ch).or(sc.zones.last()).copied().unwrap_or(sc.play);
+        let spawn = sc.spawns.get(ch).or(sc.spawns.first()).copied().unwrap_or(v2(map.w as f32 / 2.0, map.h as f32 / 2.0));
         let base = RaidSetup {
             mission: Mission::Story(ch),
             seed,
@@ -90,26 +93,27 @@ impl RaidSetup {
             clue: false,
             boss: None,
             puppy: false,
-            zone: [14, 2, 46, 26],
-            spawn: v2(25.0, 39.0),
+            zone,
+            spawn,
             stats,
         };
         match ch {
             0 => base,
-            1 => RaidSetup { clue: true, zone: [54, 14, 76, 34], spawn: v2(35.0, 39.0), ..base },
-            2 => RaidSetup { cages: 2, need_dogs: 2, zone: [30, 0, 62, 17], spawn: v2(20.0, 39.0), ..base },
-            3 => RaidSetup { cages: 2, need_dogs: 0, boss: Some(ThiefKind::TuLong), zone: [0, 10, 22, 72], spawn: v2(40.0, 47.0), ..base },
-            _ => RaidSetup { cages: 2, need_dogs: 0, boss: Some(ThiefKind::Bay), puppy: true, zone: [76, 0, 89, 12], spawn: v2(25.0, 39.0), ..base },
+            1 => RaidSetup { clue: true, ..base },
+            2 => RaidSetup { cages: 2, need_dogs: 2, ..base },
+            3 => RaidSetup { cages: 2, need_dogs: 0, boss: Some(ThiefKind::TuLong), ..base },
+            _ => RaidSetup { cages: 2, need_dogs: 0, boss: Some(ThiefKind::Bay), puppy: true, ..base },
         }
     }
 
-    pub fn free(level: u32, stats: PlayerStats, seed: u64) -> RaidSetup {
+    pub fn free(map: &Map, level: u32, stats: PlayerStats, seed: u64) -> RaidSetup {
         let mut rng = Rng::new(seed ^ 0xF4EE);
-        let all = [ExitId::QuanChuong, ExitId::LongBien, ExitId::NhaHat, ExitId::Ga];
+        let all: Vec<ExitId> = map.exits.iter().map(|e| e.id).collect();
         let first = rng.range(0, all.len());
-        let second = (first + 1 + rng.range(0, all.len() - 1)) % all.len();
-        let exits = [first, second].iter().filter_map(|i| all.get(*i).copied()).collect();
-        let spawns = [v2(5.0, 47.0), v2(25.0, 39.0), v2(45.0, 73.0), v2(75.0, 47.0), v2(5.0, 3.0)];
+        let second = (first + 1 + rng.range(0, all.len().saturating_sub(1))) % all.len().max(1);
+        let mut exits: Vec<ExitId> = [first, second].iter().filter_map(|i| all.get(*i).copied()).collect();
+        exits.dedup();
+        let spawn = rng.pick(&map.scenario.free_spawns).copied().unwrap_or(v2(map.w as f32 / 2.0, map.h as f32 / 2.0));
         RaidSetup {
             mission: Mission::Free(level),
             seed,
@@ -120,8 +124,8 @@ impl RaidSetup {
             clue: false,
             boss: None,
             puppy: false,
-            zone: [0, 0, 89, 80],
-            spawn: rng.pick(&spawns).copied().unwrap_or(v2(25.0, 39.0)),
+            zone: map.scenario.play,
+            spawn,
             stats,
         }
     }
@@ -253,8 +257,8 @@ pub struct Vehicle {
 }
 
 pub struct Train {
-    /// Front of the train (it runs north to south).
-    pub y: f32,
+    /// How far along the railway the front of the train is.
+    pub s: f32,
     pub active: bool,
     pub next_t: f32,
 }
@@ -399,10 +403,11 @@ impl Raid {
         let mut rng = Rng::new(setup.seed);
         let spawn = nearest_walkable(map, setup.spawn);
         let [zx0, zy0, zx1, zy1] = setup.zone;
+        let play = map.scenario.play;
         let reach = map.distances(spawn.tile());
         let reachable = |p: V2| {
             let (x, y) = p.tile();
-            reach.get((y * crate::map::W + x) as usize).copied().unwrap_or(-1) >= 0
+            reach.get((y * map.w + x) as usize).copied().unwrap_or(-1) >= 0
         };
         let not_rail = |t: Tile| t != Tile::Rail && t != Tile::Bridge && t != Tile::Truss;
 
@@ -411,7 +416,7 @@ impl Raid {
         let mut dogs: Vec<Dog> = Vec::new();
         let mut used_names: Vec<&str> = Vec::new();
         for i in 0..setup.cages {
-            let fixed = (setup.puppy && i == 0).then(|| v2(86.5, 8.5));
+            let fixed = (setup.puppy && i == 0).then_some(map.scenario.puppy_cage);
             let pos = fixed.or_else(|| {
                 map.random_spot(&mut rng, zx0, zy0, zx1, zy1, |t, p| {
                     not_rail(t) && t != Tile::Island && p.dist(spawn) > 12.0 && reachable(p) && cages.iter().all(|c| c.pos.dist(p) > 6.0)
@@ -458,7 +463,7 @@ impl Raid {
         if let Some(boss) = setup.boss {
             let mid = v2((zx0 + zx1) as f32 / 2.0, (zy0 + zy1) as f32 / 2.0);
             let home = if boss == ThiefKind::Bay {
-                v2(84.5, 9.0)
+                map.scenario.boss_home
             } else {
                 map.random_spot(&mut rng, mid.x as i32 - 6, mid.y as i32 - 10, mid.x as i32 + 7, mid.y as i32 + 11, |t, p| {
                     not_rail(t) && reachable(p) && far_from_start(p)
@@ -476,7 +481,7 @@ impl Raid {
             let spot = if in_zone {
                 map.random_spot(&mut rng, zx0 - 4, zy0 - 4, zx1 + 4, zy1 + 4, |t, p| not_rail(t) && reachable(p) && far_from_start(p))
             } else {
-                map.random_spot(&mut rng, 0, 0, 89, 80, |t, p| not_rail(t) && reachable(p) && far_from_start(p))
+                map.random_spot(&mut rng, play[0], play[1], play[2], play[3], |t, p| not_rail(t) && reachable(p) && far_from_start(p))
             };
             let Some(home) = spot else { continue };
             let kind = if rng.chance(0.3) { ThiefKind::Lookout } else { ThiefKind::Grunt };
@@ -495,7 +500,7 @@ impl Raid {
             let spot = if i % 2 == 0 {
                 map.random_spot(&mut rng, zx0, zy0, zx1, zy1, |t, p| not_rail(t) && reachable(p))
             } else {
-                map.random_spot(&mut rng, 0, 0, 89, 80, |t, p| not_rail(t) && reachable(p))
+                map.random_spot(&mut rng, play[0], play[1], play[2], play[3], |t, p| not_rail(t) && reachable(p))
             };
             let Some(pos) = spot else { continue };
             let kind = match i {
@@ -528,7 +533,9 @@ impl Raid {
         // Traffic.
         let mut vehicles = Vec::new();
         let colors = [0xd64541, 0x2e86de, 0xf5f6fa, 0x222f3e, 0xfeca57, 0x10ac84, 0x8e44ad];
-        for (ri, count, lo, hi) in [(0usize, 7usize, 3.5f32, 5.5f32), (1, 3, 3.0, 4.5), (2, 4, 4.0, 6.0), (3, 3, 2.5, 3.5)] {
+        let lanes: Vec<(usize, usize, f32, f32)> =
+            map.routes.iter().enumerate().map(|(i, r)| (i, ((r.len / 14.0) as usize).clamp(2, 8), 3.0f32, if i == 0 { 5.5f32 } else { 4.8 })).collect();
+        for (ri, count, lo, hi) in lanes {
             let len = map.routes.get(ri).map_or(1.0, |r| r.len);
             for k in 0..count {
                 let s = len * k as f32 / count as f32 + rng.range_f(0.0, 2.0);
@@ -566,7 +573,7 @@ impl Raid {
             cages,
             pickups,
             vehicles,
-            train: Train { y: -TRAIN_LEN, active: false, next_t: train_first },
+            train: Train { s: -TRAIN_LEN, active: false, next_t: train_first },
             slippers: Vec::new(),
             noises: Vec::new(),
             fx: Vec::new(),
@@ -705,7 +712,7 @@ impl Raid {
         self.update_dogs(map, dt);
         self.update_thieves(map, dt);
         self.update_traffic(map, dt);
-        self.update_train(dt);
+        self.update_train(map, dt);
         self.update_slippers(map, dt);
 
         self.noises.retain_mut(|n| {
@@ -729,8 +736,10 @@ impl Raid {
         let target = self.player.pos;
         for _ in 0..2 {
             let p = self.player.pos;
-            let edge = |t: Tile, q: V2| t != Tile::Rail && q.dist(p) > 18.0 && (q.x < 8.0 || q.x > 84.0 || q.y < 5.0 || q.y > 74.0);
-            if let Some(home) = map.random_spot(&mut self.rng, 0, 0, 89, 80, edge) {
+            // They arrive from somewhere out of sight, 18 to 40 tiles away.
+            let edge = |t: Tile, q: V2| t != Tile::Rail && q.dist(p) > 18.0 && q.dist(p) < 40.0;
+            let (px, py) = p.tile();
+            if let Some(home) = map.random_spot(&mut self.rng, px - 40, py - 40, px + 41, py + 41, edge) {
                 let mut t = Thief::new(ThiefKind::Grunt, home, vec![home]);
                 t.state = TState::Investigate;
                 t.target = target;
@@ -1279,40 +1288,44 @@ impl Raid {
         }
     }
 
-    fn update_train(&mut self, dt: f32) {
+    fn update_train(&mut self, map: &Map, dt: f32) {
+        let Some(rail) = &map.rail else { return };
         let every = self.setup.diff.train_every_s;
         if !self.train.active {
             self.train.next_t -= dt;
-            let near = (self.player.pos.x - RAIL_X).abs() < 14.0;
+            let near = rail.dist(self.player.pos) < 14.0;
             if self.train.warning() && near && self.banner.is_none() {
                 self.banner = Some((content::ui::TRAIN.to_string(), 2.0));
             }
             if self.train.next_t <= 0.0 {
                 self.train.active = true;
-                self.train.y = -2.0;
+                self.train.s = -2.0;
             }
             return;
         }
-        self.train.y += 15.0 * dt;
-        if self.train.y > H as f32 + TRAIN_LEN + 2.0 {
+        self.train.s += 15.0 * dt;
+        if self.train.s > rail.len + TRAIN_LEN + 2.0 {
             self.train.active = false;
             self.train.next_t = every;
             return;
         }
-        let (head, tail) = (self.train.y, self.train.y - TRAIN_LEN);
-        let on_track = |p: V2| (p.x - RAIL_X).abs() < 1.25 && p.y < head + 0.4 && p.y > tail;
-        if on_track(self.player.pos) && !self.player.invulnerable() {
-            let side = if self.player.pos.x < RAIL_X { -1.0 } else { 1.0 };
-            let from = v2(RAIL_X - side, self.player.pos.y);
-            self.hurt_player(40.0, from, 12.0);
+        // The cars, one point per tile from the tail to the head.
+        let cars: Vec<V2> = (0..=(TRAIN_LEN as i32)).map(|k| self.train.s - k as f32).filter(|d| *d >= 0.0 && *d <= rail.len).map(|d| rail.at(d).0).collect();
+        let hit = |p: V2| cars.iter().copied().find(|c| c.dist(p) < 1.25);
+        if let Some(c) = hit(self.player.pos)
+            && !self.player.invulnerable()
+        {
+            self.hurt_player(40.0, c, 12.0);
         }
         let mut said = Vec::new();
         for t in &mut self.thieves {
-            if t.state != TState::Tied && !matches!(t.state, TState::Down(_)) && on_track(t.pos) {
+            if t.state == TState::Tied || matches!(t.state, TState::Down(_)) {
+                continue;
+            }
+            if let Some(c) = hit(t.pos) {
                 t.state = TState::Down(8.0);
                 t.stun_hp = 0.0;
-                let side = if t.pos.x < RAIL_X { -1.6 } else { 1.6 };
-                t.pos = v2(RAIL_X + side, t.pos.y);
+                t.pos = map.slide(t.pos, (t.pos - c).norm() * 1.6, THIEF_R);
                 said.push(t.pos);
             }
         }
@@ -1436,7 +1449,7 @@ mod tests {
         let map = Map::hoan_kiem();
         for ch in 0..CHAPTERS.len() {
             for seed in 0..20u64 {
-                let r = Raid::new(&map, RaidSetup::story(ch, stats(), seed));
+                let r = Raid::new(&map, RaidSetup::story(&map, ch, stats(), seed));
                 assert_eq!(r.cages.len() as u32, r.setup.cages, "ch{ch} seed{seed}: cages");
                 assert!(r.thieves.len() >= r.setup.diff.thieves as usize, "ch{ch} seed{seed}: thieves");
                 for t in &r.thieves {
@@ -1460,7 +1473,7 @@ mod tests {
     #[test]
     fn chapter_one_can_be_won() {
         let map = Map::hoan_kiem();
-        let mut r = Raid::new(&map, RaidSetup::story(0, stats(), 4));
+        let mut r = Raid::new(&map, RaidSetup::story(&map, 0, stats(), 4));
         r.thieves.clear();
         let cage = r.cages.first().map(|c| c.pos).unwrap_or_default();
         assert!(walk_to(&mut r, &map, cage, 120.0, false), "reach the cage");
@@ -1482,7 +1495,7 @@ mod tests {
     #[test]
     fn a_thief_sees_what_is_in_front_not_behind() {
         let map = Map::hoan_kiem();
-        let mut r = Raid::new(&map, RaidSetup::story(1, stats(), 1));
+        let mut r = Raid::new(&map, RaidSetup::story(&map, 1, stats(), 1));
         r.thieves.truncate(1);
         r.vehicles.clear();
         r.player.pos = v2(30.0, 3.0);
@@ -1504,7 +1517,7 @@ mod tests {
     #[test]
     fn standing_in_view_gets_you_chased_and_hit() {
         let map = Map::hoan_kiem();
-        let mut r = Raid::new(&map, RaidSetup::story(2, stats(), 2));
+        let mut r = Raid::new(&map, RaidSetup::story(&map, 2, stats(), 2));
         r.thieves.truncate(1);
         r.vehicles.clear();
         r.player.pos = v2(30.0, 3.0);
@@ -1523,7 +1536,7 @@ mod tests {
     #[test]
     fn three_hits_knock_a_thief_down_and_he_can_be_tied() {
         let map = Map::hoan_kiem();
-        let mut r = Raid::new(&map, RaidSetup::story(1, stats(), 3));
+        let mut r = Raid::new(&map, RaidSetup::story(&map, 1, stats(), 3));
         r.thieves.truncate(1);
         r.vehicles.clear();
         r.player.pos = v2(30.0, 3.0);
@@ -1556,7 +1569,7 @@ mod tests {
     #[test]
     fn a_thrown_slipper_lands_makes_noise_and_can_be_picked_up() {
         let map = Map::hoan_kiem();
-        let mut r = Raid::new(&map, RaidSetup::story(0, stats(), 5));
+        let mut r = Raid::new(&map, RaidSetup::story(&map, 0, stats(), 5));
         r.thieves.clear();
         r.vehicles.clear();
         r.player.pos = v2(30.0, 3.0);
@@ -1575,11 +1588,11 @@ mod tests {
     #[test]
     fn running_out_of_time_or_health_ends_the_raid() {
         let map = Map::hoan_kiem();
-        let mut r = Raid::new(&map, RaidSetup::free(3, stats(), 9));
+        let mut r = Raid::new(&map, RaidSetup::free(&map, 3, stats(), 9));
         r.time_left = 0.01;
         r.update(&map, 0.02, &Controls::default());
         assert_eq!(r.outcome, Some(Outcome::TimeUp));
-        let mut r = Raid::new(&map, RaidSetup::free(3, stats(), 9));
+        let mut r = Raid::new(&map, RaidSetup::free(&map, 3, stats(), 9));
         r.player.hp = 1.0;
         r.hurt_player(5.0, v2(0.0, 0.0), 1.0);
         r.update(&map, 0.02, &Controls::default());
@@ -1591,7 +1604,7 @@ mod tests {
     fn free_patrols_hold_together_for_a_long_time() {
         let map = Map::hoan_kiem();
         for seed in 0..4 {
-            let mut r = Raid::new(&map, RaidSetup::free(8, stats(), seed));
+            let mut r = Raid::new(&map, RaidSetup::free(&map, 8, stats(), seed));
             let mut rng = Rng::new(seed);
             let mut mv = V2::default();
             for f in 0..3000 {

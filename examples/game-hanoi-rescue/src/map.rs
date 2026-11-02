@@ -72,7 +72,7 @@ impl Exit {
 
 #[derive(Clone, Debug)]
 pub struct Label {
-    pub text: &'static str,
+    pub text: String,
     pub at: V2,
     /// Big labels name landmarks; small ones name streets.
     pub big: bool,
@@ -87,7 +87,7 @@ pub struct Route {
 }
 
 impl Route {
-    fn new(pts: Vec<V2>, closed: bool) -> Route {
+    pub fn new(pts: Vec<V2>, closed: bool) -> Route {
         let mut r = Route { pts, closed, len: 0.0 };
         r.len = r.segments().map(|(a, b)| a.dist(b)).sum();
         r
@@ -97,6 +97,17 @@ impl Route {
         let extra = if self.closed { 1 } else { 0 };
         (0..(n.saturating_sub(1) + extra)).filter_map(move |i| Some((*self.pts.get(i)?, *self.pts.get((i + 1) % n)?)))
     }
+    /// The shortest distance from `p` to the route.
+    pub fn dist(&self, p: V2) -> f32 {
+        self.segments()
+            .map(|(a, b)| {
+                let ab = b - a;
+                let t = if ab.dot(ab) > 1e-6 { ((p - a).dot(ab) / ab.dot(ab)).clamp(0.0, 1.0) } else { 0.0 };
+                p.dist(a + ab * t)
+            })
+            .fold(f32::INFINITY, f32::min)
+    }
+
     /// The point `s` along the route (wrapped) and the direction there.
     pub fn at(&self, s: f32) -> (V2, V2) {
         if self.len <= 0.0 {
@@ -114,8 +125,29 @@ impl Route {
     }
 }
 
+/// Where each chapter happens on a map, so the same game runs on any district.
+#[derive(Clone, Debug, Default)]
+pub struct Scenario {
+    /// Per story chapter: x0, y0, x1, y1 in tiles.
+    pub zones: Vec<[i32; 4]>,
+    /// Per story chapter: where the player starts.
+    pub spawns: Vec<V2>,
+    pub free_spawns: Vec<V2>,
+    /// Bơ's cage in the last chapter, and where the gang's boss waits.
+    pub puppy_cage: V2,
+    pub boss_home: V2,
+    /// Where crates and thieves may be placed: x0, y0, x1, y1.
+    pub play: [i32; 4],
+}
+
 pub struct Map {
     tiles: Vec<Tile>,
+    pub w: i32,
+    pub h: i32,
+    /// Metres per tile.
+    pub tile_m: f32,
+    pub rail: Option<Route>,
+    pub scenario: Scenario,
     pub exits: Vec<Exit>,
     pub labels: Vec<Label>,
     pub routes: Vec<Route>,
@@ -136,10 +168,10 @@ pub fn center(x: i32, y: i32) -> V2 {
 
 impl Map {
     pub fn tile(&self, x: i32, y: i32) -> Tile {
-        if x < 0 || y < 0 || x >= W || y >= H {
+        if x < 0 || y < 0 || x >= self.w || y >= self.h {
             return Tile::Building;
         }
-        self.tiles.get((y * W + x) as usize).copied().unwrap_or(Tile::Building)
+        self.tiles.get((y * self.w + x) as usize).copied().unwrap_or(Tile::Building)
     }
     pub fn tile_at(&self, p: V2) -> Tile {
         let (x, y) = p.tile();
@@ -148,9 +180,9 @@ impl Map {
     fn set(&mut self, x: i32, y: i32, t: Tile) {
         if x >= 0
             && y >= 0
-            && x < W
-            && y < H
-            && let Some(c) = self.tiles.get_mut((y * W + x) as usize)
+            && x < self.w
+            && y < self.h
+            && let Some(c) = self.tiles.get_mut((y * self.w + x) as usize)
         {
             *c = t;
         }
@@ -226,22 +258,22 @@ impl Map {
 
     /// Steps from `from` to every tile (4-neighbour walk); -1 where unreachable.
     pub fn distances(&self, from: (i32, i32)) -> Vec<i32> {
-        let mut dist = vec![-1i32; (W * H) as usize];
+        let mut dist = vec![-1i32; (self.w * self.h) as usize];
         let mut queue = std::collections::VecDeque::new();
         if self.tile(from.0, from.1).walkable() {
-            if let Some(d) = dist.get_mut((from.1 * W + from.0) as usize) {
+            if let Some(d) = dist.get_mut((from.1 * self.w + from.0) as usize) {
                 *d = 0;
             }
             queue.push_back(from);
         }
         while let Some((x, y)) = queue.pop_front() {
-            let here = dist.get((y * W + x) as usize).copied().unwrap_or(0);
+            let here = dist.get((y * self.w + x) as usize).copied().unwrap_or(0);
             for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
                 let (nx, ny) = (x + dx, y + dy);
                 if !self.tile(nx, ny).walkable() {
                     continue;
                 }
-                if let Some(d) = dist.get_mut((ny * W + nx) as usize)
+                if let Some(d) = dist.get_mut((ny * self.w + nx) as usize)
                     && *d < 0
                 {
                     *d = here + 1;
@@ -263,18 +295,16 @@ impl Map {
         if start == goal {
             return Some(vec![to]);
         }
-        let idx = |p: (i32, i32)| (p.1 * W + p.0) as usize;
+        let key = |p: (i32, i32)| (p.1 * self.w + p.0) as u32;
         let h = |p: (i32, i32)| {
             let dx = (p.0 - goal.0).abs();
             let dy = (p.1 - goal.1).abs();
             10 * (dx + dy) - 6 * dx.min(dy)
         };
-        let mut g = vec![i32::MAX; (W * H) as usize];
-        let mut came = vec![u32::MAX; (W * H) as usize];
+        // Cost so far and the tile we came from, only for tiles the search touched.
+        let mut seen: std::collections::HashMap<u32, (i32, u32)> = std::collections::HashMap::new();
         let mut open = BinaryHeap::new();
-        if let Some(c) = g.get_mut(idx(start)) {
-            *c = 0;
-        }
+        seen.insert(key(start), (0, u32::MAX));
         open.push(Reverse((h(start), start.0, start.1)));
         let mut expanded = 0usize;
         while let Some(Reverse((_, x, y))) = open.pop() {
@@ -282,13 +312,13 @@ impl Map {
                 let mut out = Vec::new();
                 let mut cur = goal;
                 let mut guard = 0;
-                while cur != start && guard < (W * H) {
+                while cur != start && guard < budget + 8 {
                     out.push(center(cur.0, cur.1));
-                    let prev = came.get(idx(cur)).copied().unwrap_or(u32::MAX);
+                    let prev = seen.get(&key(cur)).map_or(u32::MAX, |e| e.1);
                     if prev == u32::MAX {
                         break;
                     }
-                    cur = ((prev % W as u32) as i32, (prev / W as u32) as i32);
+                    cur = ((prev % self.w as u32) as i32, (prev / self.w as u32) as i32);
                     guard += 1;
                 }
                 out.reverse();
@@ -301,7 +331,7 @@ impl Map {
             if expanded > budget {
                 return None;
             }
-            let here = g.get(idx((x, y))).copied().unwrap_or(i32::MAX);
+            let here = seen.get(&key((x, y))).map_or(i32::MAX, |e| e.0);
             for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)] {
                 let n = (x + dx, y + dy);
                 if !self.tile(n.0, n.1).walkable() {
@@ -311,13 +341,9 @@ impl Map {
                     continue;
                 }
                 let cost = here.saturating_add(if dx != 0 && dy != 0 { 14 } else { 10 });
-                if let Some(slot) = g.get_mut(idx(n))
-                    && cost < *slot
-                {
-                    *slot = cost;
-                    if let Some(c) = came.get_mut(idx(n)) {
-                        *c = (y * W + x) as u32;
-                    }
+                let better = seen.get(&key(n)).is_none_or(|e| cost < e.0);
+                if better {
+                    seen.insert(key(n), (cost, key((x, y))));
                     open.push(Reverse((cost + h(n), n.0, n.1)));
                 }
             }
@@ -328,8 +354,8 @@ impl Map {
     /// A random walkable tile centre in the box whose tile passes `ok`.
     pub fn random_spot(&self, rng: &mut Rng, x0: i32, y0: i32, x1: i32, y1: i32, ok: impl Fn(Tile, V2) -> bool) -> Option<V2> {
         for _ in 0..400 {
-            let x = rng.range(x0.max(0) as usize, x1.min(W) as usize) as i32;
-            let y = rng.range(y0.max(0) as usize, y1.min(H) as usize) as i32;
+            let x = rng.range(x0.max(0) as usize, x1.min(self.w) as usize) as i32;
+            let y = rng.range(y0.max(0) as usize, y1.min(self.h) as usize) as i32;
             let t = self.tile(x, y);
             let p = center(x, y);
             if t.walkable() && ok(t, p) {
@@ -339,11 +365,11 @@ impl Map {
         None
     }
 
-    /// Colour of each tile for the minimap, as RGBA bytes (W × H).
+    /// Colour of each tile for the minimap, as RGBA bytes (self.w × self.h).
     pub fn minimap_rgba(&self) -> Vec<u8> {
-        let mut out = Vec::with_capacity((W * H * 4) as usize);
-        for y in 0..H {
-            for x in 0..W {
+        let mut out = Vec::with_capacity((self.w * self.h * 4) as usize);
+        for y in 0..self.h {
+            for x in 0..self.w {
                 let c = match self.tile(x, y) {
                     Tile::Street | Tile::Rail => 0x5a5e66,
                     Tile::Alley => 0x4a4d54,
@@ -367,7 +393,25 @@ impl Map {
 
     /// The district.
     pub fn hoan_kiem() -> Map {
-        let mut m = Map { tiles: vec![Tile::Building; (W * H) as usize], exits: Vec::new(), labels: Vec::new(), routes: Vec::new(), lanterns: Vec::new() };
+        let mut m = Map {
+            tiles: vec![Tile::Building; (W * H) as usize],
+            w: W,
+            h: H,
+            tile_m: 1.0,
+            rail: Some(Route::new(vec![v2(RAIL_X, -14.0), v2(RAIL_X, H as f32 + 14.0)], false)),
+            scenario: Scenario {
+                zones: vec![[14, 2, 46, 26], [54, 14, 76, 34], [30, 0, 62, 17], [0, 10, 22, 72], [76, 0, 89, 12]],
+                spawns: vec![v2(25.0, 39.0), v2(35.0, 39.0), v2(20.0, 39.0), v2(40.0, 47.0), v2(25.0, 39.0)],
+                free_spawns: vec![v2(5.0, 47.0), v2(25.0, 39.0), v2(45.0, 73.0), v2(75.0, 47.0), v2(5.0, 3.0)],
+                puppy_cage: v2(86.5, 8.5),
+                boss_home: v2(84.5, 9.0),
+                play: [0, 0, 89, 80],
+            },
+            exits: Vec::new(),
+            labels: Vec::new(),
+            routes: Vec::new(),
+            lanterns: Vec::new(),
+        };
         let mut rng = Rng::new(1010);
 
         // The street grid: the old quarter in the north, the French quarter in the south.
@@ -459,8 +503,8 @@ impl Map {
             Exit { id: ExitId::Ga, name: "Ga Hà Nội", x0: 6.0, y0: 76.5, x1: 14.0, y1: 80.0 },
         ];
 
-        let big = |text, x, y| Label { text, at: v2(x, y), big: true };
-        let small = |text, x, y| Label { text, at: v2(x, y), big: false };
+        let big = |text: &str, x, y| Label { text: text.to_string(), at: v2(x, y), big: true };
+        let small = |text: &str, x, y| Label { text: text.to_string(), at: v2(x, y), big: false };
         m.labels = vec![
             big("HỒ GƯƠM", 50.0, 54.0),
             small("Tháp Rùa", 49.5, 63.2),
@@ -508,6 +552,404 @@ impl Map {
         }
         m
     }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Real districts, from OpenStreetMap data.
+
+use crate::city::{City, Dm};
+
+/// The real landmarks the story uses, by their names in the map data.
+pub mod places {
+    pub const HANG_MA: &str = "Phố Hàng Mã";
+    pub const TA_HIEN: &str = "Phố Tạ Hiện";
+    pub const LUONG_NGOC_QUYEN: &str = "Phố Lương Ngọc Quyến";
+    pub const DONG_XUAN: &str = "Chợ Đồng Xuân";
+    pub const PHUNG_HUNG: &str = "Phố Phùng Hưng";
+    pub const LONG_BIEN: &str = "Cầu Long Biên";
+    pub const QUAN_CHUONG: &str = "Ô Quan Chưởng";
+    pub const OPERA: &str = "Nhà hát Lớn";
+    pub const STATION: &str = "Ga Long Biên";
+    pub const CATHEDRAL: &str = "Nhà thờ Lớn";
+    pub const TURTLE_TOWER: &str = "Tháp Rùa";
+    pub const NGOC_SON: &str = "Đền Ngọc Sơn";
+    pub const LAKE: &str = "Hồ Hoàn Kiếm";
+    pub const DINH_TIEN_HOANG: &str = "Phố Đinh Tiên Hoàng";
+}
+
+impl Map {
+    /// Rasterises a real district: `tile_m` metres per tile.
+    pub fn from_city(c: &City, tile_m: f32) -> Map {
+        let tile_m = tile_m.clamp(0.5, 10.0);
+        let [bx0, by0, bx1, by1] = c.bounds;
+        let w = (((bx1 - bx0) as f32 / 10.0) / tile_m).ceil().clamp(16.0, 4000.0) as i32;
+        let h = (((by1 - by0) as f32 / 10.0) / tile_m).ceil().clamp(16.0, 4000.0) as i32;
+        let to = |p: &Dm| -> V2 { v2((p[0] - bx0) as f32 / 10.0 / tile_m, (p[1] - by0) as f32 / 10.0 / tile_m) };
+        let ring = |pts: &[Dm]| -> Vec<V2> { pts.iter().map(to).collect() };
+        let mut m = Map {
+            tiles: vec![Tile::Plaza; (w * h) as usize],
+            w,
+            h,
+            tile_m,
+            rail: None,
+            scenario: Scenario::default(),
+            exits: Vec::new(),
+            labels: Vec::new(),
+            routes: Vec::new(),
+            lanterns: Vec::new(),
+        };
+
+        for a in &c.parks {
+            let mut rings = vec![ring(&a.outer)];
+            rings.extend(a.holes.iter().map(|h| ring(h)));
+            m.fill_rings(&rings, |_| Tile::Park);
+        }
+        for a in &c.water {
+            let mut rings = vec![ring(&a.outer)];
+            rings.extend(a.holes.iter().map(|h| ring(h)));
+            m.fill_rings(&rings, |_| Tile::Water);
+            for hole in &a.holes {
+                m.fill_rings(&[ring(hole)], |_| Tile::Island);
+            }
+        }
+        let crowd = [places::TA_HIEN, places::LUONG_NGOC_QUYEN];
+        for r in c.roads.iter().filter(|r| !r.bridge) {
+            let pts = ring(&r.pts);
+            let half = r.w as f32 / 20.0 / tile_m;
+            let busy = r.name.as_deref().is_some_and(|n| crowd.contains(&n));
+            let t = if busy {
+                Tile::Crowd
+            } else if r.w >= 50 {
+                Tile::Street
+            } else {
+                Tile::Alley
+            };
+            m.stamp_line(&pts, half.max(0.5), |old| if matches!(old, Tile::Water | Tile::River) { old } else { t });
+        }
+        for r in &c.rails {
+            m.stamp_line(&ring(r), 1.5 / tile_m, |old| if matches!(old, Tile::Water | Tile::River) { old } else { Tile::Rail });
+        }
+        for b in &c.buildings {
+            let mut rings = vec![ring(&b.outer)];
+            rings.extend(b.holes.iter().map(|h| ring(h)));
+            m.fill_rings(&rings, |_| Tile::Building);
+        }
+        for r in c.roads.iter().filter(|r| r.bridge) {
+            let half = (r.w as f32 / 20.0 / tile_m).max(0.75);
+            m.stamp_line(&ring(&r.pts), half, |_| Tile::Bridge);
+        }
+        for t in &c.trees {
+            let p = to(t);
+            let (x, y) = p.tile();
+            if matches!(m.tile(x, y), Tile::Park) {
+                m.set(x, y, Tile::Tree);
+            }
+        }
+
+        // The railway the train runs on: the longest chain of joined rail lines.
+        m.rail = longest_chain(&c.rails).map(|chain| Route::new(chain.iter().map(to).collect(), false));
+
+        // Traffic on the main roads.
+        let mut main: Vec<&crate::city::Road> =
+            c.roads.iter().filter(|r| matches!(r.kind.as_str(), "primary" | "secondary" | "tertiary") && !r.bridge && r.pts.len() >= 3).collect();
+        let len = |r: &crate::city::Road| {
+            r.pts
+                .windows(2)
+                .map(|w| match w {
+                    [a, b] => to(a).dist(to(b)),
+                    _ => 0.0,
+                })
+                .sum::<f32>()
+        };
+        main.sort_by(|a, b| len(b).total_cmp(&len(a)));
+        m.routes = main.iter().take(14).map(|r| Route::new(ring(&r.pts), false)).collect();
+
+        // Names: landmarks big, each named street once.
+        let at = |name: &str| c.place(name).or_else(|| c.road(name)).map(|p| to(&p));
+        for (text, name) in [
+            ("HỒ GƯƠM", places::LAKE),
+            ("THÁP RÙA", places::TURTLE_TOWER),
+            ("ĐỀN NGỌC SƠN", places::NGOC_SON),
+            ("NHÀ THỜ LỚN", places::CATHEDRAL),
+            ("NHÀ HÁT LỚN", places::OPERA),
+            ("CHỢ ĐỒNG XUÂN", places::DONG_XUAN),
+            ("Ô QUAN CHƯỞNG", places::QUAN_CHUONG),
+            ("GA LONG BIÊN", places::STATION),
+            ("CẦU LONG BIÊN", places::LONG_BIEN),
+        ] {
+            let pos = if name == places::LAKE {
+                c.water.iter().find(|w| w.name.as_deref() == Some(places::LAKE)).and_then(|w| crate::city::centroid(&w.outer)).map(|p| to(&p))
+            } else {
+                at(name)
+            };
+            if let Some(p) = pos {
+                m.labels.push(Label { text: text.to_string(), at: p, big: true });
+            }
+        }
+        let mut named: Vec<&str> = Vec::new();
+        for r in &c.roads {
+            let Some(n) = r.name.as_deref() else { continue };
+            if named.contains(&n) || r.pts.len() < 2 || r.w < 50 {
+                continue;
+            }
+            named.push(n);
+            if let Some(p) = r.pts.get(r.pts.len() / 2) {
+                m.labels.push(Label { text: n.to_string(), at: to(p), big: false });
+            }
+        }
+
+        // Lanterns over Hàng Mã.
+        if let Some(r) = c.roads.iter().filter(|r| r.name.as_deref() == Some(places::HANG_MA)).max_by_key(|r| r.pts.len()) {
+            let pts = ring(&r.pts);
+            for (i, seg) in pts.windows(2).enumerate() {
+                if let [a, b] = seg {
+                    let n = (a.dist(*b) / 1.5).ceil().max(1.0) as i32;
+                    for k in 0..n {
+                        m.lanterns.push((a.lerp(*b, k as f32 / n as f32), (i as i32 + k) % 2 == 0));
+                    }
+                }
+            }
+        }
+
+        // Exits and the story's places, by name; each nudged onto a walkable tile.
+        let near = |m: &Map, p: V2| m.nearest_walkable(p);
+        let exit = |m: &Map, id: ExitId, name: &'static str, p: Option<V2>, r: f32| {
+            p.map(|p| {
+                let q = near(m, p);
+                Exit { id, name, x0: q.x - r, y0: q.y - r, x1: q.x + r, y1: q.y + r }
+            })
+        };
+        let r = 6.0 / tile_m;
+        let bridge_end = c
+            .roads
+            .iter()
+            .filter(|rd| rd.name.as_deref() == Some(places::LONG_BIEN))
+            .flat_map(|rd| rd.pts.iter())
+            .filter(|p| p[0] < bx1 - 300 && p[1] > by0 + 300)
+            .max_by_key(|p| p[0])
+            .map(to);
+        let exits = [
+            exit(&m, ExitId::QuanChuong, "Ô Quan Chưởng", at(places::QUAN_CHUONG), r),
+            exit(&m, ExitId::LongBien, "Cầu Long Biên", bridge_end, r),
+            exit(&m, ExitId::NhaHat, "Nhà hát Lớn", at(places::OPERA), r * 1.5),
+            exit(&m, ExitId::Ga, "Ga Long Biên", at(places::STATION), r * 1.5),
+        ];
+        m.exits = exits.into_iter().flatten().collect();
+
+        let zone = |p: Option<V2>, half_m: f32| -> [i32; 4] {
+            let p = p.unwrap_or(v2(w as f32 / 2.0, h as f32 / 2.0));
+            let k = half_m / tile_m;
+            [(p.x - k) as i32, (p.y - k) as i32, (p.x + k) as i32, (p.y + k) as i32]
+        };
+        let lake = at(places::DINH_TIEN_HOANG).unwrap_or(v2(w as f32 / 2.0, h as f32 / 2.0));
+        let cathedral = at(places::CATHEDRAL).map(|p| near(&m, p + v2(0.0, 25.0 / tile_m)));
+        let start = |p: Option<V2>| near(&m, p.unwrap_or(lake));
+        let warehouse = bridge_end.map(|_| ()).and(at(places::QUAN_CHUONG)).map(|p| p + v2(0.0, -150.0 / tile_m));
+        let scenario = Scenario {
+            zones: vec![
+                zone(at(places::HANG_MA), 90.0),
+                zone(at(places::TA_HIEN), 90.0),
+                zone(at(places::DONG_XUAN), 100.0),
+                zone(at(places::PHUNG_HUNG), 160.0),
+                zone(warehouse, 70.0),
+            ],
+            spawns: vec![
+                start(at(places::DINH_TIEN_HOANG)),
+                start(cathedral),
+                start(at(places::HANG_MA).map(|p| p + v2(0.0, 120.0 / tile_m))),
+                start(at(places::DINH_TIEN_HOANG)),
+                start(cathedral),
+            ],
+            free_spawns: vec![start(cathedral), start(Some(lake)), start(at(places::OPERA))],
+            puppy_cage: start(warehouse),
+            boss_home: start(warehouse.map(|p| p + v2(4.0, 3.0))),
+            play: [0, 0, w, h],
+        };
+        // Everything the story needs must be reachable from the lake's ring road, the heart of the
+        // district: move each place onto the nearest tile that is.
+        let hub = near(&m, lake);
+        let reach = m.distances(hub.tile());
+        let onto = |p: V2| m.nearest_reachable(p, &reach);
+        let new_scenario = Scenario {
+            spawns: scenario.spawns.iter().map(|p| onto(*p)).collect(),
+            free_spawns: scenario.free_spawns.iter().map(|p| onto(*p)).collect(),
+            puppy_cage: onto(scenario.puppy_cage),
+            boss_home: onto(scenario.boss_home),
+            ..scenario
+        };
+        let exits: Vec<Exit> = m
+            .exits
+            .iter()
+            .map(|e| {
+                let (hw, hh) = ((e.x1 - e.x0) / 2.0, (e.y1 - e.y0) / 2.0);
+                let c = onto(e.center());
+                Exit { x0: c.x - hw, y0: c.y - hh, x1: c.x + hw, y1: c.y + hh, ..e.clone() }
+            })
+            .collect();
+        m.scenario = new_scenario;
+        m.exits = exits;
+        m
+    }
+
+    /// The centre of the tile nearest the point that the reach map (from distances) gets to.
+    pub fn nearest_reachable(&self, p: V2, reach: &[i32]) -> V2 {
+        let (x, y) = p.tile();
+        for r in 0..200i32 {
+            for dy in -r..=r {
+                for dx in -r..=r {
+                    if dx.abs() != r && dy.abs() != r {
+                        continue;
+                    }
+                    let (tx, ty) = (x + dx, y + dy);
+                    if tx < 0 || ty < 0 || tx >= self.w || ty >= self.h {
+                        continue;
+                    }
+                    let ok = reach.get((ty * self.w + tx) as usize).is_some_and(|d| *d >= 0);
+                    if ok && self.tile(tx, ty) != Tile::Rail {
+                        return center(tx, ty);
+                    }
+                }
+            }
+        }
+        p
+    }
+
+    /// The centre of the walkable tile nearest `p` (searching up to 60 tiles away).
+    pub fn nearest_walkable(&self, p: V2) -> V2 {
+        let (x, y) = p.tile();
+        for r in 0..60i32 {
+            for dy in -r..=r {
+                for dx in -r..=r {
+                    if dx.abs() != r && dy.abs() != r {
+                        continue;
+                    }
+                    let t = self.tile(x + dx, y + dy);
+                    if t.walkable() && t != Tile::Rail {
+                        return center(x + dx, y + dy);
+                    }
+                }
+            }
+        }
+        p
+    }
+
+    /// Fills the area inside the rings (even-odd, so inner rings are holes), row by row.
+    fn fill_rings(&mut self, rings: &[Vec<V2>], tile: impl Fn(Tile) -> Tile) {
+        let (mut ymin, mut ymax) = (f32::INFINITY, f32::NEG_INFINITY);
+        for r in rings {
+            for p in r {
+                ymin = ymin.min(p.y);
+                ymax = ymax.max(p.y);
+            }
+        }
+        if !ymin.is_finite() {
+            return;
+        }
+        let y0 = (ymin.floor() as i32).max(0);
+        let y1 = (ymax.ceil() as i32).min(self.h - 1);
+        let mut xs: Vec<f32> = Vec::new();
+        for y in y0..=y1 {
+            let yc = y as f32 + 0.5;
+            xs.clear();
+            for r in rings {
+                let n = r.len();
+                for i in 0..n {
+                    let (Some(a), Some(b)) = (r.get(i), r.get((i + 1) % n)) else { continue };
+                    if (a.y > yc) != (b.y > yc) {
+                        xs.push(a.x + (yc - a.y) / (b.y - a.y) * (b.x - a.x));
+                    }
+                }
+            }
+            xs.sort_by(f32::total_cmp);
+            for pair in xs.chunks(2) {
+                if let [l, r] = pair {
+                    let xa = ((l - 0.5).ceil() as i32).max(0);
+                    let xb = ((r - 0.5).floor() as i32).min(self.w - 1);
+                    for x in xa..=xb {
+                        let t = tile(self.tile(x, y));
+                        self.set(x, y, t);
+                    }
+                }
+            }
+        }
+    }
+
+    /// Sets every tile whose centre is within `half` tiles of the polyline.
+    fn stamp_line(&mut self, pts: &[V2], half: f32, tile: impl Fn(Tile) -> Tile) {
+        for seg in pts.windows(2) {
+            let [a, b] = seg else { continue };
+            let (a, b) = (*a, *b);
+            let x0 = (a.x.min(b.x) - half).floor() as i32;
+            let x1 = (a.x.max(b.x) + half).ceil() as i32;
+            let y0 = (a.y.min(b.y) - half).floor() as i32;
+            let y1 = (a.y.max(b.y) + half).ceil() as i32;
+            let ab = b - a;
+            let len2 = ab.dot(ab);
+            for y in y0.max(0)..=y1.min(self.h - 1) {
+                for x in x0.max(0)..=x1.min(self.w - 1) {
+                    let p = center(x, y);
+                    let t = if len2 > 1e-6 { ((p - a).dot(ab) / len2).clamp(0.0, 1.0) } else { 0.0 };
+                    if p.dist(a + ab * t) <= half {
+                        let nt = tile(self.tile(x, y));
+                        self.set(x, y, nt);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Joins lines that share end points and returns the longest chain.
+fn longest_chain(lines: &[Vec<Dm>]) -> Option<Vec<Dm>> {
+    let mut pool: Vec<Vec<Dm>> = lines.iter().filter(|l| l.len() >= 2).cloned().collect();
+    let mut best: Option<Vec<Dm>> = None;
+    let length = |l: &Vec<Dm>| -> f64 {
+        l.windows(2)
+            .map(|w| match w {
+                [a, b] => (((a[0] - b[0]) as f64).powi(2) + ((a[1] - b[1]) as f64).powi(2)).sqrt(),
+                _ => 0.0,
+            })
+            .sum()
+    };
+    while let Some(mut cur) = pool.pop() {
+        let mut grown = true;
+        while grown {
+            grown = false;
+            for i in 0..pool.len() {
+                let Some(o) = pool.get(i) else { continue };
+                let (cf, cl, of, ol) = (cur.first().copied(), cur.last().copied(), o.first().copied(), o.last().copied());
+                let joined = if cl == of {
+                    Some((false, false))
+                } else if cl == ol {
+                    Some((false, true))
+                } else if cf == ol {
+                    Some((true, false))
+                } else if cf == of {
+                    Some((true, true))
+                } else {
+                    None
+                };
+                if let Some((front, reverse)) = joined {
+                    let mut o = pool.swap_remove(i);
+                    if reverse {
+                        o.reverse();
+                    }
+                    if front {
+                        o.extend(cur.into_iter().skip(1));
+                        cur = o;
+                    } else {
+                        cur.extend(o.into_iter().skip(1));
+                    }
+                    grown = true;
+                    break;
+                }
+            }
+        }
+        if best.as_ref().is_none_or(|b| length(&cur) > length(b)) {
+            best = Some(cur);
+        }
+    }
+    best
 }
 
 #[cfg(test)]

@@ -415,6 +415,20 @@ throwaway step in a longer command. There is no safe use of `python -` here: nev
 the error went to `/dev/null`, and the empty result read as "no such files on this computer". Don't
 hide a command's errors when an empty result means something; set the time limit on the tool call.
 
+**A kill that matched itself.** `pkill -f "kinora-site --addr"` (and later `pgrep -f "http.server 8766"`)
+matched the shell running the command, whose own command line held the same text, so the shell
+was killed (exit 144) and the rest of the command never ran, twice. Keep a started server's PID in
+a file (`echo $! > server.pid`) and kill that, or match an exact name with `pgrep -x`.
+
+**Backticks in a double-quoted script.** Python passed with `python3 -c "..."` contained Rust doc
+comments with `code` in backticks; bash ran them as commands, so the comments lost words and
+nothing failed. Write any script with quotes or backticks to a file with the editor tool first.
+
+**An engine feature that broke the web build.** Bevy's `VisibilityRange` worked natively but made
+every PBR pipeline invalid on WebGL2 ("Error matching ShaderStages(VERTEX) shader requirements"),
+so the 3D game drew nothing in the browser. Check each engine feature on the web target (headless
+Chromium with `--use-angle=swiftshader` runs WebGL2), and keep distance culling in our own code.
+
 **A file list in a variable that zsh didn't split.** `F=$(grep -l …); sed -i '' … $F` handed sed all the
 names as one path; it failed, the tests that followed passed on the old code, and it read as done.
 Pipe lists into `xargs`, and check the edit landed (`git status`) before reading the test result.

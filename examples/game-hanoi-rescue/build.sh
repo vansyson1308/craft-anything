@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the game into dist/ as a static site (any static host, e.g. GitHub Pages, can serve it).
 # Needs: rustup target add wasm32-unknown-unknown, and wasm-bindgen-cli at the version pinned in
-# Cargo.toml (cargo install wasm-bindgen-cli --version 0.2.129 --locked). wasm-opt is used if found.
+# Cargo.toml (cargo install wasm-bindgen-cli --version 0.2.130 --locked). wasm-opt is used if found.
 set -euo pipefail
 cd "$(dirname "$0")"
 cargo build --release --target wasm32-unknown-unknown --lib

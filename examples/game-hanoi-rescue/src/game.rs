@@ -406,8 +406,8 @@ impl Game {
     fn setup_for(&self, mission: Mission) -> RaidSetup {
         let stats = self.profile.stats();
         match mission {
-            Mission::Story(ch) => RaidSetup::story(ch, stats, self.profile.seed),
-            Mission::Free(l) => RaidSetup::free(l, stats, self.profile.seed),
+            Mission::Story(ch) => RaidSetup::story(&self.map, ch, stats, self.profile.seed),
+            Mission::Free(l) => RaidSetup::free(&self.map, l, stats, self.profile.seed),
         }
     }
 
@@ -689,7 +689,7 @@ impl Game {
         let mm = hud.minimap;
         cv.rrect(mm.x - 3.0, mm.y - 3.0, mm.w + 6.0, mm.h + 6.0, 8.0, 0x000000, 0.6);
         cv.list.push(Draw::Minimap { x: mm.x, y: mm.y, w: mm.w, h: mm.h, a: 1.0 });
-        let to_mm = |q: V2| (mm.x + q.x / crate::map::W as f32 * mm.w, mm.y + q.y / crate::map::H as f32 * mm.h);
+        let to_mm = |q: V2| (mm.x + q.x / self.map.w as f32 * mm.w, mm.y + q.y / self.map.h as f32 * mm.h);
         for e in &self.map.exits {
             if raid.exit_open(e.id) {
                 let (ex, ey) = to_mm(e.center());
