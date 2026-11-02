@@ -327,7 +327,7 @@ fn spawn_hud(commands: &mut Commands, font: Handle<Font>, mini: Handle<Image>) {
                 round(c),
             ))
             .with_children(|p| {
-                p.spawn(text(&font, label, 15.0, Color::WHITE));
+                p.spawn(text(&font, label, 13.0, Color::WHITE));
             });
     }
     commands.spawn((
@@ -1032,28 +1032,40 @@ fn menus(
         commands.entity(r).despawn();
     }
     let f = &font.0;
+    // A full-screen layer that centres the panel, so short landscape screens never cut it off.
     let panel = |commands: &mut Commands| {
-        commands
+        let inner = commands
             .spawn((
-                MenuRoot,
                 Node {
-                    position_type: PositionType::Absolute,
-                    left: Val::Percent(50.0),
-                    top: Val::Percent(50.0),
                     width: Val::Px(360.0),
                     max_width: Val::Vw(92.0),
-                    max_height: Val::Vh(92.0),
-                    margin: UiRect { left: Val::Px(-180.0), top: Val::Px(-200.0), ..default() },
+                    max_height: Val::Vh(94.0),
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(10.0),
-                    padding: UiRect::all(Val::Px(18.0)),
+                    row_gap: Val::Px(8.0),
+                    padding: UiRect::all(Val::Px(14.0)),
                     border_radius: BorderRadius::all(Val::Px(16.0)),
                     overflow: Overflow::clip_y(),
                     ..default()
                 },
                 BackgroundColor(Color::srgba(0.06, 0.07, 0.1, 0.9)),
             ))
-            .id()
+            .id();
+        commands
+            .spawn((
+                MenuRoot,
+                Node {
+                    position_type: PositionType::Absolute,
+                    left: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+            ))
+            .add_child(inner);
+        inner
     };
     let button = |commands: &mut Commands, parent: Entity, label: &str, kind: MenuButton, primary: bool| {
         let b = commands
@@ -1061,7 +1073,8 @@ fn menus(
                 Button,
                 kind,
                 Node {
-                    height: Val::Px(50.0),
+                    height: Val::Px(46.0),
+                    flex_shrink: 0.0,
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     border_radius: BorderRadius::all(Val::Px(12.0)),
