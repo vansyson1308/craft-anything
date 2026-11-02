@@ -1,0 +1,11 @@
+{
+  "name": "Giải Cứu Cún: Hà Nội",
+  "short_name": "Giải Cứu Cún",
+  "description": "Giải cứu những chú chó bị bắt trộm ở phố cổ Hà Nội.",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#14161a",
+  "theme_color": "#14161a",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

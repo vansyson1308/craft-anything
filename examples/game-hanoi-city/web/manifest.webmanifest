@@ -1,0 +1,11 @@
+{
+  "name": "Hanoi City: Giải Cứu Cún",
+  "short_name": "Hanoi City",
+  "description": "Giải cứu những chú chó bị bắt trộm trên phố thật Hoàn Kiếm, Hà Nội. 3D, chạy ngay trên trình duyệt.",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#14161a",
+  "theme_color": "#14161a",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
