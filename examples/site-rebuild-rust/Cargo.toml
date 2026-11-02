@@ -1,0 +1,28 @@
+[package]
+name = "kinora-site"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "An example website rebuilt in Rust with Craft Anything: an AI creative-suite landing page, served by axum."
+
+# Not part of the Craft Anything workspace: a standalone example a person builds on its own.
+[workspace]
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal"] }
+maud = "0.27"
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "deny"
