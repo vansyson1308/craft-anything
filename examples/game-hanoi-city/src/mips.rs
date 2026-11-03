@@ -2,35 +2,43 @@
 //! with a single level, so pavements and walls shimmer and turn to noise a few metres away; each
 //! one gets its smaller levels built once, on load (averaged in linear light for colour images).
 
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 use bevy::image::{ImageFilterMode, ImageSampler, ImageSamplerDescriptor};
+use bevy::platform::time::Instant;
 use bevy::prelude::*;
 use bevy::render::render_resource::{TextureDimension, TextureFormat};
 
 /// Images smaller than this on both sides are left alone (UI pieces, tiny masks).
 const MIN_SIDE: u32 = 32;
 
+/// How long a frame may spend building mipmaps; the rest waits for the next frame, so walking into
+/// a new block never stalls the game (an image waits a frame or two without its smaller levels).
+const BUDGET_MS: f64 = 6.0;
+
 pub fn make_mips(
     mut events: MessageReader<AssetEvent<Image>>,
     mut images: ResMut<Assets<Image>>,
     assets: Res<AssetServer>,
     mut done: Local<HashSet<AssetId<Image>>>,
+    mut queue: Local<VecDeque<AssetId<Image>>>,
 ) {
-    let ids: Vec<AssetId<Image>> = events
-        .read()
-        .filter_map(|e| match e {
-            AssetEvent::LoadedWithDependencies { id } => Some(*id),
-            _ => None,
-        })
-        .collect();
-    for id in ids {
-        if done.contains(&id) || assets.get_path(id).is_none() {
-            continue;
+    for e in events.read() {
+        if let AssetEvent::LoadedWithDependencies { id } = e
+            && !done.contains(id)
+            && assets.get_path(*id).is_some()
+        {
+            done.insert(*id);
+            queue.push_back(*id);
         }
-        done.insert(id);
+    }
+    let start = Instant::now();
+    while let Some(id) = queue.pop_front() {
         if let Some(mut img) = images.get_mut(id) {
             add_mips(&mut img);
+        }
+        if start.elapsed().as_secs_f64() * 1000.0 > BUDGET_MS {
+            break;
         }
     }
 }
@@ -71,6 +79,8 @@ pub fn add_mips(img: &mut Image) {
         return;
     }
     let lut: Vec<f32> = (0..=255u8).map(to_linear).collect();
+    // Linear light back to sRGB, in 4096 steps (no powf per pixel).
+    let back: Vec<u8> = (0..4096).map(|i| to_srgb(i as f32 / 4095.0)).collect();
     let mut level: Vec<u8> = data.clone();
     let mut levels = 1u32;
     while w > 1 || h > 1 {
@@ -91,7 +101,11 @@ pub fn add_mips(img: &mut Image) {
                         }
                     }
                     let avg = sum / n.max(1.0);
-                    let out = if colour { to_srgb(avg) } else { (avg + 0.5).clamp(0.0, 255.0) as u8 };
+                    let out = if colour {
+                        back.get((avg.clamp(0.0, 1.0) * 4095.0 + 0.5) as usize).copied().unwrap_or(255)
+                    } else {
+                        (avg + 0.5).clamp(0.0, 255.0) as u8
+                    };
                     if let Some(o) = next.get_mut(((y * nw + x) as usize) * ch + c) {
                         *o = out;
                     }

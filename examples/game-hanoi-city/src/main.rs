@@ -5,6 +5,7 @@
 //! that world in 3D with Bevy and turns touches, the mouse and the keyboard into its controls.
 
 mod actors;
+mod crowd;
 mod facade;
 mod hq;
 mod mips;
@@ -54,7 +55,15 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(
             Update,
-            ((actors::adopt_hq, actors::build_graphs, loading, pointer_lock, play, hud, menus).chain(), world::cull_far, mips::make_mips, facade::stream),
+            (
+                (actors::adopt_hq, actors::build_graphs, loading, pointer_lock, play, hud, menus).chain(),
+                world::cull_far,
+                mips::make_mips,
+                facade::stream,
+                crowd::spawn,
+                crowd::walk,
+                world::ripple,
+            ),
         )
         .run();
 }
@@ -134,7 +143,7 @@ fn look_from_page(sites: &[hq::Site]) -> Option<Look> {
     // The bridge's north end is its model's −Z turned by the site's yaw; the shore end is south.
     let north = Quat::from_rotation_y(bridge.yaw) * Vec3::NEG_Z;
     let right = north.cross(Vec3::Y);
-    let shore = bridge.at - north * 23.0 - north * 7.0;
+    let shore = bridge.at - north * 23.0 - north * 16.0;
     match which.as_str() {
         "lineup" => Some(Look { eye: shore - north * 4.2 + Vec3::Y * 1.45, target: shore + Vec3::Y * 0.95, lineup: Some((shore, right)), spawned: false }),
         "tree" => {
@@ -261,6 +270,10 @@ fn setup(
     let look = look_from_page(&built.sites);
     commands.insert_resource(hq::Sites(built.sites));
     commands.insert_resource(built.facades);
+    commands.insert_resource(crowd::Promenade::new(built.promenade));
+    let (_, cols, rows) = facade::street_atlas();
+    let sign_mat = mats.add(StandardMaterial { base_color_texture: Some(assets.load("tex/street_names.png")), perceptual_roughness: 0.45, ..default() });
+    commands.insert_resource(facade::SignFaces::new(sign_mat, cols, rows));
     commands.insert_resource(m);
 
     let fx = render::Fx::from_page();
@@ -444,7 +457,7 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &
         .iter()
         .map(|c| {
             const CAGE: [&str; 3] = ["people/long_cho.glb", "animals/long_cho.glb", "street/long_cho.glb"];
-            hq::prop(commands, hq, assets, &CAGE, Transform::from_translation(world_pos(c.pos))).unwrap_or_else(|| {
+            hq::prop(commands, hq, &CAGE, Transform::from_translation(world_pos(c.pos))).unwrap_or_else(|| {
                 commands
                     .spawn((Mesh3d(props.cage.clone()), MeshMaterial3d(props.cage_mat.clone()), Transform::from_translation(world_pos(c.pos) + Vec3::Y * 0.35)))
                     .id()
@@ -461,7 +474,7 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &
                 PickupKind::Slipper => "street/dep_to_ong.glb",
                 PickupKind::Loot(_) => "street/thung_hang.glb",
             };
-            if let Some(e) = hq::prop(commands, hq, assets, &[file], Transform::from_translation(world_pos(k.pos))) {
+            if let Some(e) = hq::prop(commands, hq, &[file], Transform::from_translation(world_pos(k.pos))) {
                 return e;
             }
             let (mesh, mat) = match k.kind {
@@ -481,7 +494,7 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &
             const BIKES: [&str; 4] = ["street/xe_may_01_chay.glb", "street/xe_may_02_chay.glb", "street/xe_may_03_chay.glb", "street/xe_may_04_chay.glb"];
             let delivered: Vec<&str> = BIKES.iter().copied().filter(|f| hq.get(f).is_some()).collect();
             if let Some(f) = delivered.get(i % delivered.len().max(1))
-                && let Some(e) = hq::prop(commands, hq, assets, &[f], Transform::default())
+                && let Some(e) = hq::prop(commands, hq, &[f], Transform::default())
             {
                 return e;
             }

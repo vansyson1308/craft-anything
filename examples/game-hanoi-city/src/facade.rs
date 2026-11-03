@@ -69,23 +69,82 @@ pub fn slots_for(a: Vec2, b: Vec2, height: f32, french: bool, seed: u32) -> (Vec
     (out, covered)
 }
 
-/// A block's fronts: its slots, and the flat stand-in fronts they replace.
+/// A piece of street furniture to stand in a block: which delivered file, where, how far away it
+/// is still drawn, and for a street-name sign, which street (its cell in the name atlas).
+#[derive(Clone, Debug)]
+pub struct PropSlot {
+    pub file: &'static str,
+    pub at: Transform,
+    pub upto: f32,
+    pub street: Option<u16>,
+}
+
+/// A block's street: its front slots, the flat stand-in fronts they replace, and its furniture.
 pub struct Block {
     pub center: Vec3,
     pub slots: Vec<Slot>,
+    pub props: Vec<PropSlot>,
     pub flat: Vec<Entity>,
     shown: Option<Entity>,
 }
 
 impl Block {
     pub fn new(center: Vec3) -> Block {
-        Block { center, slots: Vec::new(), flat: Vec::new(), shown: None }
+        Block { center, slots: Vec::new(), props: Vec::new(), flat: Vec::new(), shown: None }
     }
 }
 
 #[derive(Resource, Default)]
 pub struct Facades {
     pub blocks: Vec<Block>,
+}
+
+/// The street-name faces: the atlas drawn by `tools/make_street_names.py`, and a quad per street
+/// mapped to its cell, made the first time a sign for that street goes up.
+#[derive(Resource)]
+pub struct SignFaces {
+    pub material: Handle<StandardMaterial>,
+    pub cols: u16,
+    pub rows: u16,
+    quads: std::collections::HashMap<u16, Handle<Mesh>>,
+}
+
+impl SignFaces {
+    pub fn new(material: Handle<StandardMaterial>, cols: u16, rows: u16) -> SignFaces {
+        SignFaces { material, cols: cols.max(1), rows: rows.max(1), quads: Default::default() }
+    }
+    /// The face for street `i`: a 0.94 × 0.27 m quad standing just in front of the plate.
+    fn quad(&mut self, i: u16, meshes: &mut Assets<Mesh>) -> Handle<Mesh> {
+        let (cols, rows) = (self.cols, self.rows);
+        self.quads
+            .entry(i)
+            .or_insert_with(|| {
+                let (cu, cv) = (1.0 / cols as f32, 1.0 / rows as f32);
+                let (u0, v0) = ((i % cols) as f32 * cu, (i / cols) as f32 * cv);
+                let (u1, v1) = (u0 + cu, v0 + cv);
+                let (w, y0, y1, z) = (0.47, 2.445, 2.715, 0.034);
+                use bevy::asset::RenderAssetUsages;
+                use bevy::mesh::{Indices, PrimitiveTopology};
+                meshes.add(
+                    Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default())
+                        .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vec![[-w, y0, z], [w, y0, z], [w, y1, z], [-w, y1, z]])
+                        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, vec![[0.0, 0.0, 1.0]; 4])
+                        .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, vec![[u0, v1], [u1, v1], [u1, v0], [u0, v0]])
+                        .with_inserted_indices(Indices::U32(vec![0, 1, 2, 0, 2, 3])),
+                )
+            })
+            .clone()
+    }
+}
+
+/// The streets that have a name sign, and the atlas's columns and rows
+/// (`assets/tex/street_names.json`, written by `tools/make_street_names.py`).
+pub fn street_atlas() -> (std::collections::HashMap<String, u16>, u16, u16) {
+    let v: serde_json::Value = serde_json::from_str(include_str!("../assets/tex/street_names.json")).unwrap_or_default();
+    let names = v.get("names").and_then(|n| n.as_array()).map(|a| a.iter().filter_map(|x| x.as_str()).collect::<Vec<_>>()).unwrap_or_default();
+    let map = names.iter().enumerate().filter_map(|(i, n)| u16::try_from(i).ok().map(|i| (n.to_string(), i))).collect();
+    let num = |k: &str| v.get(k).and_then(|x| x.as_u64()).and_then(|x| u16::try_from(x).ok()).unwrap_or(1);
+    (map, num("cols"), num("rows"))
 }
 
 /// How near (metres from a block's centre) the modules go up, and how many blocks are dressed per
@@ -97,16 +156,18 @@ fn modules(hq: &Hq, prefix: &str, n: usize) -> Vec<String> {
     (1..=n).map(|i| format!("buildings/{prefix}_{i:02}.glb")).filter(|f| hq.get(f).is_some()).collect()
 }
 
-/// Puts modules on the blocks near the camera and takes them off the ones left behind.
+/// Dresses the blocks near the camera (front modules, street furniture) and undresses the ones
+/// left behind.
 #[allow(clippy::too_many_arguments)]
 pub fn stream(
     mut commands: Commands,
     hq: Res<Hq>,
-    assets: Res<AssetServer>,
     time: Res<Time>,
     mut next: Local<f32>,
     mut lists: Local<Option<[Vec<String>; 4]>>,
     mut facades: ResMut<Facades>,
+    mut signs: Option<ResMut<SignFaces>>,
+    mut meshes: ResMut<Assets<Mesh>>,
     cam: Query<&GlobalTransform, With<Camera3d>>,
     mut vis: Query<&mut Visibility>,
 ) {
@@ -123,13 +184,11 @@ pub fn stream(
         let upper = modules(&hq, "mat_tien_tang", 10);
         let fg = modules(&hq, "mat_tien_phap_tret", 3);
         let fu = modules(&hq, "mat_tien_phap_tang", 3);
-        // French fronts fall back to the ordinary ones; with no ordinary pair there is nothing to do.
+        // French fronts fall back to the ordinary ones; without an ordinary pair, no fronts.
         let (fg, fu) = if fg.is_empty() || fu.is_empty() { (ground.clone(), upper.clone()) } else { (fg, fu) };
         [ground, upper, fg, fu]
     });
-    if lists[0].is_empty() || lists[1].is_empty() {
-        return;
-    }
+    let fronts = !lists[0].is_empty() && !lists[1].is_empty();
     let Ok(cam) = cam.single() else { return };
     let c = cam.translation();
     let flat = Vec3::new(c.x, 0.0, c.z);
@@ -140,27 +199,41 @@ pub fn stream(
             (true, None) if budget > 0 => {
                 budget -= 1;
                 let holder = commands.spawn((Transform::default(), Visibility::default())).id();
-                for s in &block.slots {
-                    let list = match s.storey {
-                        Storey::Ground => &lists[0],
-                        Storey::Upper => &lists[1],
-                        Storey::FrenchGround => &lists[2],
-                        Storey::FrenchUpper => &lists[3],
-                    };
-                    let Some(file) = list.get(s.seed as usize % list.len().max(1)) else { continue };
-                    let Some(entry) = hq.get(file) else { continue };
-                    let levels: Vec<Handle<bevy::gltf::Gltf>> =
-                        std::iter::once(&entry.file).chain(entry.lods.iter()).map(|f| assets.load(Hq::path(f))).collect();
-                    let upto = if levels.len() > 1 { vec![45.0, 10_000.0] } else { vec![10_000.0] };
-                    let m = commands.spawn((s.transform(), Visibility::default(), LodModel::new(levels, upto))).id();
+                if fronts {
+                    for s in &block.slots {
+                        let list = match s.storey {
+                            Storey::Ground => &lists[0],
+                            Storey::Upper => &lists[1],
+                            Storey::FrenchGround => &lists[2],
+                            Storey::FrenchUpper => &lists[3],
+                        };
+                        let Some(file) = list.get(s.seed as usize % list.len().max(1)) else { continue };
+                        let Some(entry) = hq.get(file) else { continue };
+                        let levels = crate::hq::levels_of(entry);
+                        let upto = if levels.len() > 1 { vec![45.0, 10_000.0] } else { vec![10_000.0] };
+                        let m = commands.spawn((s.transform(), Visibility::default(), LodModel::new(levels, upto))).id();
+                        commands.entity(holder).add_child(m);
+                    }
+                    for e in &block.flat {
+                        if let Ok(mut v) = vis.get_mut(*e) {
+                            *v = Visibility::Hidden;
+                        }
+                    }
+                }
+                for p in &block.props {
+                    let Some(entry) = hq.get(p.file) else { continue };
+                    let levels = crate::hq::levels_of(entry);
+                    let n = levels.len();
+                    let upto = (0..n).map(|i| p.upto * (i + 1) as f32 / n as f32).collect();
+                    let m = commands.spawn((p.at, Visibility::default(), LodModel::new(levels, upto))).id();
+                    if let (Some(i), Some(signs)) = (p.street, signs.as_deref_mut()) {
+                        let far = crate::world::Far { at: p.at.translation, limit: p.upto };
+                        let face = commands.spawn((Mesh3d(signs.quad(i, &mut meshes)), MeshMaterial3d(signs.material.clone()), Transform::default(), far)).id();
+                        commands.entity(m).add_child(face);
+                    }
                     commands.entity(holder).add_child(m);
                 }
                 block.shown = Some(holder);
-                for e in &block.flat {
-                    if let Ok(mut v) = vis.get_mut(*e) {
-                        *v = Visibility::Hidden;
-                    }
-                }
             }
             (false, Some(holder)) => {
                 commands.entity(holder).despawn();

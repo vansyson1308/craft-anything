@@ -74,6 +74,9 @@ pub struct Manifest {
     pub version: u32,
     #[serde(default)]
     pub assets: Vec<Entry>,
+    /// Files the web packer renamed (`materials/co/orm.png` → `materials/co/orm.jpg`).
+    #[serde(default)]
+    pub renamed: HashMap<String, String>,
 }
 
 impl Manifest {
@@ -97,6 +100,7 @@ pub struct Hq {
     manifest: Handle<JsonDoc>,
     pub state: HqState,
     entries: HashMap<String, Entry>,
+    renamed: HashMap<String, String>,
     waited: f32,
 }
 
@@ -115,6 +119,10 @@ impl Hq {
     pub fn path(file: &str) -> String {
         format!("hq/{file}")
     }
+    /// The path to load a delivered file from, after any rename by the web packer.
+    pub fn locate(&self, file: &str) -> String {
+        Hq::path(self.renamed.get(file).map_or(file, String::as_str))
+    }
 }
 
 pub struct HqPlugin;
@@ -126,7 +134,13 @@ impl Plugin for HqPlugin {
             .init_resource::<Flat>()
             .init_resource::<Applied>()
             .add_systems(PreStartup, |mut commands: Commands, assets: Res<AssetServer>| {
-                commands.insert_resource(Hq { manifest: assets.load("hq/manifest.json"), state: HqState::Waiting, entries: HashMap::new(), waited: 0.0 });
+                commands.insert_resource(Hq {
+                    manifest: assets.load("hq/manifest.json"),
+                    state: HqState::Waiting,
+                    entries: HashMap::new(),
+                    renamed: HashMap::new(),
+                    waited: 0.0,
+                });
             })
             .add_systems(Update, (resolve, place_models, apply_materials, lod_switch).chain());
     }
@@ -143,6 +157,7 @@ fn resolve(mut hq: ResMut<Hq>, assets: Res<AssetServer>, docs: Res<Assets<JsonDo
             let m = docs.get(&hq.manifest).map(|d| Manifest::parse(&d.0)).unwrap_or_default();
             info!("hq: {} delivered pieces", m.assets.len());
             hq.entries = m.assets.into_iter().map(|e| (e.file.clone(), e)).collect();
+            hq.renamed = m.renamed;
             hq.state = if hq.entries.is_empty() { HqState::Absent } else { HqState::Ready };
         }
         LoadState::Failed(_) => {
@@ -165,10 +180,11 @@ pub struct Part {
     pub at: Transform,
 }
 
-/// Models already broken into parts, by glTF file.
+/// Models already broken into parts, by glTF file; and every model file asked for so far.
 #[derive(Resource, Default)]
 pub struct Flat {
     models: HashMap<AssetId<Gltf>, Vec<Part>>,
+    files: HashMap<String, Handle<Gltf>>,
     materials: HashMap<AssetId<GltfMaterial>, Handle<StandardMaterial>>,
 }
 
@@ -236,11 +252,13 @@ fn ensure_flat(
 // ---------------------------------------------------------------------------------------------
 // Levels of detail.
 
-/// A placed model with levels of detail: `levels[i]` is drawn up to `upto[i]` metres from the
-/// camera, then the billboard (if any) up to `billboard_upto`, then nothing.
+/// A placed model with levels of detail: `levels[i]` (a file under `assets/`) is drawn up to
+/// `upto[i]` metres from the camera, then the billboard (if any) up to `billboard_upto`, then
+/// nothing. A level's file is only downloaded the first time some model needs that level, so a
+/// player who never goes near a landmark never downloads its finest model.
 #[derive(Component)]
 pub struct LodModel {
-    pub levels: Vec<Handle<Gltf>>,
+    pub levels: Vec<String>,
     pub upto: Vec<f32>,
     pub billboard: Option<(Handle<Mesh>, Handle<StandardMaterial>)>,
     pub billboard_upto: f32,
@@ -248,7 +266,7 @@ pub struct LodModel {
 }
 
 impl LodModel {
-    pub fn new(levels: Vec<Handle<Gltf>>, upto: Vec<f32>) -> LodModel {
+    pub fn new(levels: Vec<String>, upto: Vec<f32>) -> LodModel {
         LodModel { levels, upto, billboard: None, billboard_upto: 0.0, shown: None }
     }
     /// Which level to show at `d` metres: an index into `levels`, `levels.len()` for the
@@ -272,6 +290,7 @@ struct LodPart;
 fn lod_switch(
     mut commands: Commands,
     time: Res<Time>,
+    assets: Res<AssetServer>,
     mut next: Local<f32>,
     cam: Query<&GlobalTransform, With<Camera3d>>,
     mut models: Query<(Entity, &GlobalTransform, &mut LodModel, Option<&Children>)>,
@@ -295,18 +314,43 @@ fn lod_switch(
         if want == lod.shown {
             continue;
         }
-        // A level that hasn't loaded yet keeps whatever is showing.
-        let parts: Vec<Part> = match want {
-            Some(i) if i < lod.levels.len() => {
-                let Some(h) = lod.levels.get(i).cloned() else { continue };
-                if !ensure_flat(&mut flat, &h, &gltfs, &nodes, &meshes, &gmats, &mut mats) {
-                    continue;
-                }
-                flat.parts(h.id()).cloned().unwrap_or_default()
+        // The level wanted is asked for; until it arrives, the nearest level already loaded stands
+        // in (coarser first), so nothing blinks out while a finer file downloads.
+        let n = lod.levels.len();
+        let mut order: Vec<usize> = Vec::new();
+        if let Some(w) = want {
+            order.push(w);
+            order.extend((w + 1)..n);
+            order.extend((0..w.min(n)).rev());
+        }
+        let mut chosen: Option<(Option<usize>, Vec<Part>)> = if want.is_none() { Some((None, Vec::new())) } else { None };
+        for (k, i) in order.iter().enumerate() {
+            if *i >= n {
+                // The billboard needs no download.
+                let card = lod.billboard.iter().map(|(m, mat)| Part { mesh: m.clone(), material: mat.clone(), at: Transform::IDENTITY }).collect();
+                chosen = Some((Some(*i), card));
+                break;
             }
-            Some(_) => lod.billboard.iter().map(|(m, mat)| Part { mesh: m.clone(), material: mat.clone(), at: Transform::IDENTITY }).collect(),
-            None => Vec::new(),
-        };
+            let Some(path) = lod.levels.get(*i) else { continue };
+            // Only the wanted level starts a download; the others are used if already here.
+            let h = match (flat.files.get(path), k == 0) {
+                (Some(h), _) => h.clone(),
+                (None, true) => {
+                    let h: Handle<Gltf> = assets.load(path.clone());
+                    flat.files.insert(path.clone(), h.clone());
+                    h
+                }
+                (None, false) => continue,
+            };
+            if ensure_flat(&mut flat, &h, &gltfs, &nodes, &meshes, &gmats, &mut mats) {
+                chosen = Some((Some(*i), flat.parts(h.id()).cloned().unwrap_or_default()));
+                break;
+            }
+        }
+        let Some((showing, parts)) = chosen else { continue };
+        if showing == lod.shown {
+            continue;
+        }
         if let Some(kids) = kids {
             for k in kids.iter().filter(|k| parts_q.contains(*k)) {
                 commands.entity(k).despawn();
@@ -316,7 +360,7 @@ fn lod_switch(
             let child = commands.spawn((LodPart, Mesh3d(p.mesh), MeshMaterial3d(p.material), p.at)).id();
             commands.entity(e).add_child(child);
         }
-        lod.shown = want;
+        lod.shown = showing;
     }
 }
 
@@ -333,9 +377,9 @@ pub fn lod_distances(kind: &str, levels: usize) -> Vec<f32> {
 
 /// A delivered prop placed like a stand-in would be, if one of `files` was delivered (levels of detail by
 /// distance, nothing until loaded).
-pub fn prop(commands: &mut Commands, hq: &Hq, assets: &AssetServer, files: &[&str], at: Transform) -> Option<Entity> {
+pub fn prop(commands: &mut Commands, hq: &Hq, files: &[&str], at: Transform) -> Option<Entity> {
     let e = hq.first(files)?;
-    let levels = levels_of(e, assets);
+    let levels = levels_of(e);
     let mut upto = lod_distances("prop", levels.len());
     if let Some(last) = upto.last_mut() {
         *last = 400.0;
@@ -343,9 +387,9 @@ pub fn prop(commands: &mut Commands, hq: &Hq, assets: &AssetServer, files: &[&st
     Some(commands.spawn((at, Visibility::default(), LodModel::new(levels, upto))).id())
 }
 
-/// Loads an entry's levels: the file itself, then its `lods`.
-pub fn levels_of(e: &Entry, assets: &AssetServer) -> Vec<Handle<Gltf>> {
-    std::iter::once(&e.file).chain(e.lods.iter()).map(|f| assets.load(Hq::path(f))).collect()
+/// An entry's levels, as paths under `assets/`: the file itself, then its `lods`.
+pub fn levels_of(e: &Entry) -> Vec<String> {
+    std::iter::once(&e.file).chain(e.lods.iter()).map(|f| Hq::path(f)).collect()
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -414,7 +458,7 @@ fn place_models(
     sites: Option<Res<Sites>>,
     assets: Res<AssetServer>,
     mut applied: ResMut<Applied>,
-    mut stand_ins: Query<(&StandIn, &mut Visibility)>,
+    mut stand_ins: Query<(Entity, &StandIn, &mut Visibility)>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut mats: ResMut<Assets<StandardMaterial>>,
 ) {
@@ -425,7 +469,7 @@ fn place_models(
     let mut hidden: HashSet<&'static str> = HashSet::new();
     let mut billboards: HashMap<&'static str, (Handle<Mesh>, Handle<StandardMaterial>)> = HashMap::new();
     let trees: Vec<&'static str> = TREES.iter().copied().filter(|t| hq.get(t).is_some()).collect();
-    let mut levels_cache: HashMap<&'static str, Vec<Handle<Gltf>>> = HashMap::new();
+    let mut levels_cache: HashMap<&'static str, Vec<String>> = HashMap::new();
     for s in &sites.0 {
         if applied.placed.contains(s.file) {
             continue;
@@ -441,7 +485,7 @@ fn place_models(
             s.file
         };
         let Some(entry) = hq.get(file) else { continue };
-        let levels = levels_cache.entry(file).or_insert_with(|| levels_of(entry, &assets)).clone();
+        let levels = levels_cache.entry(file).or_insert_with(|| levels_of(entry)).clone();
         let mut lod = LodModel::new(levels.clone(), lod_distances(s.kind, levels.len()));
         if s.kind == "tree" {
             let plane = if entry.billboard_plane_size_m.len() == 2 { &entry.billboard_plane_size_m } else { &entry.size_m };
@@ -455,7 +499,7 @@ fn place_models(
                 .or_insert_with(|| {
                     let png = file.trim_end_matches(".glb").to_string() + "_billboard.png";
                     let mat = mats.add(StandardMaterial {
-                        base_color_texture: Some(assets.load(Hq::path(&png))),
+                        base_color_texture: Some(assets.load(hq.locate(&png))),
                         alpha_mode: AlphaMode::Mask(0.5),
                         double_sided: true,
                         cull_mode: None,
@@ -474,9 +518,10 @@ fn place_models(
     for f in &hidden {
         applied.placed.insert(f);
     }
-    for (si, mut v) in &mut stand_ins {
-        if hidden.contains(si.0) || applied.placed.contains(si.0) {
+    for (e, si, mut v) in &mut stand_ins {
+        if (hidden.contains(si.0) || applied.placed.contains(si.0)) && *v != Visibility::Hidden {
             *v = Visibility::Hidden;
+            commands.entity(e).remove::<crate::world::Far>();
         }
     }
 }
@@ -486,13 +531,14 @@ fn place_models(
 
 /// Delivered material folders and the stand-in each replaces, with how many metres one repeat of
 /// the stand-in's texture covers in the city's meshes.
-const MATERIALS: [(&str, &str, f32); 6] = [
+const MATERIALS: [(&str, &str, f32); 7] = [
     ("via_he_da_xam", "paving", 4.0),
     ("duong_nhua", "asphalt", 4.0),
     ("co", "grass", 5.0),
     ("be_tong_mai", "roof", 4.0),
     ("ngoi_do", "roof_tiles", 4.0),
     ("nuoc_ho", "water", 5.0),
+    ("gach_lat_ho", "path_paving", 4.0),
 ];
 
 fn tiling(assets: &AssetServer, path: String, srgb: bool) -> Handle<Image> {
@@ -557,7 +603,7 @@ fn apply_materials(
                 // A folder can be listed whole ("materials/co") or file by file.
                 let whole = hq.get(&format!("materials/{folder}")).is_some();
                 let has = |f: &str| whole || hq.get(&format!("materials/{folder}/{f}")).is_some();
-                let load = |f: &str, srgb: bool| has(f).then(|| tiling(&assets, Hq::path(&format!("materials/{folder}/{f}")), srgb));
+                let load = |f: &str, srgb: bool| has(f).then(|| tiling(&assets, hq.locate(&format!("materials/{folder}/{f}")), srgb));
                 let (base, normal, orm) = (load("basecolor.png", true), load("normal.png", false), load("orm.png", false));
                 (base.is_some() || normal.is_some() || orm.is_some()).then(|| PendingMaterial {
                     index,
@@ -623,7 +669,7 @@ mod tests {
 
     #[test]
     fn levels_by_distance() {
-        let mut lod = LodModel::new(vec![Handle::default(), Handle::default()], vec![35.0, 140.0]);
+        let mut lod = LodModel::new(vec!["a.glb".into(), "a_lod1.glb".into()], vec![35.0, 140.0]);
         assert_eq!(lod.pick(10.0), Some(0));
         assert_eq!(lod.pick(100.0), Some(1));
         assert_eq!(lod.pick(300.0), None);

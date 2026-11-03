@@ -136,6 +136,8 @@ fn hq_files(who: &str) -> &'static [&'static str] {
         "dai_ca" => &["people/bay_thong_long.glb", "people/tu_long.glb"],
         "co_hang" => &["people/co_hang.glb"],
         "nguoi_di_duong" => &["people/nguoi_di_duong_01.glb"],
+        "nguoi_di_duong_02" => &["people/nguoi_di_duong_02.glb", "people/nguoi_di_duong_01.glb"],
+        "nguoi_di_duong_03" => &["people/nguoi_di_duong_03.glb", "people/nguoi_di_duong_01.glb"],
         _ => &["people/minh.glb"],
     }
 }
