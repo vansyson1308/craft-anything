@@ -1,7 +1,7 @@
 # ASSETS.md: quy chuẩn tài nguyên 3D cho Hanoi City
 
 Tài liệu này dành cho người (hoặc agent) làm tài nguyên 3D cho game **Hanoi City: Giải Cứu Cún**.
-Game chạy trong trình duyệt, cả điện thoại (Rust + Bevy, WebAssembly, WebGPU, có WebGL2 dự phòng),
+Game chạy trong trình duyệt **máy tính (PC, laptop)** (Rust + Bevy, WebAssembly, WebGPU, có WebGL2 dự phòng),
 trên bản đồ thật quận Hoàn Kiếm lấy từ OpenStreetMap. Làm đúng quy chuẩn này thì tài nguyên được
 đưa vào game mà không phải sửa tay.
 
@@ -19,12 +19,12 @@ làm giống hệt:
 
 - **Tải theo khu:** thành phố chia thành ô 160 m × 160 m. Chỉ những ô quanh người chơi được tải.
   Vì vậy mỗi tài nguyên phải là **một file riêng**, không gộp cả phố vào một file.
-- **Mức chi tiết (LOD):** mỗi vật có 2–3 bản, gần dùng bản đẹp, xa dùng bản thô. Không có LOD thì
-  điện thoại không chạy nổi.
-- **Nén:** game tự nén texture sang KTX2 (Basis Universal) và nén mô hình (meshopt) khi build.
-  Người làm tài nguyên chỉ cần nộp PNG/JPG và GLB chuẩn.
-- **Ánh sáng nướng sẵn:** điện thoại không tính được ánh sáng phản xạ thời gian thực, nên che
-  khuất ánh sáng (ambient occlusion) phải được **nướng sẵn vào texture** (kênh R của ORM, mục 3).
+- **Mức chi tiết (LOD):** mỗi vật có 2–3 bản, gần dùng bản đẹp, xa dùng bản thô (cây xa nữa thì dùng
+  ảnh billboard). Không có LOD thì máy tính phổ thông không chạy nổi cả quận.
+- **Nén:** phần nén cho web (texture, mô hình) là việc của game khi build. Người làm tài nguyên chỉ
+  cần nộp PNG/JPG và GLB chuẩn.
+- **Ánh sáng nướng sẵn:** bản WebGL2 dự phòng không tính được che khuất ánh sáng thời gian thực,
+  nên ambient occlusion phải được **nướng sẵn vào texture** (kênh R của ORM, mục 3).
 - **Tự nhận và dự phòng:** game thấy file đúng tên trong thư mục thì dùng, không thấy thì dùng
   bản hiện tại. Nộp từng món một cũng được.
 
@@ -160,6 +160,7 @@ Mô-đun: mặt tường nằm trong mặt phẳng **z = 0**, nhìn ra **+Z**, c
 | `xe_may_01…04.glb` | Xe máy số và tay ga **chung chung, không logo hãng**. Có bản đậu (`_dau`) và bản đang chạy kèm người lái đội mũ bảo hiểm (`_chay`). |
 | `xe_dap_tho.glb`, `ganh_hang_rong.glb`, `xe_banh_mi.glb` | Xe đạp chở hàng, gánh hàng rong, xe bánh mì của cô Hằng. |
 | `thung_rac.glb`, `chau_cay.glb`, `cot_dien_day.glb` | Thùng rác, chậu cây, cột điện chằng chịt dây. |
+| `dep_to_ong.glb`, `so_tay.glb`, `thung_hang.glb` | Đồ nhặt được trong game: đôi dép tổ ong (ném để đánh lạc hướng), sổ ghi chép của bọn trộm (manh mối), thùng hàng nhỏ (chiến lợi phẩm). Pivot giữa đáy, dài 0,25–0,6 m. |
 | `den_long_01…03.glb` | Đèn lồng phố Hàng Mã (đỏ, vàng), `emissive`, treo được trên dây. |
 | `toa_tau.glb`, `dau_may.glb` | Toa tàu khách và đầu máy kiểu Đường sắt Việt Nam (xanh lam sọc trắng/vàng), **không logo thật**, dài khoảng 20 m. |
 
@@ -224,6 +225,18 @@ Tên phố và tên quán là chữ thật, lấy từ bản đồ, do game tự
    ```
 
    `skeleton` là `"armature-65"` nếu dùng khung xương mục 5, hoặc `"own"` kèm danh sách `animations`.
+
+   Cách khai báo các loại khác trong `manifest.json`:
+
+   - **Vật liệu nền** (nhóm F): một dòng cho cả thư mục, ví dụ `{"file": "materials/via_he_da_xam"}`.
+     Trong thư mục có `basecolor.png`, `normal.png`, `orm.png` và `info.json` dạng `{"metres": 2.0}`
+     (số mét một ảnh phủ).
+   - **Cây** (nhóm E): `{"file": "trees/xa_cu.glb", "lods": ["trees/xa_cu_lod1.glb"], "size_m": [rộng, cao, sâu]}`.
+     Ảnh `trees/xa_cu_billboard.png` nằm cạnh file, không cần khai báo. `size_m` dùng để dựng
+     billboard đúng cỡ.
+   - **Mô-đun mặt tiền** (nhóm C): mỗi mô-đun một dòng, kèm `lods` nếu có. Bản LOD0 dùng trong vòng
+     45 m, LOD1 xa hơn. Game chỉ ốp mặt tiền khi có **ít nhất một** `mat_tien_tret_xx` **và một**
+     `mat_tien_tang_xx`.
 3. **Thứ tự ưu tiên** (làm theo đúng thứ tự này):
    1. `minh.glb`
    2. `cau_the_huc.glb`
@@ -251,3 +264,23 @@ Tên phố và tên quán là chữ thật, lấy từ bản đồ, do game tự
 - Nhân vật: đủ 65 xương đúng tên, hoặc đủ 12 động tác đúng tên.
 - Không có logo trong ảnh texture (kiểm tra bằng mắt trên ảnh chụp trong game).
 - Chạy thử trong trình duyệt cỡ điện thoại và máy tính, chụp ảnh đặt cạnh ảnh mẫu để so.
+
+## 11. Hàng tạm đang dùng (cần thay, theo thứ tự ảnh hưởng)
+
+Đây là những thứ hiện chỉ được dựng tạm bằng khối hình học hoặc mượn từ bộ CC0. Mỗi món có tên file
+đúng như mục 6; nộp file nào thì game tự thay món đó.
+
+| Đang thấy trong game | Thiếu gì | File cần nộp |
+|---|---|---|
+| Nhà là khối hộp dán ảnh cửa sổ lặp lại | Mặt tiền nhà ống thật: cửa hàng, ban công, mái hiên, dây điện | `buildings/mat_tien_tret_01…08`, `buildings/mat_tien_tang_01…10` |
+| Tháp Rùa là một khối hộp cao 17,5 m trên đảo | Toà tháp ba tầng thật (khoảng 8 m) trên gò | `landmarks/thap_rua.glb` |
+| Cầu Thê Húc là một dải phẳng màu đỏ | Cầu gỗ cong có lan can | `landmarks/cau_the_huc.glb` |
+| Đền Ngọc Sơn, Nhà thờ Lớn, Nhà hát Lớn, Ô Quan Chưởng, Chợ Đồng Xuân là khối hộp theo mặt bằng | Công trình thật | các file nhóm B |
+| Cây là thân trụ với hai quả cầu xanh | Cây xà cừ, sấu, bàng, liễu | nhóm E |
+| Mặt hồ là một màu xanh phẳng | Sóng gợn nhẹ | `materials/nuoc_ho/normal.png` |
+| Vỉa hè, mặt đường, cỏ là ảnh CC0 chung chung | Đá xám Hà Nội, nhựa đường có vạch | nhóm F |
+| Minh và bọn trộm là nhân vật mẫu CC0, quần áo tô màu | Người Việt, trang phục đời thường | nhóm A |
+| Chó là mô hình cáo CC0 tô lại màu | Chó cỏ Việt | `animals/cho_co.glb` |
+| Lồng chó là khối kính mờ; xe máy là khối hộp | Lồng sắt, xe máy có người lái | `people/long_cho.glb`, `street/xe_may_01_chay.glb` (…`_04_chay`) |
+| Tàu hoả là các khối hộp | Toa tàu (game chưa tự thay: sẽ làm khi có file) | `street/toa_tau.glb` |
+| Đồ nhặt được (dép tổ ong, sổ ghi chép, thùng hàng) là khối màu | Vật nhỏ thật, mỗi món dưới 2.000 tam giác | `street/dep_to_ong.glb`, `street/so_tay.glb`, `street/thung_hang.glb` |

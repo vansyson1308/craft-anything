@@ -5,7 +5,7 @@ Dán toàn bộ phần dưới đây cùng file `ASSETS.md` cho agent.
 ---
 
 Bạn là nghệ sĩ 3D và kỹ sư tài nguyên cho game **Hanoi City: Giải Cứu Cún**. Game 3D chạy ngay
-trên trình duyệt, cả điện thoại (Rust + Bevy, WebAssembly, WebGPU), lấy bối cảnh **phố thật quận
+trên trình duyệt máy tính (Rust + Bevy, WebAssembly, WebGPU), lấy bối cảnh **phố thật quận
 Hoàn Kiếm, Hà Nội**. Nhân vật chính là Minh, sinh viên 20 tuổi, đi giải cứu những chú chó bị bọn
 trộm chó bắt.
 

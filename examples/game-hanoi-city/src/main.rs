@@ -5,22 +5,28 @@
 //! that world in 3D with Bevy and turns touches, the mouse and the keyboard into its controls.
 
 mod actors;
+mod facade;
+mod hq;
+mod mips;
+mod render;
 mod world;
 
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
 use bevy::asset::AssetMetaCheck;
-use bevy::light::CascadeShadowConfigBuilder;
+use bevy::input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll};
 use bevy::prelude::*;
 use bevy::text::FontSize;
 use bevy::ui_widgets::{Activate, Button};
-use bevy::window::PrimaryWindow;
+use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
 use hanoi_rescue::city::City;
 use hanoi_rescue::content::{self, CHAPTERS, UPGRADES};
 use hanoi_rescue::game::Hud;
 use hanoi_rescue::geom::V2;
-use hanoi_rescue::map::Map;
-use hanoi_rescue::meta::{Earned, Profile, SAVE_KEY};
+use hanoi_rescue::map::{Map, Tile};
+#[cfg(target_arch = "wasm32")]
+use hanoi_rescue::meta::SAVE_KEY;
+use hanoi_rescue::meta::{Earned, Profile};
 use hanoi_rescue::raid::{Context, Controls, DogState, Mission, Outcome, PickupKind, Raid, RaidSetup, Report, TState, ThiefKind};
 
 use actors::{AnimLib, Dog, Move, Person, Props};
@@ -28,11 +34,11 @@ use actors::{AnimLib, Dog, Move, Person, Props};
 const CITY_JSON: &str = include_str!("../assets/hoankiem.json");
 const SIGNS_JSON: &str = include_str!("../assets/signs.json");
 const TILE_M: f32 = 2.0;
+/// The controls, shown along the bottom during a raid.
+const PC_KEYS: &str = "WASD đi · Shift lén · bấm để khoá chuột, di chuột nhìn · chuột trái đánh · chuột phải ném dép · Space lăn · giữ E mở/trói · Esc dừng";
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::srgb(0.32, 0.36, 0.52)))
-        .insert_resource(GlobalAmbientLight { color: Color::srgb(0.62, 0.66, 0.9), brightness: 420.0, ..default() })
         .add_plugins(DefaultPlugins.set(AssetPlugin { meta_check: AssetMetaCheck::Never, ..default() }).set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Hanoi City: Giải Cứu Cún".into(),
@@ -43,9 +49,13 @@ fn main() {
             }),
             ..default()
         }))
+        .add_plugins(hq::HqPlugin)
         .init_resource::<Clicked>()
         .add_systems(Startup, setup)
-        .add_systems(Update, ((actors::build_graphs, play, hud, menus).chain(), world::cull_far))
+        .add_systems(
+            Update,
+            ((actors::adopt_hq, actors::build_graphs, loading, pointer_lock, play, hud, menus).chain(), world::cull_far, mips::make_mips, facade::stream),
+        )
         .run();
 }
 
@@ -86,7 +96,14 @@ struct Game {
     exits: Vec<Entity>,
     // The camera orbits behind the player.
     cam_yaw: f32,
+    /// How far the camera looks down (radians) and how far behind it sits (metres).
+    cam_pitch: f32,
+    cam_dist: f32,
     cam_target: Vec3,
+    /// The mouse is captured for looking around (the page's pointer lock).
+    locked: bool,
+    /// Someone touched the screen: show the on-screen stick and buttons.
+    touch_seen: bool,
     drag: Option<(u64, Vec2)>,
     joy: Option<(u64, Vec2, Vec2)>,
     t: f32,
@@ -95,8 +112,6 @@ struct Game {
 
 #[derive(Component)]
 struct MainCamera;
-#[derive(Component)]
-struct Sun;
 
 #[derive(Component, Clone, Copy, PartialEq, Eq)]
 enum Ui {
@@ -185,6 +200,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut mats: ResMut<Assets<StandardMaterial>>,
     mut images: ResMut<Assets<Image>>,
+    mut media: ResMut<Assets<bevy::light::atmosphere::ScatteringMedium>>,
 ) {
     let city = City::from_json(CITY_JSON).unwrap_or_default();
     let map = Map::from_city(&city, TILE_M);
@@ -199,24 +215,31 @@ fn setup(
         })
         .collect();
     let m = world::materials(&assets, &mut mats);
-    world::spawn_city(&mut commands, &mut meshes, &m, &city, Vec2::new(lake.x, lake.z), &signs);
+    let built = world::spawn_city(&mut commands, &mut meshes, &m, &city, &map, Vec2::new(lake.x, lake.z), &signs);
+    commands.insert_resource(hq::Sites(built.sites));
+    commands.insert_resource(built.facades);
+    commands.insert_resource(m);
 
-    // Dusk: a low warm sun, blue sky light, haze in the distance.
-    commands.spawn((
-        Sun,
-        DirectionalLight { illuminance: 7000.0, color: Color::srgb(1.0, 0.78, 0.55), shadow_maps_enabled: true, ..default() },
-        Transform::from_rotation(Quat::from_euler(EulerRot::YXZ, 0.9, -0.42, 0.0)),
-        CascadeShadowConfigBuilder { num_cascades: 1, first_cascade_far_bound: 45.0, maximum_distance: 60.0, ..default() }.build(),
-    ));
-    commands.spawn((
+    let fx = render::Fx::from_page();
+    info!("renderer: {fx:?}");
+    commands.insert_resource(fx);
+    render::spawn_sun(&mut commands, fx);
+    let mut cam = commands.spawn((
         MainCamera,
         Camera3d::default(),
         Projection::Perspective(PerspectiveProjection { fov: 0.95, ..default() }),
         Transform::from_translation(lake + Vec3::new(0.0, 120.0, 220.0)).looking_at(lake, Vec3::Y),
-        DistanceFog { color: Color::srgb(0.36, 0.38, 0.52), falloff: FogFalloff::Linear { start: 90.0, end: 420.0 }, ..default() },
     ));
+    render::setup_camera(&mut cam, &mut media, fx);
 
-    commands.insert_resource(AnimLib { gltf: assets.load("anim.glb"), dog_gltf: assets.load("dog.glb"), graph: None, dog_graph: None });
+    commands.insert_resource(AnimLib {
+        gltf: assets.load("anim.glb"),
+        dog_gltf: assets.load("dog.glb"),
+        dog_path: "dog.glb".into(),
+        dog_scale: 0.0075,
+        graph: None,
+        dog_graph: None,
+    });
     commands.insert_resource(actors::make_props(&mut meshes, &mut mats));
 
     // The minimap, from the map's tiles, scaled down.
@@ -271,7 +294,11 @@ fn setup(
         train: Vec::new(),
         exits: Vec::new(),
         cam_yaw: PI,
+        cam_pitch: 0.42,
+        cam_dist: 6.5,
         cam_target: lake,
+        locked: false,
+        touch_seen: false,
         drag: None,
         joy: None,
         t: 0.0,
@@ -303,7 +330,7 @@ fn spawn_hud(commands: &mut Commands, font: Handle<Font>, mini: Handle<Image>) {
     commands.spawn((Ui::Objective, text(&font, "", 14.0, Color::srgb(1.0, 0.9, 0.55)), abs(12.0, 70.0, 300.0, 60.0), Visibility::Hidden));
     commands.spawn((Ui::Banner, text(&font, "", 18.0, Color::srgb(1.0, 0.9, 0.55)), abs(0.0, 0.0, 10.0, 30.0), Visibility::Hidden));
     commands.spawn((Ui::Extract, text(&font, "", 18.0, Color::srgb(0.65, 0.95, 0.8)), abs(0.0, 0.0, 10.0, 30.0), Visibility::Hidden));
-    commands.spawn((Ui::Hint, text(&font, content::ui::KEYS, 12.0, Color::srgb(0.85, 0.87, 0.9)), abs(0.0, 0.0, 10.0, 20.0), Visibility::Hidden));
+    commands.spawn((Ui::Hint, text(&font, PC_KEYS, 12.0, Color::srgb(0.85, 0.87, 0.9)), abs(0.0, 0.0, 10.0, 20.0), Visibility::Hidden));
     commands.spawn((Ui::Loading, text(&font, "Đang dựng phố cổ Hà Nội…", 22.0, Color::srgb(1.0, 0.75, 0.2)), abs(0.0, 0.0, 10.0, 30.0)));
     commands.spawn((Ui::Minimap, ImageNode::new(mini), abs(0.0, 0.0, 120.0, 120.0), Visibility::Hidden));
     commands.spawn((Ui::MiniDot, BackgroundColor(Color::WHITE), Node { border_radius: BorderRadius::MAX, ..abs(0.0, 0.0, 7.0, 7.0) }, Visibility::Hidden));
@@ -345,11 +372,11 @@ fn spawn_hud(commands: &mut Commands, font: Handle<Font>, mini: Handle<Image>) {
 }
 
 /// Spawns everything a raid shows, under one root that is despawned when it ends.
-fn spawn_raid(commands: &mut Commands, assets: &AssetServer, props: &Props, g: &mut Game) {
+fn spawn_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &AnimLib, props: &Props, g: &mut Game) {
     let Some(raid) = &g.raid else { return };
     let root = commands.spawn((Transform::default(), Visibility::default())).id();
     let mut kids = Vec::new();
-    let player = actors::spawn_person(commands, assets, "minh", "Hair_SimpleParted", world_pos(raid.player.pos));
+    let player = actors::spawn_person(commands, assets, hq, "minh", "Hair_SimpleParted", world_pos(raid.player.pos));
     kids.push(player);
     g.player = Some(player);
     g.thieves = raid
@@ -362,19 +389,22 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, props: &Props, g: &
                 _ if i % 2 == 0 => ("trom", "Hair_Buzzed"),
                 _ => ("trom2", "Hair_Buzzed"),
             };
-            actors::spawn_person(commands, assets, who, hair, world_pos(t.pos))
+            actors::spawn_person(commands, assets, hq, who, hair, world_pos(t.pos))
         })
         .collect();
     kids.extend(&g.thieves);
-    g.dogs = raid.dogs.iter().map(|d| actors::spawn_dog(commands, assets, world_pos(d.pos))).collect();
+    g.dogs = raid.dogs.iter().map(|d| actors::spawn_dog(commands, assets, lib, world_pos(d.pos))).collect();
     kids.extend(&g.dogs);
     g.cages = raid
         .cages
         .iter()
         .map(|c| {
-            commands
-                .spawn((Mesh3d(props.cage.clone()), MeshMaterial3d(props.cage_mat.clone()), Transform::from_translation(world_pos(c.pos) + Vec3::Y * 0.35)))
-                .id()
+            const CAGE: [&str; 3] = ["people/long_cho.glb", "animals/long_cho.glb", "street/long_cho.glb"];
+            hq::prop(commands, hq, assets, &CAGE, Transform::from_translation(world_pos(c.pos))).unwrap_or_else(|| {
+                commands
+                    .spawn((Mesh3d(props.cage.clone()), MeshMaterial3d(props.cage_mat.clone()), Transform::from_translation(world_pos(c.pos) + Vec3::Y * 0.35)))
+                    .id()
+            })
         })
         .collect();
     kids.extend(&g.cages);
@@ -382,6 +412,14 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, props: &Props, g: &
         .pickups
         .iter()
         .map(|k| {
+            let file = match k.kind {
+                PickupKind::Clue => "street/so_tay.glb",
+                PickupKind::Slipper => "street/dep_to_ong.glb",
+                PickupKind::Loot(_) => "street/thung_hang.glb",
+            };
+            if let Some(e) = hq::prop(commands, hq, assets, &[file], Transform::from_translation(world_pos(k.pos))) {
+                return e;
+            }
             let (mesh, mat) = match k.kind {
                 PickupKind::Clue => (props.crate_mesh.clone(), props.book_mat.clone()),
                 PickupKind::Slipper => (props.small.clone(), props.slipper_mat.clone()),
@@ -396,6 +434,13 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, props: &Props, g: &
         .iter()
         .enumerate()
         .map(|(i, _)| {
+            const BIKES: [&str; 4] = ["street/xe_may_01_chay.glb", "street/xe_may_02_chay.glb", "street/xe_may_03_chay.glb", "street/xe_may_04_chay.glb"];
+            let delivered: Vec<&str> = BIKES.iter().copied().filter(|f| hq.get(f).is_some()).collect();
+            if let Some(f) = delivered.get(i % delivered.len().max(1))
+                && let Some(e) = hq::prop(commands, hq, assets, &[f], Transform::default())
+            {
+                return e;
+            }
             let mat = props.bike_mats[i % props.bike_mats.len()].clone();
             commands
                 .spawn((Transform::default(), Visibility::default()))
@@ -464,7 +509,7 @@ fn end_raid(commands: &mut Commands, g: &mut Game) {
     g.exits.clear();
 }
 
-fn start_raid(commands: &mut Commands, assets: &AssetServer, props: &Props, g: &mut Game, mission: Mission) {
+fn start_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &AnimLib, props: &Props, g: &mut Game, mission: Mission) {
     let _ = g.profile.next_seed();
     save_profile(&g.profile);
     let stats = g.profile.stats();
@@ -483,7 +528,7 @@ fn start_raid(commands: &mut Commands, assets: &AssetServer, props: &Props, g: &
     g.cam_yaw = PI;
     g.raid = Some(raid);
     end_raid(commands, g);
-    spawn_raid(commands, assets, props, g);
+    spawn_raid(commands, assets, hq, lib, props, g);
     g.screen = Screen::Playing;
 }
 
@@ -504,15 +549,10 @@ fn play(
     mut dogs: Query<&mut Dog>,
     mut players: Query<(&mut AnimationPlayer, &mut AnimationTransitions)>,
     camera: Single<Entity, With<MainCamera>>,
+    (motion, scroll): (Res<AccumulatedMouseMotion>, Res<AccumulatedMouseScroll>),
 ) {
     let dt = time.delta_secs().min(0.05);
     g.t += dt;
-    if g.screen == Screen::Loading {
-        g.loaded_t += dt;
-        if lib.graph.is_some() && g.loaded_t > 0.5 {
-            g.screen = if g.profile.seen_intro { Screen::Title } else { Screen::Story(0, 0) };
-        }
-    }
     let (w, h) = (window.width(), window.height());
     let hudl = Hud::new(w, h, [0.0; 4]);
     let cam_e = *camera;
@@ -549,14 +589,27 @@ fn play(
     mv = mv.normalize_or_zero();
     let mut c = Controls {
         sneak: keys.pressed(KeyCode::ShiftLeft) || keys.pressed(KeyCode::ShiftRight),
-        attack: keys.pressed(KeyCode::KeyJ),
-        throw: keys.just_pressed(KeyCode::KeyK),
+        attack: keys.pressed(KeyCode::KeyJ) || (g.locked && mouse.pressed(MouseButton::Left)),
+        throw: keys.just_pressed(KeyCode::KeyK) || keys.just_pressed(KeyCode::KeyQ) || (g.locked && mouse.just_pressed(MouseButton::Right)),
         roll: keys.just_pressed(KeyCode::Space),
         interact: keys.pressed(KeyCode::KeyE),
         ..default()
     };
     let hit = |b: (V2, f32), p: Vec2| Vec2::new(b.0.x, b.0.y).distance(p) < b.1 * 1.25;
     let mut pause = keys.just_pressed(KeyCode::Escape) || keys.just_pressed(KeyCode::KeyP);
+    if touches.iter_just_pressed().next().is_some() {
+        g.touch_seen = true;
+    }
+    // Mouse look while the pointer is captured; the wheel moves the camera in and out.
+    if g.locked {
+        let d = motion.delta;
+        g.cam_yaw -= d.x * 0.0028;
+        g.cam_pitch = (g.cam_pitch + d.y * 0.0022).clamp(-0.05, 1.25);
+    }
+    if scroll.delta.y != 0.0 {
+        let k = if matches!(scroll.unit, bevy::input::mouse::MouseScrollUnit::Line) { 0.6 } else { 0.01 };
+        g.cam_dist = (g.cam_dist - scroll.delta.y * k).clamp(2.5, 14.0);
+    }
     for t in touches.iter_just_pressed() {
         let p = t.position();
         if hit(hudl.pause, p) {
@@ -579,17 +632,17 @@ fn play(
         if hit(hudl.context, start) {
             c.interact = true;
         }
-        if let Some((id, s, _)) = g.joy {
-            if id == t.id() {
-                g.joy = Some((id, s, t.position()));
-            }
+        if let Some((id, s, _)) = g.joy
+            && id == t.id()
+        {
+            g.joy = Some((id, s, t.position()));
         }
-        if let Some((id, last)) = g.drag {
-            if id == t.id() {
-                let d = t.position() - last;
-                g.cam_yaw -= d.x * 0.008;
-                g.drag = Some((id, t.position()));
-            }
+        if let Some((id, last)) = g.drag
+            && id == t.id()
+        {
+            let d = t.position() - last;
+            g.cam_yaw -= d.x * 0.008;
+            g.drag = Some((id, t.position()));
         }
     }
     for t in touches.iter_just_released().chain(touches.iter_just_canceled()) {
@@ -603,8 +656,8 @@ fn play(
     if let Some((_, s, p)) = g.joy {
         mv = ((p - s) / hudl.joy_r).clamp_length_max(1.0);
     }
-    // Mouse: drag with any button to turn the camera.
-    if mouse.pressed(MouseButton::Left) || mouse.pressed(MouseButton::Right) {
+    // Mouse without capture: drag to turn the camera.
+    if !g.locked && (mouse.pressed(MouseButton::Left) || mouse.pressed(MouseButton::Right)) {
         if let Some(p) = window.cursor_position() {
             if let Some((id, last)) = g.drag.filter(|d| d.0 == u64::MAX) {
                 g.cam_yaw -= (p.x - last.x) * 0.006;
@@ -702,10 +755,10 @@ fn play(
         }
     }
     for (i, cg) in raid.cages.iter().enumerate() {
-        if let (Some(&e), true) = (g.cages.get(i), cg.open) {
-            if let Ok(mut v) = vis.get_mut(e) {
-                *v = Visibility::Hidden;
-            }
+        if let (Some(&e), true) = (g.cages.get(i), cg.open)
+            && let Ok(mut v) = vis.get_mut(e)
+        {
+            *v = Visibility::Hidden;
         }
     }
     for (i, k) in raid.pickups.iter().enumerate() {
@@ -733,18 +786,18 @@ fn play(
             if let Ok(mut v) = vis.get_mut(e) {
                 *v = if show { Visibility::Inherited } else { Visibility::Hidden };
             }
-            if show {
-                if let Ok(mut t) = tf.get_mut(e) {
-                    let (q, dir) = rail.at(d);
-                    *t = Transform::from_translation(world_pos(q) + Vec3::Y * 1.9)
-                        .with_rotation(Quat::from_rotation_y(dir.x.atan2(dir.y)))
-                        .with_scale(Vec3::new(1.0, 1.0, TILE_M * 2.0 - 0.3));
-                }
+            if show && let Ok(mut t) = tf.get_mut(e) {
+                let (q, dir) = rail.at(d);
+                *t = Transform::from_translation(world_pos(q) + Vec3::Y * 1.9).with_rotation(Quat::from_rotation_y(dir.x.atan2(dir.y))).with_scale(Vec3::new(
+                    1.0,
+                    1.0,
+                    TILE_M * 2.0 - 0.3,
+                ));
             }
         }
     }
-    // Camera: behind and above the player, easing round when he runs.
-    if p.moving && g.drag.is_none() {
+    // Camera: behind and above the player, easing round when he runs (unless the mouse steers it).
+    if p.moving && g.drag.is_none() && !g.locked {
         let want = p.facing.cos().atan2(p.facing.sin());
         let cur = g.cam_yaw;
         let mut d = (want - cur) % TAU;
@@ -760,8 +813,11 @@ fn play(
     let yaw = g.cam_yaw;
     let shake = if raid.shake > 0.0 { Vec3::new((g.t * 90.0).sin(), (g.t * 77.0).cos(), 0.0) * 0.08 } else { Vec3::ZERO };
     if let Ok(mut t) = tf.get_mut(cam_e) {
-        let back = Vec3::new(-yaw.sin(), 0.0, -yaw.cos());
-        *t = Transform::from_translation(target + back * 6.5 + Vec3::Y * 3.4 + shake).looking_at(target, Vec3::Y);
+        let pitch = g.cam_pitch;
+        let back = Vec3::new(-yaw.sin() * pitch.cos(), pitch.sin(), -yaw.cos() * pitch.cos());
+        let dist = camera_room(&g.map, target, back, g.cam_dist);
+        let eye = target + back * dist;
+        *t = Transform::from_translation(Vec3::new(eye.x, eye.y.max(0.4), eye.z) + shake).looking_at(target, Vec3::Y);
     }
     g.raid = Some(raid);
 
@@ -776,12 +832,91 @@ fn play(
     let _ = &mut commands;
 }
 
+/// The loading screen ends once the list of delivered art has been read and the moves are ready.
+fn loading(mut g: ResMut<Game>, time: Res<Time>, lib: Res<AnimLib>, hq: Res<hq::Hq>) {
+    if g.screen != Screen::Loading {
+        return;
+    }
+    g.loaded_t += time.delta_secs().min(0.05);
+    let ready = hq.resolved() && lib.graph.is_some() && lib.dog_graph.is_some();
+    if (ready && g.loaded_t > 0.5) || g.loaded_t > 30.0 {
+        g.screen = if g.profile.seen_intro { Screen::Title } else { Screen::Story(0, 0) };
+    }
+}
+
+/// How far the camera can sit behind `target` along `back` before a building gets in the way,
+/// so it never looks out from inside a wall.
+fn camera_room(map: &Map, target: Vec3, back: Vec3, want: f32) -> f32 {
+    let mut d = 0.0;
+    while d < want {
+        let q = target + back * (d + 0.6);
+        let tile = map.tile_at(V2 { x: q.x / TILE_M, y: q.z / TILE_M });
+        if matches!(tile, Tile::Building | Tile::Market | Tile::Landmark) && q.y < 14.0 {
+            return d.max(1.2);
+        }
+        d += 0.25;
+    }
+    want
+}
+
+/// Captures the mouse when the player clicks into a raid and lets it go on menus. When the browser
+/// drops the capture (the player pressed Esc), the game pauses.
+fn pointer_lock(
+    mut g: ResMut<Game>,
+    time: Res<Time>,
+    mouse: Res<ButtonInput<MouseButton>>,
+    mut cursor: Single<&mut CursorOptions, With<PrimaryWindow>>,
+    mut since: Local<f32>,
+    mut seen: Local<bool>,
+) {
+    let playing = g.screen == Screen::Playing;
+    if playing && !g.locked && !g.touch_seen && mouse.just_pressed(MouseButton::Left) {
+        cursor.grab_mode = CursorGrabMode::Locked;
+        cursor.visible = false;
+        g.locked = true;
+        g.drag = None;
+        *since = 0.0;
+        *seen = false;
+        return;
+    }
+    if !g.locked {
+        return;
+    }
+    *since += time.delta_secs();
+    let held = page_has_pointer_lock();
+    *seen |= held;
+    // The browser grants the lock a frame or two after the click; it may also refuse it.
+    let released = (*seen && !held) || (!*seen && *since > 2.0);
+    if !playing || released {
+        cursor.grab_mode = CursorGrabMode::None;
+        cursor.visible = true;
+        g.locked = false;
+        if playing && *seen {
+            g.screen = Screen::Paused;
+        }
+    }
+}
+
+/// Whether the page holds the pointer lock (always true off the web).
+fn page_has_pointer_lock() -> bool {
+    #[cfg(target_arch = "wasm32")]
+    {
+        return web_sys::window().and_then(|w| w.document()).is_some_and(|d| d.pointer_lock_element().is_some());
+    }
+    #[allow(unreachable_code)]
+    true
+}
+
+/// What the HUD updates on each of its pieces.
+type HudNode =
+    (&'static Ui, &'static mut Node, &'static mut Visibility, Option<&'static mut Text>, Option<&'static mut BackgroundColor>, Option<&'static Children>);
+
 /// The heads-up display during a raid, and the loading text.
 #[allow(clippy::too_many_arguments)]
 fn hud(
     g: Res<Game>,
     window: Single<&Window, With<PrimaryWindow>>,
-    mut nodes: Query<(&Ui, &mut Node, &mut Visibility, Option<&mut Text>, Option<&mut BackgroundColor>, Option<&Children>), Without<Label3d>>,
+    mut nodes: Query<HudNode, Without<Label3d>>,
     mut child_text: Query<&mut Text, (Without<Ui>, Without<Label3d>)>,
     mut labels: Query<(&Label3d, &mut Node, &mut Visibility), Without<Ui>>,
     camera: Single<(&Camera, &GlobalTransform), With<MainCamera>>,
@@ -792,7 +927,8 @@ fn hud(
     let raid = g.raid.as_ref();
     let (cam, cam_t) = *camera;
     for (kind, mut node, mut v, text, bg, kids) in &mut nodes {
-        let mut show = playing;
+        let touch_ui = matches!(kind, Ui::Attack | Ui::Throw | Ui::Roll | Ui::Pause | Ui::JoyBase | Ui::JoyKnob);
+        let mut show = playing && (!touch_ui || g.touch_seen);
         let place = |node: &mut Node, x: f32, y: f32, ww: f32, hh: f32| {
             node.left = Val::Px(x);
             node.top = Val::Px(y);
@@ -865,8 +1001,8 @@ fn hud(
                 place(&mut node, w / 2.0 - 90.0, h * 0.4, 180.0, 30.0);
             }
             Ui::Hint => {
-                show = playing && w > 900.0;
-                place(&mut node, w / 2.0 - 330.0, h - 26.0, 660.0, 20.0);
+                show = playing && !g.touch_seen;
+                place(&mut node, w / 2.0 - 470.0, h - 26.0, 940.0, 20.0);
             }
             Ui::Attack => round(&mut node, hudl.attack),
             Ui::Throw => {
@@ -893,7 +1029,7 @@ fn hud(
                 if let (Some(l), Some(kids)) = (label, kids) {
                     for k in kids.iter() {
                         if let Ok(mut t) = child_text.get_mut(k) {
-                            t.0 = l.to_string();
+                            t.0 = if g.touch_seen { l.to_string() } else { format!("E · {l}") };
                         }
                     }
                 }
@@ -926,7 +1062,8 @@ fn hud(
     for (l, mut node, mut v) in &mut labels {
         let on = playing && cam_t.translation().distance(l.0) < 260.0;
         match cam.world_to_viewport(cam_t, l.0) {
-            Ok(p) if on && p.x > 0.0 && p.y > 0.0 && p.x < w && p.y < h => {
+            // Names stay clear of the HUD along the top.
+            Ok(p) if on && p.x > 0.0 && p.y > 150.0 && p.x < w && p.y < h => {
                 node.left = Val::Px(p.x - 60.0);
                 node.top = Val::Px(p.y);
                 *v = Visibility::Inherited;
@@ -945,6 +1082,7 @@ fn menus(
     font: Res<UiFont>,
     assets: Res<AssetServer>,
     props: Res<Props>,
+    (hq, lib): (Res<hq::Hq>, Res<AnimLib>),
     roots: Query<Entity, With<MenuRoot>>,
     mut clicked_res: ResMut<Clicked>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -973,15 +1111,15 @@ fn menus(
             (MenuButton::Go, Screen::Brief(m)) => {
                 let need = matches!(m, Mission::Story(2)) && g.profile.stats().leash < 2;
                 if !need {
-                    start_raid(&mut commands, &assets, &props, &mut g, m);
+                    start_raid(&mut commands, &assets, &hq, &lib, &props, &mut g, m);
                 }
             }
             (MenuButton::Buy(i), _) => {
-                if let Some(u) = UPGRADES.get(i) {
-                    if g.profile.buy(u.kind) {
-                        save_profile(&g.profile);
-                        g.shown = None;
-                    }
+                if let Some(u) = UPGRADES.get(i)
+                    && g.profile.buy(u.kind)
+                {
+                    save_profile(&g.profile);
+                    g.shown = None;
                 }
             }
             (MenuButton::Next, Screen::Story(s, i)) => {

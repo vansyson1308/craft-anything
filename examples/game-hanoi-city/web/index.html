@@ -2,35 +2,72 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#14161a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Hanoi City: lẻn vào phố cổ Hoàn Kiếm thật (bản đồ OpenStreetMap) để giải cứu những chú chó bị bắt trộm. 3D, chạy ngay trên trình duyệt, cả điện thoại.">
+<meta name="description" content="Hanoi City: lẻn vào phố cổ Hoàn Kiếm thật (bản đồ OpenStreetMap) để giải cứu những chú chó bị bắt trộm. 3D, chạy ngay trên trình duyệt máy tính.">
 <title>Hanoi City: Giải Cứu Cún</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
-  html, body { margin: 0; height: 100%; background: #14161a; overflow: hidden; overscroll-behavior: none; }
+  html, body { margin: 0; height: 100%; background: #14161a; overflow: hidden; }
   #wrap { position: fixed; inset: 0; }
-  canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  canvas { display: block; width: 100%; height: 100%; outline: none; user-select: none; -webkit-user-select: none; }
   #boot { position: fixed; inset: 0; display: grid; place-items: center; color: #fbbf24; pointer-events: none;
-    font: 700 18px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 24px; }
+    font: 700 18px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 24px; line-height: 1.6; }
+  #boot small { display: block; color: #9ca3af; font-weight: 400; font-size: 14px; }
 </style>
 </head>
 <body>
 <div id="wrap"><canvas id="game"></canvas></div>
-<div id="boot">Đang tải Hanoi City… (lần đầu khoảng 30–40 MB)</div>
+<div id="boot">Đang tải Hanoi City…<small id="how"></small></div>
 <script type="module">
-  import init from "./hanoi-city.js";
+  // WebGPU gets the full renderer (sky, ambient occlusion, soft shadows); without it, WebGL2.
+  // ?gl forces the WebGL2 build.
   const boot = document.getElementById("boot");
-  init().then(() => boot.remove()).catch((e) => {
+  const how = document.getElementById("how");
+  const q = new URLSearchParams(location.search);
+  if (q.has("gpu")) { try { sessionStorage.removeItem("hanoi-webgpu-failed"); } catch (_) {} }
+  let failedBefore = false;
+  try { failedBefore = sessionStorage.getItem("hanoi-webgpu-failed") === "1"; } catch (_) {}
+  const forceGl = q.has("gl") || (failedBefore && !q.has("gpu"));
+  let gpu = false;
+  if (!forceGl && navigator.gpu) {
+    try { gpu = !!(await navigator.gpu.requestAdapter()); } catch (_) { gpu = false; }
+  }
+  if (gpu) {
+    // If the browser loses the WebGPU device (a driver or browser fault), carry on with WebGL2
+    // instead of leaving a frozen picture.
+    const requestDevice = GPUAdapter.prototype.requestDevice;
+    GPUAdapter.prototype.requestDevice = async function (...args) {
+      const device = await requestDevice.apply(this, args);
+      device.lost.then((info) => {
+        console.warn("WebGPU device lost (" + info.reason + "): " + info.message + "; switching to WebGL2");
+        try { sessionStorage.setItem("hanoi-webgpu-failed", "1"); } catch (_) {}
+        const params = new URLSearchParams(location.search);
+        params.delete("gpu");
+        params.set("gl", "");
+        location.replace(location.pathname + "?" + params.toString().replace(/=(&|$)/g, "$1") + location.hash);
+      });
+      return device;
+    };
+  }
+  how.textContent = gpu ? "Đồ hoạ WebGPU · dành cho máy tính, nên dùng chuột và bàn phím"
+                        : failedBefore ? "WebGPU vừa gặp lỗi trên máy này: dùng bản WebGL2 (thêm ?gpu vào địa chỉ để thử lại WebGPU)."
+                        : q.has("gl") ? "Bản WebGL2"
+                        : "Trình duyệt này chưa có WebGPU: dùng bản WebGL2 đơn giản hơn. Chrome hoặc Edge mới nhất cho hình đẹp nhất.";
+  if (matchMedia("(pointer: coarse)").matches && !matchMedia("(pointer: fine)").matches) {
+    how.textContent += " · Bản này làm cho máy tính; trên điện thoại có thể chậm.";
+  }
+  try {
+    const { default: init } = await import(gpu ? "./gpu/hanoi-city.js" : "./gl/hanoi-city.js");
+    await init();
+    boot.remove();
+  } catch (e) {
     // Bevy hands control to the browser's event loop by throwing; that's not a failure.
-    if (String(e).includes("Using exceptions for control flow")) { boot.remove(); return; }
-    boot.textContent = "Không tải được game: " + e;
-  });
-  setTimeout(() => { if (document.getElementById("boot")) boot.remove(); }, 15000);
+    if (String(e).includes("Using exceptions for control flow")) { boot.remove(); }
+    else { boot.textContent = "Không tải được game: " + e; }
+  }
+  setTimeout(() => { if (document.getElementById("boot")) boot.remove(); }, 20000);
 </script>
 </body>
 </html>

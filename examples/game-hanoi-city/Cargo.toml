@@ -9,19 +9,49 @@ description = "Hanoi City: the dog-rescue extraction game in 3D on Hoàn Kiếm'
 # Not part of the Craft Anything workspace: a standalone example built on its own.
 [workspace]
 
+[features]
+# One browser back end per build: `webgpu` (full lighting: sky, ambient occlusion, soft shadows,
+# temporal anti-aliasing) or `webgl2` (the fallback for browsers without WebGPU). build.sh
+# builds both and the page picks one.
+default = ["webgl2"]
+webgl2 = ["bevy/webgl2"]
+webgpu = ["bevy/webgpu"]
+
 [dependencies]
-bevy = { version = "0.20", default-features = false, features = ["3d", "ui", "png", "jpeg", "tonemapping_luts"] }
+# Bevy's "3d" and "ui" groups, spelt out so that the WebGL2 back end isn't forced on.
+bevy = { version = "0.20", default-features = false, features = [
+  "default_app",
+  "std",
+  "multi_threaded",
+  "bevy_winit",
+  "x11",
+  "default_font",
+  "3d_bevy_render",
+  "scene",
+  "picking",
+  "ui_api",
+  "ui_bevy_render",
+  "bevy_ui_widgets",
+  "png",
+  "jpeg",
+  "ktx2",
+  "zstd_rust",
+  "tonemapping_luts",
+  "smaa_luts",
+  "bluenoise_texture",
+] }
 hanoi-rescue = { path = "../game-hanoi-rescue", default-features = false }
+serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-web-sys = { version = "0.3", features = ["Window", "Storage", "Location"] }
+web-sys = { version = "0.3", features = ["Window", "Storage", "Location", "Document", "Element"] }
 
 [profile.dev.package."*"]
 opt-level = 2
 
 [profile.release]
-opt-level = "z"
+opt-level = 3
 lto = "thin"
 codegen-units = 1
 
