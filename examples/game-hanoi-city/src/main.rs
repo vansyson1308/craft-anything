@@ -91,6 +91,19 @@ fn story_lines(which: usize) -> &'static [content::Line] {
     if which == 0 { content::INTRO } else { CHAPTERS.get(which - 1).map_or(&[], |c| c.after) }
 }
 
+#[cfg(test)]
+mod speed_tests {
+    #[test]
+    fn reads_the_game_speed() {
+        assert_eq!(super::game_speed("0.1"), Some(0.1));
+        assert_eq!(super::game_speed("100"), Some(4.0));
+        assert_eq!(super::game_speed("0.0001"), Some(0.02));
+        for bad in ["", "abc", "0", "-1", "NaN", "inf"] {
+            assert_eq!(super::game_speed(bad), None, "{bad}");
+        }
+    }
+}
+
 #[derive(Resource)]
 struct Game {
     map: Map,
@@ -260,7 +273,14 @@ fn setup(
     mut mats: ResMut<Assets<StandardMaterial>>,
     mut images: ResMut<Assets<Image>>,
     mut media: ResMut<Assets<bevy::light::atmosphere::ScatteringMedium>>,
+    mut clock: ResMut<Time<Virtual>>,
 ) {
+    if let Some(speed) = game_speed(&render::page_query("speed")) {
+        // Recording on a slow computer: the game runs slower than real time and every frame counts,
+        // however long it took to draw, so the video can be sped up afterwards to real speed.
+        clock.set_relative_speed(speed);
+        clock.set_max_delta(std::time::Duration::from_secs(10));
+    }
     let city = City::from_json(CITY_JSON).unwrap_or_default();
     let map = Map::from_city(&city, TILE_M);
     let lake = map.labels.iter().find(|l| l.text == "HỒ GƯƠM").map(|l| world_pos(l.at)).unwrap_or(Vec3::new(1000.0, 0.0, 1000.0));
@@ -940,6 +960,12 @@ fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>
 
 /// How far the camera can sit behind `target` along `back` before a building gets in the way,
 /// so it never looks out from inside a wall.
+/// The game's speed from the page's address (`?speed=0.1` runs it at a tenth of real time, for
+/// recording video on a computer too slow to draw it live), between 0.02 and 4.
+fn game_speed(q: &str) -> Option<f32> {
+    q.parse::<f32>().ok().filter(|s| s.is_finite() && *s > 0.0).map(|s| s.clamp(0.02, 4.0))
+}
+
 /// Night for the chapters the story sets after dark (or what the address asks for), the lights
 /// nearest the camera, and a torch in Minh's hand at night.
 fn choose_sky(
