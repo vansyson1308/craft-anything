@@ -1,0 +1,778 @@
+{
+  "checks": [
+    {
+      "file": "people/minh.glb",
+      "triangles": 23294,
+      "limit": 25000,
+      "bounds_min_m": [
+        -0.9294325113296509,
+        0.0,
+        -0.17306411266326904
+      ],
+      "bounds_max_m": [
+        0.9294325113296509,
+        1.7360061407089233,
+        0.14413797855377197
+      ],
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 8414168,
+      "sha256": "f5c5618715869de1626cfc765cd2b0ddc7cb8e9b31c96a8aea348254536d3563",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": true,
+      "max_influences": 4
+    },
+    {
+      "file": "people/minh_lod1.glb",
+      "triangles": 7856,
+      "limit": 8000,
+      "bounds_min_m": [
+        -0.9297580718994141,
+        0.0,
+        -0.17325077950954437
+      ],
+      "bounds_max_m": [
+        0.9297580718994141,
+        1.7357418537139893,
+        0.14335604012012482
+      ],
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 7533848,
+      "sha256": "f509dff690ef144e53d1e87881390537d7896f890983ae88d958b53d9b737e10",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": true,
+      "max_influences": 4
+    },
+    {
+      "file": "people/minh_lod2.glb",
+      "triangles": 1913,
+      "limit": 2000,
+      "bounds_min_m": [
+        -0.9285105466842651,
+        0.0,
+        -0.17445021867752075
+      ],
+      "bounds_max_m": [
+        0.9285104870796204,
+        1.7353447675704956,
+        0.14335604012012482
+      ],
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 7152484,
+      "sha256": "733fd9ce71272ebb0053a4c7b264169fc408eebe905fd94b5aab3d71e23f1020",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": true,
+      "max_influences": 4
+    },
+    {
+      "file": "landmarks/cau_the_huc.glb",
+      "triangles": 58206,
+      "limit": 60000,
+      "bounds_min_m": [
+        -1.4800000190734863,
+        -0.008028971031308174,
+        -23.009559631347656
+      ],
+      "bounds_max_m": [
+        1.4800000190734863,
+        3.3975000381469727,
+        23.009559631347656
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "size_bytes": 13172412,
+      "sha256": "2a124770854955a428d8ab33b1ee41bd50ae725d0915eb840124cfefb0fb6fa9",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 0
+    },
+    {
+      "file": "landmarks/cau_the_huc_lod1.glb",
+      "triangles": 14716,
+      "limit": 15000,
+      "bounds_min_m": [
+        -1.4782764911651611,
+        -0.008430483750998974,
+        -23.007579803466797
+      ],
+      "bounds_max_m": [
+        1.4780864715576172,
+        3.3950188159942627,
+        23.007549285888672
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "size_bytes": 7672772,
+      "sha256": "9739fa767a7d3b46b16cb3b8c9f7bc2cbf4031f6a34f2d5b4963f8a8d918ed66",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 0
+    },
+    {
+      "file": "landmarks/cau_the_huc_lod2.glb",
+      "triangles": 2332,
+      "limit": 3000,
+      "bounds_min_m": [
+        -1.5175530910491943,
+        -0.0271837767213583,
+        -23.02196502685547
+      ],
+      "bounds_max_m": [
+        1.5172252655029297,
+        3.407843589782715,
+        23.027484893798828
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ],
+      "size_bytes": 6169396,
+      "sha256": "8e8a55e22e342dbd24d2d19c29567c9cff48bec5db10b162debdb5659d993d69",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 0
+    },
+    {
+      "file": "animals/cho_co.glb",
+      "triangles": 7810,
+      "limit": 8000,
+      "bounds_min_m": [
+        -0.10142743587493896,
+        0.0015146209625527263,
+        -0.29315611720085144
+      ],
+      "bounds_max_m": [
+        0.10149236768484116,
+        0.587640106678009,
+        0.3569999933242798
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 3853024,
+      "sha256": "977eeab63e12147e35dc132ebe2509162130f45c65a01c44ccd422784b43c1ed",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 4
+    },
+    {
+      "file": "animals/cho_co_lod1.glb",
+      "triangles": 2434,
+      "limit": 2500,
+      "bounds_min_m": [
+        -0.10162217915058136,
+        0.000921868602745235,
+        -0.293440043926239
+      ],
+      "bounds_max_m": [
+        0.1016625240445137,
+        0.5878088474273682,
+        0.35697296261787415
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 3557160,
+      "sha256": "f395b4c55d11177badd1f69f0f318a39f89b2bbd21a8ca1050d6eefb47f1bb12",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 4
+    },
+    {
+      "file": "people/trom_01.glb",
+      "triangles": 24210,
+      "limit": 25000,
+      "bounds_min_m": [
+        -0.9294325113296509,
+        0.0,
+        -0.17306411266326904
+      ],
+      "bounds_max_m": [
+        0.9294325113296509,
+        1.7510000467300415,
+        0.1509999781847
+      ],
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 7992620,
+      "sha256": "f5b15f91efa1b6081eee4f94468f50782f642922a9c52649dca8e7f08aa5c326",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": true,
+      "max_influences": 4
+    },
+    {
+      "file": "people/trom_01_lod1.glb",
+      "triangles": 7853,
+      "limit": 8000,
+      "bounds_min_m": [
+        -0.9297580718994141,
+        0.0,
+        -0.17325077950954437
+      ],
+      "bounds_max_m": [
+        0.9297580718994141,
+        1.7510000467300415,
+        0.1505821794271469
+      ],
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 7064452,
+      "sha256": "b9e79f6b67ebb0e70f6314001e1094778872690f670a2c65b2748c6a9ec42b13",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": true,
+      "max_influences": 4
+    },
+    {
+      "file": "people/trom_01_lod2.glb",
+      "triangles": 1912,
+      "limit": 2000,
+      "bounds_min_m": [
+        -0.9285105466842651,
+        0.0,
+        -0.17445021867752075
+      ],
+      "bounds_max_m": [
+        0.9285104870796204,
+        1.7501373291015625,
+        0.1563320904970169
+      ],
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "size_bytes": 6687412,
+      "sha256": "03db8372cf83d3b0c5cbbb063d00dd9997c92c5851a4f2ba361568a459838415",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": true,
+      "max_influences": 4
+    },
+    {
+      "file": "trees/xa_cu.glb",
+      "triangles": 7836,
+      "limit": 15000,
+      "bounds_min_m": [
+        -7.328447341918945,
+        -0.17066256701946259,
+        -7.325563907623291
+      ],
+      "bounds_max_m": [
+        7.948841094970703,
+        14.268927574157715,
+        7.091130256652832
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "size_bytes": 4621564,
+      "sha256": "a3cf3afa3d3f518bc0e5c6153d89a075aeeef6a88e28cc44186cbb704887a517",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 0
+    },
+    {
+      "file": "trees/xa_cu_lod1.glb",
+      "triangles": 2908,
+      "limit": 3000,
+      "bounds_min_m": [
+        -6.950582027435303,
+        -0.17324523627758026,
+        -6.961711406707764
+      ],
+      "bounds_max_m": [
+        7.969892501831055,
+        14.345137596130371,
+        6.771775245666504
+      ],
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "size_bytes": 4057524,
+      "sha256": "08cb21519d36dbefb788a41117755b2b445ddbd64c3b11f3674f2f766adb9ac4",
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "exact_source_skeleton": null,
+      "max_influences": 0
+    }
+  ],
+  "external_animation_count": 43,
+  "source_skeleton_sha256": "7401c7f78e2fcfa6584ffd1f4dbe1cbc2a6ab5d645f8a732d21224d0475f3bd6",
+  "source_anim_sha256": "69591853d817488edaa8fd9bf8fc1d821eaeaf789f8627b3cd23b41c4ed67997",
+  "game_bevy_tested": false,
+  "physical_mobile_tested": false,
+  "art_final_approved": false
+}
