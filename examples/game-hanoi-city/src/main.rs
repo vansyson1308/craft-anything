@@ -97,7 +97,8 @@ mod speed_tests {
     fn reads_the_game_speed() {
         assert_eq!(super::game_speed("0.1"), Some(0.1));
         assert_eq!(super::game_speed("100"), Some(4.0));
-        assert_eq!(super::game_speed("0.0001"), Some(0.02));
+        assert_eq!(super::game_speed("0.004"), Some(0.004));
+        assert_eq!(super::game_speed("0.00001"), Some(0.001));
         for bad in ["", "abc", "0", "-1", "NaN", "inf"] {
             assert_eq!(super::game_speed(bad), None, "{bad}");
         }
@@ -961,9 +962,10 @@ fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>
 /// How far the camera can sit behind `target` along `back` before a building gets in the way,
 /// so it never looks out from inside a wall.
 /// The game's speed from the page's address (`?speed=0.1` runs it at a tenth of real time, for
-/// recording video on a computer too slow to draw it live), between 0.02 and 4.
+/// recording video on a computer too slow to draw it live), between 0.001 and 4. The game moves at
+/// most 0.05 s per frame, so for smooth video pick about 1 / (24 × seconds a frame takes to draw).
 fn game_speed(q: &str) -> Option<f32> {
-    q.parse::<f32>().ok().filter(|s| s.is_finite() && *s > 0.0).map(|s| s.clamp(0.02, 4.0))
+    q.parse::<f32>().ok().filter(|s| s.is_finite() && *s > 0.0).map(|s| s.clamp(0.001, 4.0))
 }
 
 /// Night for the chapters the story sets after dark (or what the address asks for), the lights

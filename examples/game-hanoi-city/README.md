@@ -64,8 +64,11 @@ Thêm vào cuối địa chỉ trang:
 - `?gpu`: thử lại WebGPU sau khi trang đã tự chuyển sang WebGL2.
 - `?off=atmo,env,ssao,taa,bloom,shadows`: tắt từng hiệu ứng, cho máy yếu hoặc khi dò lỗi.
 - `#peek`: Minh bắt đầu ngay cạnh lồng chó.
-- `?speed=0.02` … `?speed=4`: chạy game chậm hoặc nhanh hơn thời gian thật. Dùng để quay video trên máy yếu:
-  quay ở `?speed=0.02`, rồi tua video nhanh lên 50 lần (`ffmpeg -i in.webm -vf setpts=0.02*PTS out.mp4`).
+- `?speed=0.001` … `?speed=4`: chạy game chậm hoặc nhanh hơn thời gian thật. Dùng để quay video trên máy yếu.
+  - Game tiến nhiều nhất 0,05 giây mỗi khung hình. Nếu máy vẽ mỗi khung hình mất T giây, chọn tốc độ khoảng
+    1 / (24 × T).
+  - Ví dụ máy không có card đồ hoạ vẽ mỗi khung hình khoảng 10 giây: quay ở `?speed=0.004`, rồi tua video
+    nhanh lên 250 lần (`ffmpeg -i in.webm -vf setpts=0.004*PTS out.mp4`).
 - `?time=night` hoặc `?time=day`: luôn là đêm hoặc ngày, kể cả với `?look=…`. Mặc định Chương 1 là đêm, còn lại là
   chiều muộn.
 - `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`: camera duyệt hình cố định, không có menu. Dùng để
