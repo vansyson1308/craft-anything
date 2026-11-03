@@ -34,6 +34,12 @@ lên web.
     - lan can quanh Hồ Gươm, chừa đầu cầu Thê Húc;
     - biển tên ở hai đầu mỗi phố, chữ in tên phố thật (`tools/make_street_names.py` vẽ atlas tên phố);
   - người đi dạo quanh hồ (`src/crowd.rs`), mặt hồ gợn sóng, đường dạo lát gạch;
+  - ban đêm cho Chương 1 "Đêm mất Bơ" (`src/night.rs`):
+    - trăng xanh thấp;
+    - đèn đường, đèn ven hồ và đèn lồng Hàng Mã chiếu sáng thật, bật 20 ngọn gần người chơi nhất;
+    - mỗi ngọn chỉ sáng khi đã có mô hình cột đèn của nó, nên không có đèn lơ lửng giữa trời;
+    - mặt đường ướt phản chiếu đèn;
+    - đèn pin trong tay Minh (mô hình đèn pin gắn vào tay khi agent nộp `people/den_pin.glb`);
   - mỗi bản LOD chỉ tải khi lần đầu cần tới; người chơi không lại gần một công trình thì không tải bản đẹp nhất của nó;
   - mipmap và lọc anisotropic cho mọi texture;
   - nhân vật dùng chung 43 động tác qua khung xương 65 xương, hoặc dùng động tác có sẵn trong file;
@@ -58,6 +64,8 @@ Thêm vào cuối địa chỉ trang:
 - `?gpu`: thử lại WebGPU sau khi trang đã tự chuyển sang WebGL2.
 - `?off=atmo,env,ssao,taa,bloom,shadows`: tắt từng hiệu ứng, cho máy yếu hoặc khi dò lỗi.
 - `#peek`: Minh bắt đầu ngay cạnh lồng chó.
+- `?time=night` hoặc `?time=day`: luôn là đêm hoặc ngày, kể cả với `?look=…`. Mặc định Chương 1 là đêm, còn lại là
+  chiều muộn.
 - `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`: camera duyệt hình cố định, không có menu. Dùng để
   chụp tài nguyên trong game và đặt cạnh ảnh tham chiếu. `lineup` cho Minh, tên trộm và chó đứng ở đầu cầu Thê Húc.
 
@@ -99,6 +107,7 @@ máy tính.
 | `src/hq.rs` | Đọc tài nguyên đã nộp (`assets/hq/`), đặt vào đúng chỗ, LOD, vật liệu nền |
 | `src/facade.rs` | Cắt mặt nhà nhìn ra phố thành ô mô-đun; dựng và gỡ mô-đun theo khu |
 | `src/render.rs` | Ánh sáng và hậu kỳ cho WebGPU và WebGL2, công tắc hiệu ứng |
+| `src/night.rs` | Ban đêm: trăng, đèn đường, đèn lồng, đường ướt, đèn pin |
 | `src/mips.rs` | Mipmap và lọc anisotropic cho texture |
 | `src/actors.rs` | Nhân vật, chó, hoạt ảnh, đồ vật |
 | `src/main.rs` | Vòng chơi, camera góc thứ ba, chuột và phím, HUD, các màn hình, lưu game |

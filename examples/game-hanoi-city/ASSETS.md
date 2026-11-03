@@ -286,3 +286,21 @@ Tên phố và tên quán là chữ thật, lấy từ bản đồ, do game tự
 | Lồng chó là khối kính mờ; xe máy là khối hộp | Lồng sắt, xe máy có người lái | `people/long_cho.glb`, `street/xe_may_01_chay.glb` (…`_04_chay`) |
 | Tàu hoả là các khối hộp | Toa tàu (game chưa tự thay: sẽ làm khi có file) | `street/toa_tau.glb` |
 | Đồ nhặt được (dép tổ ong, sổ ghi chép, thùng hàng) là khối màu | Vật nhỏ thật, mỗi món dưới 2.000 tam giác | `street/dep_to_ong.glb`, `street/so_tay.glb`, `street/thung_hang.glb` |
+
+## 12. Ban đêm (Chương 1 "Đêm mất Bơ")
+
+Chương 1 giờ chơi vào ban đêm. Game tự lo ánh trăng, đèn đường chiếu sáng thật (theo vị trí các cột đèn đã
+nộp), đèn lồng Hàng Mã, mặt đường ướt phản chiếu đèn, đèn pin trong tay Minh. Thử bằng `?time=night`, ví dụ
+`?gl&time=night&look=lineup`. Ban đêm làm lộ ra những chỗ dưới đây, nên cần nộp hoặc sửa:
+
+| Đang thấy ban đêm | Cần gì | File |
+|---|---|---|
+| Cả cột đèn đường phát sáng: vật liệu kim loại của nó có `emissiveFactor` 0,65 kèm `emissiveTexture` | Chỉ **chao đèn** phát sáng. Tách thành vật liệu riêng tên `lamp_glass` (emissive vàng ấm, khoảng 2.700 K). Thân, cần, đế: emissive = 0. Bóng đèn nằm ở khoảng (0; 4,45; 1,15) m, game đặt nguồn sáng ở đó. | `street/den_duong_01.glb` (cả `_lod1`) |
+| Mọi chi tiết kim loại của mặt tiền nhà phát sáng nhẹ (cùng lỗi emissive 0,65 trên vật liệu "joinery metal") | Kim loại: emissive = 0. Cửa sổ và cửa hàng dùng vật liệu riêng `window_glow`. Emissive map của nó: khoảng 40% ô cửa sáng vàng ấm, rèm che một phần, số còn lại tối. Cửa cuốn đóng thì tối. | `buildings/mat_tien_tret_*`, `buildings/mat_tien_tang_*` |
+| Đèn lồng Hàng Mã là quả cầu màu | Đèn lồng vải lụa đỏ và vàng, khung tre, tua rua; có emissive bên trong; pivot ở móc treo trên đỉnh | `street/den_long_01…03.glb` |
+| Đường dạo quanh Hồ Gươm tối om: chưa có cột đèn | Cột đèn gang trang trí ven hồ, cao khoảng 3,8 m, một chao đèn trên đỉnh (vật liệu `lamp_glass`, sáng ở khoảng 3,5 m). Pivot giữa đế, đối xứng. Game đặt mỗi 25 m dọc đường dạo, và chỉ bật đèn khi đã có file này. | `street/den_ven_ho.glb` (+ `_lod1`) |
+| Đèn pin chỉ có ánh sáng, không có vật | Đèn pin cầm tay nhỏ (dài 0,15 m, dưới 1.500 tam giác). Pivot ở chỗ nắm, mặt kính nhìn ra +Z, kính có emissive. Game gắn vào xương `hand_r`. | `people/den_pin.glb` |
+| (tuỳ chọn) Đường ướt đều một màu | Bản đồ vũng nước: ảnh xám 2048×2048 lặp được, trắng ở chỗ đọng nước. Game giảm độ nhám ở đó. | `materials/duong_nhua/wet_mask.png` |
+
+Cách kiểm tra trước khi nộp: mở file trong Blender, chọn Viewport Shading > Rendered (Eevee), tắt World (độ sáng
+0). Chỉ những chỗ nói trên được phát sáng.
