@@ -108,6 +108,48 @@ struct Game {
     joy: Option<(u64, Vec2, Vec2)>,
     t: f32,
     loaded_t: f32,
+    /// Art review (`?look=…`): a fixed camera, no menus.
+    look: Option<Look>,
+}
+
+/// A fixed view for reviewing delivered art against the reference photo, from the page's address:
+/// `?look=thehuc` (from the lakeside by its shore end along the Thê Húc bridge), `?look=bridge` (the
+/// bridge from above the water), `?look=lineup` (Minh, a thief and the dog standing at the bridge's
+/// shore end) or `?look=tree` (the nearest street tree).
+#[derive(Clone, Copy)]
+struct Look {
+    eye: Vec3,
+    target: Vec3,
+    /// Where to stand the characters, facing the camera, for `lineup`.
+    lineup: Option<(Vec3, Vec3)>,
+    spawned: bool,
+}
+
+fn look_from_page(sites: &[hq::Site]) -> Option<Look> {
+    let which = render::page_query("look");
+    if which.is_empty() {
+        return None;
+    }
+    let bridge = sites.iter().find(|s| s.file.ends_with("cau_the_huc.glb"))?;
+    // The bridge's north end is its model's −Z turned by the site's yaw; the shore end is south.
+    let north = Quat::from_rotation_y(bridge.yaw) * Vec3::NEG_Z;
+    let right = north.cross(Vec3::Y);
+    let shore = bridge.at - north * 23.0 - north * 7.0;
+    match which.as_str() {
+        "lineup" => Some(Look { eye: shore - north * 4.2 + Vec3::Y * 1.45, target: shore + Vec3::Y * 0.95, lineup: Some((shore, right)), spawned: false }),
+        "tree" => {
+            let tree = sites.iter().filter(|s| s.kind == "tree").min_by(|a, b| a.at.distance(shore).total_cmp(&b.at.distance(shore)))?;
+            Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, spawned: true })
+        }
+        "bridge" => Some(Look { eye: bridge.at + right * 38.0 - north * 6.0 + Vec3::Y * 11.0, target: bridge.at + Vec3::Y * 1.0, lineup: None, spawned: true }),
+        // From the lakeside path just north of the bridge's shore end, looking along it to the island.
+        _ => Some(Look {
+            eye: bridge.at - north * 21.0 + right * 15.0 + Vec3::Y * 1.7,
+            target: bridge.at + north * 6.0 + Vec3::Y * 1.0,
+            lineup: None,
+            spawned: true,
+        }),
+    }
 }
 
 #[derive(Component)]
@@ -216,6 +258,7 @@ fn setup(
         .collect();
     let m = world::materials(&assets, &mut mats);
     let built = world::spawn_city(&mut commands, &mut meshes, &m, &city, &map, Vec2::new(lake.x, lake.z), &signs);
+    let look = look_from_page(&built.sites);
     commands.insert_resource(hq::Sites(built.sites));
     commands.insert_resource(built.facades);
     commands.insert_resource(m);
@@ -303,6 +346,7 @@ fn setup(
         joy: None,
         t: 0.0,
         loaded_t: 0.0,
+        look,
     });
 }
 
@@ -557,6 +601,12 @@ fn play(
     let hudl = Hud::new(w, h, [0.0; 4]);
     let cam_e = *camera;
 
+    if let Some(l) = g.look {
+        if let Ok(mut c) = tf.get_mut(cam_e) {
+            *c = Transform::from_translation(l.eye).looking_at(l.target, Vec3::Y);
+        }
+        return;
+    }
     if g.screen != Screen::Playing {
         // Menus: the camera drifts over the lake.
         if g.raid.is_none() || matches!(g.screen, Screen::Title | Screen::Story(..) | Screen::Brief(_) | Screen::Shop) {
@@ -833,7 +883,26 @@ fn play(
 }
 
 /// The loading screen ends once the list of delivered art has been read and the moves are ready.
-fn loading(mut g: ResMut<Game>, time: Res<Time>, lib: Res<AnimLib>, hq: Res<hq::Hq>) {
+fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>, time: Res<Time>, lib: Res<AnimLib>, hq: Res<hq::Hq>) {
+    if let Some(mut l) = g.look
+        && !l.spawned
+        && hq.resolved()
+        && lib.graph.is_some()
+        && lib.dog_graph.is_some()
+        && let Some((at, right)) = l.lineup
+    {
+        let facing = Quat::from_rotation_arc(Vec3::Z, (l.eye - at).with_y(0.0).normalize_or(Vec3::Z));
+        let spots = [at - right * 0.9, at + right * 0.9, at + (l.eye - at).with_y(0.0).normalize_or(Vec3::Z) * 1.4];
+        let minh = actors::spawn_person(&mut commands, &assets, &hq, "minh", "Hair_SimpleParted", spots[0]);
+        let thief = actors::spawn_person(&mut commands, &assets, &hq, "trom", "Hair_Buzzed", spots[1]);
+        let dog = actors::spawn_dog(&mut commands, &assets, &lib, spots[2]);
+        for (e, p) in [(minh, spots[0]), (thief, spots[1])] {
+            commands.entity(e).insert(Transform::from_translation(p).with_rotation(facing));
+        }
+        commands.entity(dog).insert(Transform::from_translation(spots[2]).with_rotation(facing).with_scale(Vec3::splat(lib.dog_scale)));
+        l.spawned = true;
+        g.look = Some(l);
+    }
     if g.screen != Screen::Loading {
         return;
     }
@@ -1163,6 +1232,13 @@ fn menus(
     }
 
     if g.shown == Some(g.screen) {
+        return;
+    }
+    if g.look.is_some() {
+        g.shown = Some(g.screen);
+        for r in &roots {
+            commands.entity(r).despawn();
+        }
         return;
     }
     g.shown = Some(g.screen);

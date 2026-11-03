@@ -19,7 +19,9 @@ lên web.
 - **Phần hình:** do người hoặc agent chuyên làm tài nguyên 3D làm theo [ASSETS.md](ASSETS.md), rồi
   thả vào `assets/hq/` (lời nhắn mẫu cho agent: [AGENT_PROMPT.md](AGENT_PROMPT.md)). Mục 11 của
   ASSETS.md liệt kê những thứ hiện còn là hàng tạm.
-- **Phần kỹ thuật** (`src/hq.rs`, `src/facade.rs`, `src/mips.rs`, `src/render.rs`):
+- **Phần kỹ thuật** (`src/hq.rs`, `src/facade.rs`, `src/mips.rs`, `src/render.rs`, `tools/pack_hq.py`):
+  - khi build, đóng gói `assets/hq` cho web: tách ảnh khỏi GLB, gộp ảnh trùng giữa các LOD và các món,
+    chuyển sang JPEG khi không có trong suốt (lô 01: 88 MB còn 26 MB);
   - đọc `hq/manifest.json`, món nào được nộp thì thay hàng tạm, món nào chưa có thì giữ hàng tạm;
   - đặt công trình đúng chỗ thật lấy từ bản đồ (tâm mặt bằng, cầu Thê Húc theo hướng cầu);
   - mức chi tiết theo khoảng cách (LOD0 → LOD1 → LOD2 → ảnh billboard cho cây);
@@ -47,6 +49,8 @@ Thêm vào cuối địa chỉ trang:
 - `?gpu`: thử lại WebGPU sau khi trang đã tự chuyển sang WebGL2.
 - `?off=atmo,env,ssao,taa,bloom,shadows`: tắt từng hiệu ứng, cho máy yếu hoặc khi dò lỗi.
 - `#peek`: Minh bắt đầu ngay cạnh lồng chó.
+- `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`: camera duyệt hình cố định, không có menu. Dùng để
+  chụp tài nguyên trong game và đặt cạnh ảnh tham chiếu. `lineup` cho Minh, tên trộm và chó đứng ở đầu cầu Thê Húc.
 
 Nếu WebGPU mất GPU (lỗi driver hoặc trình duyệt), trang tự chuyển sang WebGL2 và nhớ lựa chọn đó
 trong phiên.

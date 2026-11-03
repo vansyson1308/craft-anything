@@ -58,6 +58,12 @@ pub struct Entry {
     pub lods: Vec<String>,
     #[serde(default)]
     pub size_m: Vec<f32>,
+    /// A tree's billboard card: its size in metres and where the trunk's foot is on it (u from
+    /// the left, v from the bottom). Without them the card is `size_m`, standing on its bottom edge.
+    #[serde(default)]
+    pub billboard_plane_size_m: Vec<f32>,
+    #[serde(default)]
+    pub billboard_pivot_uv: Vec<f32>,
     #[serde(default)]
     pub skeleton: String,
 }
@@ -365,8 +371,9 @@ struct Applied {
     materials: bool,
 }
 
-/// A two-sided card facing every way (two crossed quads) for a tree seen from afar.
-fn billboard_mesh(w: f32, h: f32) -> Mesh {
+/// A two-sided card facing every way (two crossed quads) for a tree seen from afar: `w` × `h`
+/// metres, with the point (`pu`, `pv`) of the picture (from its left and its bottom) at the foot.
+fn billboard_mesh(w: f32, h: f32, pu: f32, pv: f32) -> Mesh {
     use bevy::asset::RenderAssetUsages;
     use bevy::mesh::{Indices, PrimitiveTopology};
     let mut pos = Vec::new();
@@ -375,8 +382,11 @@ fn billboard_mesh(w: f32, h: f32) -> Mesh {
     let mut idx = Vec::new();
     for (dx, dz) in [(1.0f32, 0.0f32), (0.0, 1.0)] {
         let b = pos.len() as u32;
-        let (hx, hz) = (dx * w / 2.0, dz * w / 2.0);
-        for (p, t) in [([-hx, 0.0, -hz], [0.0, 1.0]), ([hx, 0.0, hz], [1.0, 1.0]), ([hx, h, hz], [1.0, 0.0]), ([-hx, h, -hz], [0.0, 0.0])] {
+        let (l, r) = (-pu * w, (1.0 - pu) * w);
+        let (y0, y1) = (-pv * h, (1.0 - pv) * h);
+        let corners =
+            [([l * dx, y0, l * dz], [0.0, 1.0]), ([r * dx, y0, r * dz], [1.0, 1.0]), ([r * dx, y1, r * dz], [1.0, 0.0]), ([l * dx, y1, l * dz], [0.0, 0.0])];
+        for (p, t) in corners {
             pos.push(p);
             nrm.push([dz, 0.0, -dx]);
             uv.push(t);
@@ -434,7 +444,12 @@ fn place_models(
         let levels = levels_cache.entry(file).or_insert_with(|| levels_of(entry, &assets)).clone();
         let mut lod = LodModel::new(levels.clone(), lod_distances(s.kind, levels.len()));
         if s.kind == "tree" {
-            let (w, h) = (entry.size_m.first().copied().unwrap_or(9.0), entry.size_m.get(1).copied().unwrap_or(13.0));
+            let plane = if entry.billboard_plane_size_m.len() == 2 { &entry.billboard_plane_size_m } else { &entry.size_m };
+            let (w, h) = (plane.first().copied().unwrap_or(9.0).clamp(0.5, 80.0), plane.get(1).copied().unwrap_or(13.0).clamp(0.5, 80.0));
+            let (pu, pv) = match entry.billboard_pivot_uv.as_slice() {
+                [u, v] if (0.0..=1.0).contains(u) && (0.0..=1.0).contains(v) => (*u, *v),
+                _ => (0.5, 0.0),
+            };
             let card = billboards
                 .entry(file)
                 .or_insert_with(|| {
@@ -447,7 +462,7 @@ fn place_models(
                         perceptual_roughness: 0.9,
                         ..default()
                     });
-                    (meshes.add(billboard_mesh(w, h)), mat)
+                    (meshes.add(billboard_mesh(w, h, pu, pv)), mat)
                 })
                 .clone();
             lod.billboard = Some(card);
@@ -616,6 +631,17 @@ mod tests {
         lod.billboard_upto = 600.0;
         assert_eq!(lod.pick(300.0), Some(2));
         assert_eq!(lod.pick(700.0), None);
+    }
+
+    #[test]
+    fn billboard_stands_on_its_pivot() {
+        // The delivered xà cừ card: 17 × 34 m, its trunk's foot 29.4 % up from the bottom.
+        let m = billboard_mesh(17.0, 34.0, 0.5, 0.294);
+        let Some(bevy::mesh::VertexAttributeValues::Float32x3(pos)) = m.attribute(Mesh::ATTRIBUTE_POSITION) else { panic!("positions") };
+        let (lo, hi) = pos.iter().fold((f32::MAX, f32::MIN), |(lo, hi), p| (lo.min(p[1]), hi.max(p[1])));
+        assert!((lo + 9.996).abs() < 1e-3 && (hi - 24.004).abs() < 1e-3, "{lo} {hi}");
+        let xs: Vec<f32> = pos.iter().map(|p| p[0]).collect();
+        assert!(xs.iter().any(|x| (x + 8.5).abs() < 1e-4) && xs.iter().any(|x| (x - 8.5).abs() < 1e-4));
     }
 
     #[test]

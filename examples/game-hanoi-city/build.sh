@@ -24,7 +24,8 @@ if [ "${ONLY:-}" != gpu ]; then build webgl2 gl; fi
 
 mkdir -p dist/assets
 cp -r assets/people assets/hair assets/tex assets/fonts assets/anim.glb assets/dog.glb dist/assets/
-if [ -d assets/hq ]; then cp -r assets/hq dist/assets/; fi
+# Delivered art, packed for the web (shared textures, JPEG where there is no transparency).
+if [ -d assets/hq ]; then python3 -I tools/pack_hq.py assets/hq dist/assets/hq; fi
 cp web/index.html web/icon.svg web/manifest.webmanifest dist/
 touch dist/.nojekyll
 du -sh dist dist/*/*.wasm

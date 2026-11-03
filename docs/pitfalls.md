@@ -428,6 +428,13 @@ a file (`echo $! > server.pid`) and kill that, or match an exact name with `pgre
 comments with `code` in backticks; bash ran them as commands, so the comments lost words and
 nothing failed. Write any script with quotes or backticks to a file with the editor tool first.
 
+**A map that drew a bridge as buildings.** OpenStreetMap maps the Thê Húc bridge as a road plus
+untagged areas: its outline, 32 piers, both railings, the gate posts. The importer raised every area
+as a building, so boxes covered the bridge and hid the delivered model. The overhead preview never
+showed it, only a camera at eye level did, and the first fix (drop the area over the road) left the
+other 35 parts standing. Look at delivered art from where a player stands, and treat everything
+unnamed inside a bridge's outline as part of the bridge.
+
 **A renderer judged by a browser that can't run it.** The WebGPU build lost its device two
 seconds in ("A valid external Instance reference no longer exists") in headless Chromium on
 SwiftShader. Switching every effect off didn't help, and neither did a scene with only a cube, while

@@ -36,6 +36,8 @@ jobs:
         run: cargo install wasm-bindgen-cli --version 0.2.130 --locked
       - name: wasm-opt
         run: npm install -g binaryen@132.0.0
+      - name: Pillow (packs delivered art as JPEG where it has no transparency)
+        run: sudo apt-get install -y --no-install-recommends python3-pil
       - name: Test the game core (including the real-streets self-play)
         working-directory: examples/game-hanoi-rescue
         run: cargo test --locked --release
