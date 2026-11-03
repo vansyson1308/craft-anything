@@ -1,4 +1,189 @@
 {
   "version": 1,
-  "assets": []
+  "created": "2026-11-03",
+  "status": "technical_candidate_not_art_final",
+  "coordinate_system": {
+    "units": "metres",
+    "up": "+Y",
+    "front": "+Z",
+    "north": "-Z"
+  },
+  "assets": [
+    {
+      "file": "people/minh.glb",
+      "lods": [
+        "people/minh_lod1.glb",
+        "people/minh_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.8589,
+        1.736,
+        0.3172
+      ],
+      "triangles": [
+        23294,
+        7856,
+        1913
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; cho phép sử dụng, sửa đổi và phân phối công khai trong dự án mã nguồn mở. Xem LICENSE.txt và SOURCES.md.",
+      "made_with": "Codex; Blender 4.5.3 LTS; Python/NumPy; Khronos glTF Validator",
+      "preview": "previews/minh.png",
+      "quality_status": "technical_candidate_not_art_final",
+      "notes": [
+        "Bản ứng viên tích hợp kỹ thuật; chưa đạt mức chân thực của ảnh tham chiếu và chưa được duyệt mỹ thuật cuối.",
+        "Đã kiểm tra trong trình xem Three.js/Chrome WebGL; chưa chạy trong game Bevy/WebGPU hoặc trên điện thoại thật.",
+        "Khung xương 65 xương, thứ tự joint, tên, parent-child và inverse bind giữ nguyên từ file mẫu; không đổi scale xương. Animation dùng từ anim.glb của game, không nhúng lại.",
+        "size_m là hộp bao T-pose, bao gồm hai cánh tay dang ngang.",
+        "Trọng số đã thử với 43 clip; còn cần chỉnh mỹ thuật nếp áo, viền áo/tóc và kiểm tra giao cắt ở các tư thế cực hạn."
+      ],
+      "compatible_external_animations": 43,
+      "skeleton_source": "../people/minh/person.gltf"
+    },
+    {
+      "file": "landmarks/cau_the_huc.glb",
+      "lods": [
+        "landmarks/cau_the_huc_lod1.glb",
+        "landmarks/cau_the_huc_lod2.glb"
+      ],
+      "kind": "landmark",
+      "size_m": [
+        2.96,
+        3.4055,
+        46.0191
+      ],
+      "triangles": [
+        58206,
+        14716,
+        2332
+      ],
+      "textures": 6,
+      "skeleton": "none",
+      "animations": [],
+      "license": "CC0-1.0; cho phép sử dụng, sửa đổi và phân phối công khai trong dự án mã nguồn mở. Xem LICENSE.txt và SOURCES.md.",
+      "made_with": "Codex; Blender 4.5.3 LTS; Python/NumPy; Khronos glTF Validator",
+      "preview": "previews/cau_the_huc.png",
+      "quality_status": "technical_candidate_not_art_final",
+      "notes": [
+        "Bản ứng viên tích hợp kỹ thuật; chưa đạt mức chân thực của ảnh tham chiếu và chưa được duyệt mỹ thuật cuối.",
+        "Đã kiểm tra trong trình xem Three.js/Chrome WebGL; chưa chạy trong game Bevy/WebGPU hoặc trên điện thoại thật.",
+        "Kích thước theo brief, hình dáng dựng ước lượng; không phải khảo sát/scan công trình hoặc cây thật.",
+        "Chưa đáp ứng đồng đều mức 4 px/cm trên atlas độc bản của vật lớn trong giới hạn texture hiện tại; cần thêm UV texture lặp và tinh chỉnh mật độ trước khi duyệt production."
+      ]
+    },
+    {
+      "file": "animals/cho_co.glb",
+      "lods": [
+        "animals/cho_co_lod1.glb"
+      ],
+      "kind": "animal",
+      "size_m": [
+        0.2029,
+        0.5861,
+        0.6502
+      ],
+      "triangles": [
+        7810,
+        2434
+      ],
+      "textures": 6,
+      "skeleton": "own",
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Sit",
+        "Bark"
+      ],
+      "license": "CC0-1.0; cho phép sử dụng, sửa đổi và phân phối công khai trong dự án mã nguồn mở. Xem LICENSE.txt và SOURCES.md.",
+      "made_with": "Codex; Blender 4.5.3 LTS; Python/NumPy; Khronos glTF Validator",
+      "preview": "previews/cho_co.png",
+      "quality_status": "technical_candidate_not_art_final",
+      "notes": [
+        "Bản ứng viên tích hợp kỹ thuật; chưa đạt mức chân thực của ảnh tham chiếu và chưa được duyệt mỹ thuật cuối.",
+        "Đã kiểm tra trong trình xem Three.js/Chrome WebGL; chưa chạy trong game Bevy/WebGPU hoặc trên điện thoại thật.",
+        "Mô hình và 5 clip tự dựng; dáng, tai/đuôi, chi tiết lông và chuyển động vẫn cần tinh chỉnh để đạt chuẩn chân thực."
+      ]
+    },
+    {
+      "file": "people/trom_01.glb",
+      "lods": [
+        "people/trom_01_lod1.glb",
+        "people/trom_01_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.8589,
+        1.751,
+        0.3241
+      ],
+      "triangles": [
+        24210,
+        7853,
+        1912
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; cho phép sử dụng, sửa đổi và phân phối công khai trong dự án mã nguồn mở. Xem LICENSE.txt và SOURCES.md.",
+      "made_with": "Codex; Blender 4.5.3 LTS; Python/NumPy; Khronos glTF Validator",
+      "preview": "previews/trom_01.png",
+      "quality_status": "technical_candidate_not_art_final",
+      "notes": [
+        "Bản ứng viên tích hợp kỹ thuật; chưa đạt mức chân thực của ảnh tham chiếu và chưa được duyệt mỹ thuật cuối.",
+        "Đã kiểm tra trong trình xem Three.js/Chrome WebGL; chưa chạy trong game Bevy/WebGPU hoặc trên điện thoại thật.",
+        "Khung xương 65 xương, thứ tự joint, tên, parent-child và inverse bind giữ nguyên từ file mẫu; không đổi scale xương. Animation dùng từ anim.glb của game, không nhúng lại.",
+        "size_m là hộp bao T-pose, bao gồm hai cánh tay dang ngang.",
+        "Trọng số đã thử với 43 clip; còn cần chỉnh mỹ thuật nếp áo, viền áo/tóc và kiểm tra giao cắt ở các tư thế cực hạn."
+      ],
+      "compatible_external_animations": 43,
+      "skeleton_source": "../people/minh/person.gltf"
+    },
+    {
+      "file": "trees/xa_cu.glb",
+      "lods": [
+        "trees/xa_cu_lod1.glb"
+      ],
+      "kind": "tree",
+      "size_m": [
+        15.2773,
+        14.4396,
+        14.4167
+      ],
+      "triangles": [
+        7836,
+        2908
+      ],
+      "textures": 6,
+      "skeleton": "none",
+      "animations": [],
+      "license": "CC0-1.0; cho phép sử dụng, sửa đổi và phân phối công khai trong dự án mã nguồn mở. Xem LICENSE.txt và SOURCES.md.",
+      "made_with": "Codex; Blender 4.5.3 LTS; Python/NumPy; Khronos glTF Validator",
+      "preview": "previews/xa_cu.png",
+      "quality_status": "technical_candidate_not_art_final",
+      "notes": [
+        "Bản ứng viên tích hợp kỹ thuật; chưa đạt mức chân thực của ảnh tham chiếu và chưa được duyệt mỹ thuật cuối.",
+        "Đã kiểm tra trong trình xem Three.js/Chrome WebGL; chưa chạy trong game Bevy/WebGPU hoặc trên điện thoại thật.",
+        "Kích thước theo brief, hình dáng dựng ước lượng; không phải khảo sát/scan công trình hoặc cây thật.",
+        "Chưa đáp ứng đồng đều mức 4 px/cm trên atlas độc bản của vật lớn trong giới hạn texture hiện tại; cần thêm UV texture lặp và tinh chỉnh mật độ trước khi duyệt production.",
+        "Billboard có đệm trong suốt để giữ đủ tán rộng; mặt phẳng 17 × 34 m với pivot_uv ở gốc cây. Có thể dùng hai mặt phẳng chéo trong game."
+      ],
+      "billboard": "trees/xa_cu_billboard.png",
+      "billboard_size_px": [
+        512,
+        1024
+      ],
+      "billboard_plane_size_m": [
+        17,
+        34
+      ],
+      "billboard_pivot_uv": [
+        0.5,
+        0.29411764705882354
+      ]
+    }
+  ]
 }
