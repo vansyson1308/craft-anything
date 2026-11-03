@@ -1,0 +1,8 @@
+{
+  "source_hq_bytes_including_review": 316483839,
+  "glb_bytes": 223470756,
+  "packed_runtime_bytes": 166671683,
+  "packed_texture_files": 292,
+  "packer": "PR #5 tools/pack_hq.py, Pillow enabled; review/ and REVIEW.md additionally excluded for runtime measurement",
+  "note": "Total package size, not initial region download. No memory or bandwidth benchmark."
+}

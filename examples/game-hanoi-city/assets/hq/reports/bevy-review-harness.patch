@@ -1,0 +1,32 @@
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -138,0 +139,4 @@
++        "asset" => {
++            let d = render::page_query("size").parse::<f32>().unwrap_or(3.0).clamp(0.2, 60.0);
++            Some(Look { eye: shore - north * d * 1.6 + right * d * 1.1 + Vec3::Y * d * 0.75, target: shore + Vec3::Y * d * 0.40, lineup: Some((shore, right)), spawned: false })
++        }
+@@ -142 +146 @@
+-            Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, spawned: true })
++            Some(Look { eye: tree.at - north * 28.0 + right * 8.0 + Vec3::Y * 9.0, target: tree.at + Vec3::Y * 10.0, lineup: None, spawned: true })
+@@ -886 +890,12 @@
+-fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>, time: Res<Time>, lib: Res<AnimLib>, hq: Res<hq::Hq>) {
++fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>, time: Res<Time>, lib: Res<AnimLib>, hq: Res<hq::Hq>, keys: Res<ButtonInput<KeyCode>>, mut review_people: Query<&mut actors::Person>, mut review_players: Query<(&mut AnimationPlayer, &mut AnimationTransitions)>) {
++    if g.look.is_some() {
++        for (key, movement) in [(KeyCode::Digit1, Move::Idle), (KeyCode::Digit2, Move::Sprint), (KeyCode::Digit3, Move::Sneak), (KeyCode::Digit4, Move::Punch), (KeyCode::Digit5, Move::Roll), (KeyCode::Digit6, Move::Down)] {
++            if keys.just_pressed(key) {
++                for mut person in &mut review_people {
++                    person.current = None;
++                    actors::set_move(&mut person, movement, &lib, &mut review_players);
++                }
++            }
++        }
++    }
++
+@@ -895,0 +911,7 @@
++        let review_asset = render::page_query("asset");
++        if !review_asset.is_empty() {
++            commands.spawn((Transform::from_translation(at).with_rotation(facing), Visibility::default(), bevy::world_serialization::WorldAssetRoot(assets.load(bevy::gltf::GltfAssetLabel::Scene(0).from_asset(format!("hq/{review_asset}"))))));
++            l.spawned = true;
++            g.look = Some(l);
++            return;
++        }
