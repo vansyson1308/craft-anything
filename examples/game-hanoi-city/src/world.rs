@@ -193,6 +193,7 @@ const LANDMARK_BUILDINGS: [(&str, &str); 6] = [
     ("Chợ Đồng Xuân", "landmarks/cho_dong_xuan.glb"),
 ];
 const THE_HUC: (&str, &str) = ("Cầu Thê Húc", "landmarks/cau_the_huc.glb");
+const GATE: &str = "landmarks/thap_but_dai_nghien.glb";
 
 fn repeat(assets: &AssetServer, path: &'static str) -> Handle<Image> {
     assets
@@ -394,6 +395,14 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             let d = north - south;
             let mid = (south + north) / 2.0;
             sites.push(Site { file: THE_HUC.1, kind: "landmark", at: Vec3::new(mid.x, 0.0, mid.y), yaw: (-d.x).atan2(-d.y) });
+            // Tháp Bút, Đài Nghiên and the gate stand where the bridge meets the shore: the end
+            // farther from the temple island. Their model's −Z points along the bridge to the island.
+            let temple = c.buildings.iter().find(|b| b.name.as_deref() == Some("Đền Ngọc Sơn")).and_then(|b| b.outer.first()).map(|p| to_world(c, p));
+            if let Some(t) = temple {
+                let (shore, island) = if a.distance(t) > b.distance(t) { (*a, *b) } else { (*b, *a) };
+                let to_island = island - shore;
+                sites.push(Site { file: GATE, kind: "landmark", at: Vec3::new(shore.x, 0.0, shore.y), yaw: (-to_island.x).atan2(-to_island.y) });
+            }
         }
         let mut along = 0.0;
         for seg in pts.windows(2) {
@@ -453,6 +462,27 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         }
     }
 
+    // Bridge decks: OpenStreetMap also outlines some bridges as untagged areas, which would
+    // otherwise stand up as a low building over the bridge (Thê Húc's did).
+    let decks: Vec<Vec2> = c
+        .roads
+        .iter()
+        .filter(|r| r.bridge)
+        .flat_map(|r| {
+            let pts: Vec<Vec2> = r.pts.iter().map(|p| to_world(c, p)).collect();
+            pts.windows(2).map(|w| (w[0] + w[1]) / 2.0).collect::<Vec<_>>()
+        })
+        .collect();
+    // The outlines themselves: untagged, unnamed areas lying over a bridge's deck. Everything
+    // unnamed inside one (piers, railings, the deck's halves) is part of the bridge too.
+    let outlines: Vec<Vec<Vec2>> = c
+        .buildings
+        .iter()
+        .filter(|b| b.kind.is_empty() && b.name.is_none())
+        .map(|b| b.outer.iter().map(|p| to_world(c, p)).collect::<Vec<Vec2>>())
+        .filter(|ring| ring.len() >= 3 && decks.iter().any(|d| contains(ring, *d)))
+        .collect();
+
     // Buildings: two bands of wall (shopfront, then floors of windows) and a roof.
     for (bi, b) in c.buildings.iter().enumerate() {
         let mut ring: Vec<Vec2> = b.outer.iter().map(|p| to_world(c, p)).collect();
@@ -465,10 +495,18 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         if signed_area(&ring) < 0.0 {
             ring.reverse();
         }
+        let centre = ring.iter().copied().sum::<Vec2>() / ring.len() as f32;
+        let on_bridge = b.name.is_none() && outlines.iter().any(|o| contains(o, centre));
+        // Untagged parts of a bridge aren't buildings; a tagged structure at its end is a gate,
+        // standing in for the delivered Tháp Bút and Đài Nghiên.
+        if on_bridge && b.kind.is_empty() {
+            continue;
+        }
         let height = (b.h as f32 / 10.0).clamp(3.0, 120.0);
         let style = (hash2(bi as i32, 7) % 6) as u8;
         let (cx, cz) = chunk_of(ring[0]);
         let landmark = b.name.as_deref().and_then(|n| LANDMARK_BUILDINGS.iter().find(|(name, _)| *name == n)).map(|(_, f)| *f);
+        let landmark = if on_bridge { Some(GATE) } else { landmark };
         if let Some(f) = landmark {
             let (lo, hi) = ring.iter().fold((Vec2::splat(f32::MAX), Vec2::splat(f32::MIN)), |(lo, hi), p| (lo.min(*p), hi.max(*p)));
             let mid = (lo + hi) / 2.0;
@@ -687,6 +725,19 @@ fn pick<'a>(chunks: &'a mut Chunks, own: &'a mut Own, landmark: Option<&'static 
         Some(f) => own.entry(f).or_default().entry(key.2 * 8 + key.3).or_default(),
         None => chunks.entry(key).or_default(),
     }
+}
+
+/// Whether `p` is inside the polygon `ring` (even-odd rule).
+fn contains(ring: &[Vec2], p: Vec2) -> bool {
+    let n = ring.len();
+    let mut inside = false;
+    for i in 0..n {
+        let (a, b) = (ring[i], ring[(i + 1) % n]);
+        if (a.y > p.y) != (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x {
+            inside = !inside;
+        }
+    }
+    inside
 }
 
 fn seg_dist(p: Vec2, a: Vec2, b: Vec2) -> f32 {

@@ -49,6 +49,8 @@ làm giống hệt:
   - `normal` (chuẩn **OpenGL, +Y**),
   - **ORM** gộp một ảnh: R = ambient occlusion (nướng sẵn), G = roughness, B = metallic.
   - Đèn, cửa sổ sáng, biển hiệu phát sáng: thêm `emissive`.
+- **Vật lớn** (cầu, công trình, mô-đun nhà): vật liệu lặp theo mét trên UV0, còn AO nướng tách thành một ảnh
+  xám riêng trên UV1 (`occlusionTexture.texCoord = 1`). Game hỗ trợ đúng 2 bộ UV.
 - Kích thước texture là luỹ thừa của 2: **tối đa 2048** (công trình lớn), 1024 (nhân vật, xe), 512 (vật nhỏ). Tối thiểu 4 px texture cho mỗi cm ở khoảng cách 2 m.
 - Kính, nước, lá cây: lá dùng `alphaMode: MASK` (không dùng BLEND cho lá). Kính dùng BLEND.
 - Vật liệu nền lặp (vỉa hè, đường, cỏ…): ảnh **lặp liền mạch**, kèm ghi chú mỗi ảnh phủ bao nhiêu mét.
@@ -123,7 +125,7 @@ Thư mục nộp: `assets/hq/<nhóm>/<ten>.glb`. Có thể tạo thêm biến th
 |---|---|---|
 | `cau_the_huc.glb` | Cầu Thê Húc: cầu gỗ cong sơn đỏ, lan can con tiện, nối bờ với đảo Ngọc Sơn. | dài khoảng 46 m (gồm đoạn dẫn), rộng 2,5–3 m |
 | `den_ngoc_son.glb` | Cụm đền Ngọc Sơn: Đắc Nguyệt Lâu, Trấn Ba Đình, nhà chính, cây cối trên đảo. | khoảng 27 × 27 m |
-| `thap_but_dai_nghien.glb` | Tháp Bút và Đài Nghiên ở lối vào đền. | đặt ở bờ, đầu cầu |
+| `thap_but_dai_nghien.glb` | Tháp Bút, Đài Nghiên và cổng ở lối vào đền. | gốc ở điểm đầu cầu chạm bờ; −Z chỉ dọc cầu về phía đảo, cụm tháp ở phía +Z |
 | `thap_rua.glb` | Tháp Rùa trên gò nhỏ giữa hồ, ba tầng, tường vôi rêu phong. | khoảng 4,5 × 6,3 m |
 | `nha_tho_lon.glb` | Nhà thờ Lớn: tháp đôi gothic, tường đá xám đen, cửa hoa hồng. | khoảng 63 × 46 m |
 | `nha_hat_lon.glb` | Nhà hát Lớn: kiến trúc Pháp màu vàng kem, mái vòm, hàng cột. | khoảng 83 × 52 m |
