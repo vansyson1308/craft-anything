@@ -20,12 +20,21 @@ lên web.
   thả vào `assets/hq/` (lời nhắn mẫu cho agent: [AGENT_PROMPT.md](AGENT_PROMPT.md)). Mục 11 của
   ASSETS.md liệt kê những thứ hiện còn là hàng tạm.
 - **Phần kỹ thuật** (`src/hq.rs`, `src/facade.rs`, `src/mips.rs`, `src/render.rs`, `tools/pack_hq.py`):
-  - khi build, đóng gói `assets/hq` cho web: tách ảnh khỏi GLB, gộp ảnh trùng giữa các LOD và các món,
-    chuyển sang JPEG khi không có trong suốt (lô 01: 88 MB còn 26 MB);
+  - khi build, đóng gói `assets/hq` cho web:
+    - tách ảnh khỏi GLB, gộp ảnh trùng giữa các LOD và các món;
+    - chuyển sang JPEG khi không có trong suốt, kể cả ảnh vật liệu nền (đổi tên ghi trong `renamed` của manifest);
+    - lô 02: 306 MB còn 100 MB; lúc vào game tải khoảng 53 MB tài nguyên, phần còn lại tải theo khoảng cách;
   - đọc `hq/manifest.json`, món nào được nộp thì thay hàng tạm, món nào chưa có thì giữ hàng tạm;
   - đặt công trình đúng chỗ thật lấy từ bản đồ (tâm mặt bằng, cầu Thê Húc theo hướng cầu);
   - mức chi tiết theo khoảng cách (LOD0 → LOD1 → LOD2 → ảnh billboard cho cây);
   - mặt tiền nhà ghép từ mô-đun, chỉ dựng cho các khu phố gần camera, xa thì dùng tường phẳng;
+  - đồ phố đặt theo dữ liệu bản đồ, cũng chỉ dựng cho các khu gần camera:
+    - bó vỉa dọc mọi phố rộng từ 5 m, chừa chỗ ngã rẽ;
+    - đèn đường mỗi 30 m trên các trục chính;
+    - lan can quanh Hồ Gươm, chừa đầu cầu Thê Húc;
+    - biển tên ở hai đầu mỗi phố, chữ in tên phố thật (`tools/make_street_names.py` vẽ atlas tên phố);
+  - người đi dạo quanh hồ (`src/crowd.rs`), mặt hồ gợn sóng, đường dạo lát gạch;
+  - mỗi bản LOD chỉ tải khi lần đầu cần tới; người chơi không lại gần một công trình thì không tải bản đẹp nhất của nó;
   - mipmap và lọc anisotropic cho mọi texture;
   - nhân vật dùng chung 43 động tác qua khung xương 65 xương, hoặc dùng động tác có sẵn trong file;
   - WebGPU có bầu trời vật lý, ánh sáng bầu trời, bóng đổ mềm nhiều tầng, SSAO, bloom, TAA.

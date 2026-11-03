@@ -435,6 +435,12 @@ showed it, only a camera at eye level did, and the first fix (drop the area over
 other 35 parts standing. Look at delivered art from where a player stands, and treat everything
 unnamed inside a bridge's outline as part of the bridge.
 
+**Two systems writing one visibility.** Delivered trees hid the stand-in trees, but the distance
+culler kept setting what it owned back to visible every 0.4 s, so the old green balls stood under
+the new trees. Give each thing one owner for a setting; when something changes hands, take it out
+of the old owner's reach (here: remove its `Far`), and look at the scene after the switch, not
+only at the frame where it happened.
+
 **A renderer judged by a browser that can't run it.** The WebGPU build lost its device two
 seconds in ("A valid external Instance reference no longer exists") in headless Chromium on
 SwiftShader. Switching every effect off didn't help, and neither did a scene with only a cube, while

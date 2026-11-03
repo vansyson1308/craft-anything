@@ -148,6 +148,8 @@ pub struct Mats {
     pub roof_tiles: Handle<StandardMaterial>,
     pub asphalt: Handle<StandardMaterial>,
     pub paving: Handle<StandardMaterial>,
+    /// Footways and the lakeside promenade.
+    pub path_paving: Handle<StandardMaterial>,
     pub grass: Handle<StandardMaterial>,
     pub water: Handle<StandardMaterial>,
     pub red_bridge: Handle<StandardMaterial>,
@@ -167,6 +169,7 @@ impl Mats {
         Some(
             match name {
                 "paving" => &self.paving,
+                "path_paving" => &self.path_paving,
                 "asphalt" => &self.asphalt,
                 "grass" => &self.grass,
                 "roof" => &self.roof,
@@ -206,6 +209,18 @@ fn repeat(assets: &AssetServer, path: &'static str) -> Handle<Image> {
             });
         })
         .load(path)
+}
+
+/// The lake's ripples: its normal map drifts slowly (seen once a `nuoc_ho` normal map is delivered).
+pub fn ripple(time: Res<Time>, m: Option<Res<Mats>>, mut mats: ResMut<Assets<StandardMaterial>>) {
+    let Some(m) = m else { return };
+    let Some(mut water) = mats.get_mut(&m.water) else { return };
+    if water.normal_map_texture.is_none() {
+        return;
+    }
+    let scale = water.uv_transform.matrix2.x_axis.x;
+    let t = time.elapsed_secs();
+    water.uv_transform = bevy::math::Affine2::from_scale_angle_translation(Vec2::splat(scale), 0.0, Vec2::new(t * 0.012, t * 0.007));
 }
 
 /// Hidden when the camera is farther than `limit` from `at` (cheaper than drawing into fog).
@@ -277,6 +292,12 @@ pub fn materials(assets: &AssetServer, mats: &mut Assets<StandardMaterial>) -> M
         roof_tiles: tex("tex/roof_tiles.jpg", 0.8, mats),
         asphalt: tex("tex/asphalt.jpg", 0.9, mats),
         paving: tex("tex/paving.jpg", 0.85, mats),
+        path_paving: mats.add(StandardMaterial {
+            base_color: Color::srgb(0.86, 0.8, 0.74),
+            base_color_texture: Some(repeat(assets, "tex/paving.jpg")),
+            perceptual_roughness: 0.8,
+            ..default()
+        }),
         grass: tex("tex/grass.jpg", 0.95, mats),
         water: mats.add(StandardMaterial { base_color: Color::srgb(0.16, 0.42, 0.38), perceptual_roughness: 0.08, reflectance: 0.6, ..default() }),
         red_bridge: mats.add(StandardMaterial { base_color: Color::srgb(0.72, 0.1, 0.1), perceptual_roughness: 0.6, ..default() }),
@@ -305,6 +326,8 @@ const CHUNK: f32 = 160.0;
 pub struct Built {
     pub sites: Vec<Site>,
     pub facades: facade::Facades,
+    /// A loop round Hồ Gươm a few metres out from the shore, where people stroll.
+    pub promenade: Vec<Vec2>,
 }
 
 /// Mesh kinds at or above this are the street-facing part of a wall kind (kind + FRONT).
@@ -379,15 +402,19 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
 
     // Roads: asphalt strips (bridges red, or steel for Long Biên), above the paving.
     for r in &c.roads {
-        if matches!(r.kind.as_str(), "footway" | "path" | "steps" | "cycleway") && !r.bridge {
-            continue;
-        }
+        let footway = matches!(r.kind.as_str(), "footway" | "path" | "steps" | "cycleway" | "pedestrian") && !r.bridge;
         let pts: Vec<Vec2> = r.pts.iter().map(|p| to_world(c, p)).collect();
         if !pts.iter().any(|p| near(*p)) {
             continue;
         }
         let half = r.w as f32 / 20.0;
-        let (kind, y) = if r.bridge { if r.name.as_deref() == Some("Cầu Long Biên") { (8u8, 4.0f32) } else { (7u8, 0.6f32) } } else { (4u8, 0.04f32) };
+        let (kind, y) = if r.bridge {
+            if r.name.as_deref() == Some("Cầu Long Biên") { (8u8, 4.0f32) } else { (7u8, 0.6f32) }
+        } else if footway {
+            (11u8, 0.035f32)
+        } else {
+            (4u8, 0.04f32)
+        };
         let the_huc = r.name.as_deref() == Some(THE_HUC.0);
         if the_huc && let (Some(a), Some(b)) = (pts.first(), pts.last()) {
             // The model's north end (−Z) points along the bridge to its northern end.
@@ -581,6 +608,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             7 => m.red_bridge.clone(),
             8 => m.steel.clone(),
             9 => m.rail_bed.clone(),
+            11 => m.path_paving.clone(),
             _ => m.paving.clone(),
         }
     };
@@ -609,6 +637,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             }
         }
     }
+    street_furniture(c, map, &near, &chunk_of, &mut blocks, &facade::street_atlas().0, &decks);
     let facades = facade::Facades { blocks: blocks.into_values().collect() };
 
     // Water tanks.
@@ -713,7 +742,26 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
     if let Some(mesh) = sign.mesh() {
         commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(m.signs.clone())));
     }
-    Built { sites, facades }
+    let promenade = c
+        .water
+        .iter()
+        .find(|w| w.name.as_deref() == Some("Hồ Hoàn Kiếm"))
+        .map(|lake| {
+            let mut ring: Vec<Vec2> = lake.outer.iter().map(|p| to_world(c, p)).collect();
+            if signed_area(&ring) < 0.0 {
+                ring.reverse();
+            }
+            let n = ring.len();
+            (0..n)
+                .map(|i| {
+                    let (prev, here, next) = (ring[(i + n - 1) % n], ring[i], ring[(i + 1) % n]);
+                    let d = (next - prev).normalize_or_zero();
+                    here + Vec2::new(d.y, -d.x) * 3.5
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    Built { sites, facades, promenade }
 }
 
 type Chunks = HashMap<(i32, i32, u8, u8), Builder>;
@@ -724,6 +772,128 @@ fn pick<'a>(chunks: &'a mut Chunks, own: &'a mut Own, landmark: Option<&'static 
     match landmark {
         Some(f) => own.entry(f).or_default().entry(key.2 * 8 + key.3).or_default(),
         None => chunks.entry(key).or_default(),
+    }
+}
+
+/// Street furniture from the map, in the blocks it stands in (put up by `facade::stream` when the
+/// art for it was delivered): granite kerbs along every street, lamps along the main roads, the low
+/// railing round Hồ Gươm, and a name sign at both ends of every named street.
+#[allow(clippy::too_many_arguments)]
+fn street_furniture(
+    c: &City,
+    map: &Map,
+    near: &dyn Fn(Vec2) -> bool,
+    chunk_of: &dyn Fn(Vec2) -> (i32, i32),
+    blocks: &mut HashMap<(i32, i32), facade::Block>,
+    streets: &HashMap<String, u16>,
+    decks: &[Vec2],
+) {
+    let mut put = |at: Vec2, slot: facade::PropSlot| {
+        let (cx, cz) = chunk_of(at);
+        blocks.entry((cx, cz)).or_insert_with(|| facade::Block::new(Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK))).props.push(slot);
+    };
+    // A model's +X along `along`, its +Z toward `facing` (both flat).
+    let turn = |along: Vec2, facing: Vec2| {
+        let x = Vec3::new(along.x, 0.0, along.y).normalize_or(Vec3::X);
+        let mut z = x.cross(Vec3::Y);
+        if z.dot(Vec3::new(facing.x, 0.0, facing.y)) < 0.0 {
+            z = -z;
+        }
+        Quat::from_mat3(&Mat3::from_cols(z.cross(Vec3::Y) * -1.0, Vec3::Y, z))
+    };
+    let road_at =
+        |p: Vec2| matches!(map.tile_at(V2 { x: p.x / map.tile_m, y: p.y / map.tile_m }), Tile::Street | Tile::Alley | Tile::Crowd | Tile::Water | Tile::Bridge);
+
+    for r in &c.roads {
+        if r.bridge || r.w < 50 || matches!(r.kind.as_str(), "footway" | "path" | "steps" | "cycleway" | "pedestrian") {
+            continue;
+        }
+        let pts: Vec<Vec2> = r.pts.iter().map(|p| to_world(c, p)).collect();
+        if !pts.iter().any(|p| near(*p)) {
+            continue;
+        }
+        let half = r.w as f32 / 20.0;
+        let main = matches!(r.kind.as_str(), "primary" | "secondary" | "tertiary");
+        let mut along = 0.0f32;
+        let mut next_lamp = 12.0f32;
+        let mut lamp_side = 1.0f32;
+        for seg in pts.windows(2) {
+            let (a, b) = (seg[0], seg[1]);
+            let len = a.distance(b);
+            if len < 0.5 {
+                continue;
+            }
+            let d = (b - a) / len;
+            let n = Vec2::new(-d.y, d.x);
+            // Kerbs: 2 m granite pieces on both edges, left out where another street joins.
+            let pieces = (len / 2.0).floor() as i32;
+            for k in 0..pieces {
+                let mid = a + d * (k as f32 * 2.0 + 1.0);
+                for side in [-1.0f32, 1.0] {
+                    let edge = mid + n * side * (half + 0.16);
+                    if road_at(mid + n * side * (half + 1.6)) || !near(edge) {
+                        continue;
+                    }
+                    let at = Transform::from_translation(Vec3::new(edge.x, 0.0, edge.y)).with_rotation(turn(d, -n * side)).with_scale(Vec3::new(2.0, 1.0, 1.0));
+                    put(edge, facade::PropSlot { file: "street/bo_via.glb", at, upto: 70.0, street: None });
+                }
+            }
+            // Lamps every 30 m along the main roads, side to side, their arms over the road.
+            while main && next_lamp <= along + len {
+                let p = a + d * (next_lamp - along);
+                let foot = p + n * lamp_side * (half + 0.7);
+                if !road_at(foot) && near(foot) {
+                    let at = Transform::from_translation(Vec3::new(foot.x, 0.0, foot.y)).with_rotation(turn(d, -n * lamp_side));
+                    put(foot, facade::PropSlot { file: "street/den_duong_01.glb", at, upto: 260.0, street: None });
+                }
+                lamp_side = -lamp_side;
+                next_lamp += 30.0;
+            }
+            along += len;
+        }
+        // Name signs at both ends of a named street, on the corner, facing along the street.
+        if let Some(i) = r.name.as_ref().and_then(|n| streets.get(n)) {
+            for (end, inward) in [(pts.first(), pts.get(1)), (pts.last(), pts.get(pts.len().saturating_sub(2)))] {
+                let (Some(&e), Some(&next)) = (end, inward) else { continue };
+                let d = (next - e).normalize_or_zero();
+                let n = Vec2::new(-d.y, d.x);
+                let foot = e + d * 4.0 + n * (half + 0.8);
+                if road_at(foot) || !near(foot) {
+                    continue;
+                }
+                let at = Transform::from_translation(Vec3::new(foot.x, 0.0, foot.y)).with_rotation(turn(n, -d));
+                put(foot, facade::PropSlot { file: "street/cot_bien_ten_pho.glb", at, upto: 140.0, street: Some(*i) });
+            }
+        }
+    }
+
+    // The railing round Hồ Gươm: 2.1 m sections just outside the shore, open where the Thê Húc
+    // bridge leaves it.
+    if let Some(lake) = c.water.iter().find(|w| w.name.as_deref() == Some("Hồ Hoàn Kiếm")) {
+        let mut ring: Vec<Vec2> = lake.outer.iter().map(|p| to_world(c, p)).collect();
+        if signed_area(&ring) < 0.0 {
+            ring.reverse();
+        }
+        let n = ring.len();
+        for i in 0..n {
+            let (a, b) = (ring[i], ring[(i + 1) % n]);
+            let len = a.distance(b);
+            if len < 0.5 {
+                continue;
+            }
+            let d = (b - a) / len;
+            let out = Vec2::new(d.y, -d.x);
+            let pieces = (len / 2.1).round().max(1.0) as i32;
+            let step = len / pieces as f32;
+            for k in 0..pieces {
+                let p = a + d * (step * (k as f32 + 0.5)) + out * 0.6;
+                if decks.iter().any(|q| q.distance(p) < 26.0) {
+                    continue;
+                }
+                let at = Transform::from_translation(Vec3::new(p.x, 0.0, p.y)).with_rotation(turn(d, out)).with_scale(Vec3::new(step / 2.1, 1.0, 1.0));
+                put(p, facade::PropSlot { file: "street/hang_rao_ho.glb", at, upto: 160.0, street: None });
+            }
+        }
     }
 }
 

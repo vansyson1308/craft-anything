@@ -4,7 +4,8 @@ delivers stays as it is in the repository, and the copy in dist/ is made small.
 - Every image embedded in a .glb is taken out into dist/assets/hq/_tex/, named by its content, so
   a texture shared by LOD0, LOD1 and LOD2 (or by two models) is downloaded once.
 - Images with no transparency are re-encoded as JPEG (quality 92) when Pillow is installed;
-  colour images with transparency stay PNG.
+  colour images with transparency stay PNG. Loose images (ground materials) are renamed to .jpg,
+  and the web copy of manifest.json lists every rename under "renamed" for the game to follow.
 - Previews, reports, editable texture sources and notes are left out of the web copy.
 
 Usage: python3 -I tools/pack_hq.py <assets/hq> <dist/assets/hq>
@@ -23,8 +24,8 @@ try:
 except ImportError:  # pragma: no cover
     Image = None
 
-SKIP_DIRS = {"previews", "reports", "textures"}
-SKIP_FILES = {"README.md", "SOURCES.md", "LICENSE.txt", ".gitattributes"}
+SKIP_DIRS = {"previews", "reports", "textures", "review"}
+SKIP_FILES = {"README.md", "REVIEW.md", "SOURCES.md", "LICENSE.txt", ".gitattributes"}
 GLB_MAGIC = 0x46546C67
 
 
@@ -67,6 +68,26 @@ def has_alpha(png):
         return False
 
 
+# Largest side for images inside models: the browser decodes every image on the page's one thread,
+# and a 2048 px image takes four times as long as a 1024 px one. Ground materials, seen close up
+# everywhere, keep their size.
+MAX_MODEL_TEXTURE = int(os.environ.get("HQ_MAX_TEXTURE", "1024"))
+
+
+def shrink(raw, mime):
+    """Returns the image no larger than MAX_MODEL_TEXTURE on its longest side."""
+    if Image is None:
+        return raw, mime
+    with Image.open(io.BytesIO(raw)) as im:
+        if max(im.size) <= MAX_MODEL_TEXTURE:
+            return raw, mime
+        k = MAX_MODEL_TEXTURE / max(im.size)
+        small = im.resize((max(1, round(im.size[0] * k)), max(1, round(im.size[1] * k))), Image.LANCZOS)
+        buf = io.BytesIO()
+        small.save(buf, "PNG", optimize=True)
+        return buf.getvalue(), "image/png"
+
+
 def to_jpeg(png):
     with Image.open(io.BytesIO(png)) as im:
         buf = io.BytesIO()
@@ -79,6 +100,7 @@ def store_image(raw, mime, tex_dir, cache):
     key = hashlib.sha256(raw).hexdigest()[:20]
     if key in cache:
         return cache[key]
+    raw, mime = shrink(raw, mime)
     data, ext = raw, {"image/png": "png", "image/jpeg": "jpg"}.get(mime, "bin")
     if Image is not None and mime == "image/png" and not has_alpha(raw):
         jpg = to_jpeg(raw)
@@ -144,6 +166,7 @@ def main(src_root, dst_root):
     tex_dir = os.path.join(dst_root, "_tex")
     os.makedirs(tex_dir)
     cache, before, after = {}, 0, 0
+    renamed, manifest_dst = {}, None
     for root, dirs, files in os.walk(src_root):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         for name in files:
@@ -159,8 +182,24 @@ def main(src_root, dst_root):
                 except (ValueError, KeyError, struct.error) as e:
                     print(f"pack_hq: {src}: {e}; copied as it is", file=sys.stderr)
                     shutil.copyfile(src, dst)
+            elif name.endswith(".png") and Image is not None and not has_alpha(open(src, "rb").read()):
+                jpg = to_jpeg(open(src, "rb").read())
+                new = dst[: -len(".png")] + ".jpg"
+                with open(new, "wb") as f:
+                    f.write(jpg)
+                rel = os.path.relpath(src, src_root).replace(os.sep, "/")
+                renamed[rel] = rel[: -len(".png")] + ".jpg"
+            elif name == "manifest.json":
+                manifest_dst = dst
+                shutil.copyfile(src, dst)
             else:
                 shutil.copyfile(src, dst)
+    if manifest_dst and renamed:
+        with open(manifest_dst, encoding="utf-8") as f:
+            m = json.load(f)
+        m["renamed"] = renamed
+        with open(manifest_dst, "w", encoding="utf-8") as f:
+            json.dump(m, f, ensure_ascii=False, indent=1)
     for root, _, files in os.walk(dst_root):
         after += sum(os.path.getsize(os.path.join(root, f)) for f in files)
     jpeg = "with JPEG" if Image is not None else "without Pillow: no JPEG step"

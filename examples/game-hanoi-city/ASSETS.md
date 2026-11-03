@@ -154,7 +154,7 @@ Mô-đun: mặt tường nằm trong mặt phẳng **z = 0**, nhìn ra **+Z**, c
 
 | Tên file | Mô tả |
 |---|---|
-| `cot_bien_ten_pho.glb` | Cột sơn sọc đỏ trắng, cao khoảng 3 m, kèm biển tên phố nền xanh viền trắng, có logo Hà Nội. **Mặt chữ để trống** và tách thành vật liệu riêng tên `sign_text` (game tự in tên phố). |
+| `cot_bien_ten_pho.glb` | Cột sơn sọc đỏ trắng, cao khoảng 3 m, kèm biển tên phố nền xanh viền trắng, có logo Hà Nội. **Mặt chữ để trống** và tách thành vật liệu riêng tên `sign_text`. Game đặt tấm chữ tên phố thật của nó ngay trước mặt biển: mặt biển ở x từ −0,49 đến 0,49 m, y từ 2,43 đến 2,73 m, z = 0,03, nhìn ra +Z (như bản lô 02); giữ đúng vị trí này. |
 | `den_duong_01.glb` | Cột đèn đường Hà Nội, có `emissive`. |
 | `hang_rao_ho.glb` | Đoạn hàng rào sắt thấp ven hồ dài 2 m, lặp được. |
 | `bo_via.glb` | Đoạn bó vỉa đá granite dài 1 m, lặp được. |
