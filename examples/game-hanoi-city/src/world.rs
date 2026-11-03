@@ -196,6 +196,9 @@ const LANDMARK_BUILDINGS: [(&str, &str); 6] = [
     ("Chợ Đồng Xuân", "landmarks/cho_dong_xuan.glb"),
 ];
 const THE_HUC: (&str, &str) = ("Cầu Thê Húc", "landmarks/cau_the_huc.glb");
+/// Landmarks whose delivered model covers more than their main building: everything standing within
+/// this many metres of it (Đình Trấn Ba beside the temple, the tower's parts) is part of its stand-in.
+const LANDMARK_GROUNDS: [(&str, f32); 2] = [("Đền Ngọc Sơn", 30.0), ("Tháp Rùa", 6.0)];
 const GATE: &str = "landmarks/thap_but_dai_nghien.glb";
 
 fn repeat(assets: &AssetServer, path: &'static str) -> Handle<Image> {
@@ -510,6 +513,16 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         .filter(|ring| ring.len() >= 3 && decks.iter().any(|d| contains(ring, *d)))
         .collect();
 
+    let grounds: Vec<(Vec2, f32, &'static str)> = LANDMARK_GROUNDS
+        .iter()
+        .filter_map(|(name, r)| {
+            let b = c.buildings.iter().find(|b| b.name.as_deref() == Some(*name))?;
+            let ring: Vec<Vec2> = b.outer.iter().map(|p| to_world(c, p)).collect();
+            let file = LANDMARK_BUILDINGS.iter().find(|(n, _)| n == name)?.1;
+            (!ring.is_empty()).then(|| (ring.iter().copied().sum::<Vec2>() / ring.len() as f32, *r, file))
+        })
+        .collect();
+
     // Buildings: two bands of wall (shopfront, then floors of windows) and a roof.
     for (bi, b) in c.buildings.iter().enumerate() {
         let mut ring: Vec<Vec2> = b.outer.iter().map(|p| to_world(c, p)).collect();
@@ -533,6 +546,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         let style = (hash2(bi as i32, 7) % 6) as u8;
         let (cx, cz) = chunk_of(ring[0]);
         let landmark = b.name.as_deref().and_then(|n| LANDMARK_BUILDINGS.iter().find(|(name, _)| *name == n)).map(|(_, f)| *f);
+        let landmark = landmark.or_else(|| grounds.iter().find(|(at, r, _)| at.distance(centre) < *r).map(|(_, _, f)| *f));
         let landmark = if on_bridge { Some(GATE) } else { landmark };
         if let Some(f) = landmark {
             let (lo, hi) = ring.iter().fold((Vec2::splat(f32::MAX), Vec2::splat(f32::MIN)), |(lo, hi), p| (lo.min(*p), hi.max(*p)));
