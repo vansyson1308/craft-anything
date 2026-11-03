@@ -99,7 +99,8 @@ Nguồn và giấy phép của mọi tài nguyên: [CREDITS.md](CREDITS.md).
 - Bản WebGPU chưa chạy thử được ở máy build: Chromium chạy GPU giả lập (SwiftShader) mất GPU ngay
   khi Bevy khởi động, kể cả với cảnh nhỏ nhất. Trang có cơ chế tự chuyển sang WebGL2 cho trường hợp
   này. Bản WebGL2 đã chạy thử.
-- Chưa đo khung hình trên máy thật. Lần đầu tải khoảng 40 MB, trình duyệt lưu lại cho lần sau.
+- Chưa đo khung hình trên máy thật. Lần đầu tải khoảng 22 MB qua mạng (wasm khoảng 14 MB nén, build
+  tối ưu tốc độ chứ không tối ưu dung lượng; tài nguyên khoảng 7 MB), trình duyệt lưu lại cho lần sau.
 - Chưa có âm thanh và người đi đường.
 - Phần nén tài nguyên cho web (KTX2, meshopt) sẽ làm khi có lô tài nguyên thật đầu tiên, để đo
   trên dữ liệu thật.
