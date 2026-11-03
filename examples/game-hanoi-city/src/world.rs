@@ -11,6 +11,12 @@ use bevy::prelude::*;
 use hanoi_rescue::city::{City, Dm};
 use hanoi_rescue::geom::hash2;
 
+use hanoi_rescue::geom::V2;
+use hanoi_rescue::map::{Map, Tile};
+
+use crate::facade;
+use crate::hq::{Site, TREE_SITE};
+
 /// Metres from the city's top-left corner: x east, z south.
 pub fn to_world(c: &City, p: &Dm) -> Vec2 {
     Vec2::new((p[0] - c.bounds[0]) as f32 / 10.0, (p[1] - c.bounds[1]) as f32 / 10.0)
@@ -21,17 +27,36 @@ pub fn to_world(c: &City, p: &Dm) -> Vec2 {
 struct Builder {
     pos: Vec<[f32; 3]>,
     nrm: Vec<[f32; 3]>,
+    tan: Vec<[f32; 4]>,
     uv: Vec<[f32; 2]>,
     idx: Vec<u32>,
+}
+
+/// The tangent (direction of growing u, and the sign that gives growing v) of a flat face, for
+/// normal maps.
+fn tangent(p: [Vec3; 4], uv: [Vec2; 4], n: Vec3) -> [f32; 4] {
+    let du = uv[3] - uv[0];
+    let dv = uv[1] - uv[0];
+    let (e1, e2) = (p[3] - p[0], p[1] - p[0]);
+    let det = du.x * dv.y - du.y * dv.x;
+    if det.abs() < 1e-9 {
+        return [1.0, 0.0, 0.0, 1.0];
+    }
+    let t = ((e1 * dv.y - e2 * du.y) / det).normalize_or_zero();
+    let b = ((e2 * du.x - e1 * dv.x) / det).normalize_or_zero();
+    let w = if n.cross(t).dot(b) < 0.0 { -1.0 } else { 1.0 };
+    [t.x, t.y, t.z, w]
 }
 
 impl Builder {
     fn quad(&mut self, p: [Vec3; 4], uv: [Vec2; 4]) {
         let n = (p[1] - p[0]).cross(p[2] - p[0]).normalize_or_zero();
+        let t = tangent(p, uv, n);
         let base = self.pos.len() as u32;
         for i in 0..4 {
             self.pos.push(p[i].to_array());
             self.nrm.push(n.to_array());
+            self.tan.push(t);
             self.uv.push(uv[i].to_array());
         }
         self.idx.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
@@ -41,6 +66,7 @@ impl Builder {
         for p in pts {
             self.pos.push(p.to_array());
             self.nrm.push([0.0, 1.0, 0.0]);
+            self.tan.push([1.0, 0.0, 0.0, -1.0]);
             self.uv.push([p.x * uv_scale, p.z * uv_scale]);
         }
         for t in tris {
@@ -55,6 +81,7 @@ impl Builder {
             Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default())
                 .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, self.pos)
                 .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, self.nrm)
+                .with_inserted_attribute(Mesh::ATTRIBUTE_TANGENT, self.tan)
                 .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, self.uv)
                 .with_inserted_indices(Indices::U32(self.idx)),
         )
@@ -113,6 +140,7 @@ pub fn earcut(r: &[Vec2]) -> Vec<[usize; 3]> {
     out
 }
 
+#[derive(Resource, Clone)]
 pub struct Mats {
     pub walls_up: Vec<Handle<StandardMaterial>>,
     pub walls_ground: Vec<Handle<StandardMaterial>>,
@@ -132,6 +160,39 @@ pub struct Mats {
     pub lantern_red: Handle<StandardMaterial>,
     pub lantern_yellow: Handle<StandardMaterial>,
 }
+
+impl Mats {
+    /// A ground material by the name `hq` uses for it.
+    pub fn by_name(&self, name: &str) -> Option<Handle<StandardMaterial>> {
+        Some(
+            match name {
+                "paving" => &self.paving,
+                "asphalt" => &self.asphalt,
+                "grass" => &self.grass,
+                "roof" => &self.roof,
+                "roof_tiles" => &self.roof_tiles,
+                "water" => &self.water,
+                _ => return None,
+            }
+            .clone(),
+        )
+    }
+}
+
+/// A stand-in for a piece of delivered art (see `hq`): hidden once the real one is placed.
+#[derive(Component, Clone, Copy)]
+pub struct StandIn(pub &'static str);
+
+/// Landmarks the art list covers, by their name in OpenStreetMap.
+const LANDMARK_BUILDINGS: [(&str, &str); 6] = [
+    ("Tháp Rùa", "landmarks/thap_rua.glb"),
+    ("Đền Ngọc Sơn", "landmarks/den_ngoc_son.glb"),
+    ("Nhà thờ Lớn", "landmarks/nha_tho_lon.glb"),
+    ("Nhà hát Lớn", "landmarks/nha_hat_lon.glb"),
+    ("Ô Quan Chưởng", "landmarks/o_quan_chuong.glb"),
+    ("Chợ Đồng Xuân", "landmarks/cho_dong_xuan.glb"),
+];
+const THE_HUC: (&str, &str) = ("Cầu Thê Húc", "landmarks/cau_the_huc.glb");
 
 fn repeat(assets: &AssetServer, path: &'static str) -> Handle<Image> {
     assets
@@ -195,14 +256,14 @@ pub fn materials(assets: &AssetServer, mats: &mut Assets<StandardMaterial>) -> M
         walls_up.push(mats.add(StandardMaterial {
             base_color_texture: Some(repeat(assets, UP[i])),
             emissive_texture: Some(repeat(assets, UP_GLOW[i])),
-            emissive: LinearRgba::rgb(1.6, 1.3, 1.0),
+            emissive: crate::render::glow(1.6, 1.3, 1.0),
             perceptual_roughness: 0.9,
             ..default()
         }));
         walls_ground.push(mats.add(StandardMaterial {
             base_color_texture: Some(repeat(assets, GR[i])),
             emissive_texture: Some(repeat(assets, GR_GLOW[i])),
-            emissive: LinearRgba::rgb(2.0, 1.6, 1.1),
+            emissive: crate::render::glow(2.0, 1.6, 1.1),
             perceptual_roughness: 0.85,
             ..default()
         }));
@@ -223,15 +284,15 @@ pub fn materials(assets: &AssetServer, mats: &mut Assets<StandardMaterial>) -> M
         signs: mats.add(StandardMaterial {
             base_color_texture: Some(signs_tex.clone()),
             emissive_texture: Some(signs_tex),
-            emissive: LinearRgba::rgb(0.9, 0.9, 0.9),
+            emissive: crate::render::glow(0.9, 0.9, 0.9),
             unlit: false,
             ..default()
         }),
         tank: mats.add(StandardMaterial { base_color: Color::srgb(0.82, 0.84, 0.86), metallic: 0.8, perceptual_roughness: 0.3, ..default() }),
         bark: tex("tex/bark.jpg", 1.0, mats),
         leaves: mats.add(StandardMaterial { base_color: Color::srgb(0.18, 0.38, 0.17), perceptual_roughness: 0.9, ..default() }),
-        lantern_red: mats.add(StandardMaterial { base_color: Color::srgb(0.9, 0.1, 0.1), emissive: LinearRgba::rgb(6.0, 0.6, 0.3), ..default() }),
-        lantern_yellow: mats.add(StandardMaterial { base_color: Color::srgb(0.95, 0.75, 0.2), emissive: LinearRgba::rgb(6.0, 4.0, 0.8), ..default() }),
+        lantern_red: mats.add(StandardMaterial { base_color: Color::srgb(0.9, 0.1, 0.1), emissive: crate::render::glow(6.0, 0.6, 0.3), ..default() }),
+        lantern_yellow: mats.add(StandardMaterial { base_color: Color::srgb(0.95, 0.75, 0.2), emissive: crate::render::glow(6.0, 4.0, 0.8), ..default() }),
     }
 }
 
@@ -239,11 +300,33 @@ pub fn materials(assets: &AssetServer, mats: &mut Assets<StandardMaterial>) -> M
 pub const DRAW_RADIUS: f32 = 1000.0;
 const CHUNK: f32 = 160.0;
 
+/// What the city hands on to the art streamers: where delivered models go, and the street fronts.
+pub struct Built {
+    pub sites: Vec<Site>,
+    pub facades: facade::Facades,
+}
+
+/// Mesh kinds at or above this are the street-facing part of a wall kind (kind + FRONT).
+const FRONT: u8 = 20;
+
+/// Whether a building face (ring order `a` to `b`, ring counter-clockwise) looks onto a street.
+fn street_facing(map: &Map, a: Vec2, b: Vec2) -> bool {
+    let d = (b - a).normalize_or_zero();
+    let out = Vec2::new(d.y, -d.x);
+    let p = (a + b) / 2.0 + out * 2.5;
+    let t = map.tile_at(V2 { x: p.x / map.tile_m, y: p.y / map.tile_m });
+    matches!(t, Tile::Street | Tile::Alley | Tile::Plaza | Tile::Crowd | Tile::Rail)
+}
+
 /// Spawns the whole district. `center` is where the lake is (metres).
-pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, c: &City, center: Vec2, signs: &[(String, Dm)]) {
+pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, c: &City, map: &Map, center: Vec2, signs: &[(String, Dm)]) -> Built {
+    let mut sites = Vec::new();
+    let mut blocks: HashMap<(i32, i32), facade::Block> = HashMap::new();
+    // Stand-ins for delivered landmarks get meshes of their own, so they can be hidden.
+    let mut own: Own = HashMap::new();
     let near = |p: Vec2| p.distance(center) < DRAW_RADIUS;
     let chunk_of = |p: Vec2| ((p.x / CHUNK).floor() as i32, (p.y / CHUNK).floor() as i32);
-    let mut chunks: HashMap<(i32, i32, u8, u8), Builder> = HashMap::new();
+    let mut chunks: Chunks = HashMap::new();
     // Kinds: 0 wall up, 1 wall ground, 2 roof, 3 roof tiles, 4 asphalt, 5 grass, 6 water, 7 red bridge, 8 steel, 9 rail bed.
     let mut tanks: Vec<Vec3> = Vec::new();
 
@@ -304,6 +387,14 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         }
         let half = r.w as f32 / 20.0;
         let (kind, y) = if r.bridge { if r.name.as_deref() == Some("Cầu Long Biên") { (8u8, 4.0f32) } else { (7u8, 0.6f32) } } else { (4u8, 0.04f32) };
+        let the_huc = r.name.as_deref() == Some(THE_HUC.0);
+        if the_huc && let (Some(a), Some(b)) = (pts.first(), pts.last()) {
+            // The model's north end (−Z) points along the bridge to its northern end.
+            let (south, north) = if a.y > b.y { (*a, *b) } else { (*b, *a) };
+            let d = north - south;
+            let mid = (south + north) / 2.0;
+            sites.push(Site { file: THE_HUC.1, kind: "landmark", at: Vec3::new(mid.x, 0.0, mid.y), yaw: (-d.x).atan2(-d.y) });
+        }
         let mut along = 0.0;
         for seg in pts.windows(2) {
             let (a, b) = (seg[0], seg[1]);
@@ -311,15 +402,17 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             let n = Vec2::new(-d.y, d.x) * half;
             let len = a.distance(b);
             let (cx, cz) = chunk_of(a);
-            let s = 1.0 / (2.0 * half).max(1.0);
-            chunks.entry((cx, cz, kind, 0)).or_default().quad(
+            let s = 0.25;
+            let w = 2.0 * half * s;
+            let target = if the_huc { own.entry(THE_HUC.1).or_default().entry(kind).or_default() } else { chunks.entry((cx, cz, kind, 0)).or_default() };
+            target.quad(
                 [
                     Vec3::new(a.x + n.x, y, a.y + n.y),
                     Vec3::new(b.x + n.x, y, b.y + n.y),
                     Vec3::new(b.x - n.x, y, b.y - n.y),
                     Vec3::new(a.x - n.x, y, a.y - n.y),
                 ],
-                [Vec2::new(0.0, along * s), Vec2::new(0.0, (along + len) * s), Vec2::new(1.0, (along + len) * s), Vec2::new(1.0, along * s)],
+                [Vec2::new(0.0, along * s), Vec2::new(0.0, (along + len) * s), Vec2::new(w, (along + len) * s), Vec2::new(w, along * s)],
             );
             along += len;
         }
@@ -375,42 +468,71 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         let height = (b.h as f32 / 10.0).clamp(3.0, 120.0);
         let style = (hash2(bi as i32, 7) % 6) as u8;
         let (cx, cz) = chunk_of(ring[0]);
+        let landmark = b.name.as_deref().and_then(|n| LANDMARK_BUILDINGS.iter().find(|(name, _)| *name == n)).map(|(_, f)| *f);
+        if let Some(f) = landmark {
+            let (lo, hi) = ring.iter().fold((Vec2::splat(f32::MAX), Vec2::splat(f32::MIN)), |(lo, hi), p| (lo.min(*p), hi.max(*p)));
+            let mid = (lo + hi) / 2.0;
+            if !sites.iter().any(|s: &Site| s.file == f) {
+                sites.push(Site { file: f, kind: "landmark", at: Vec3::new(mid.x, 0.0, mid.y), yaw: 0.0 });
+            }
+        }
+
         let ground = 3.6f32.min(height);
         let n = ring.len();
+        let french = ring[0].distance(center) < 380.0;
         for i in 0..n {
             let (a, bb) = (ring[i], ring[(i + 1) % n]);
             let len = a.distance(bb);
             if len < 0.05 {
                 continue;
             }
+            // A face onto a street can take delivered front modules: the part they cover goes into
+            // the block's own "flat front" mesh, hidden while the modules are up.
+            let (slots, covered) = if landmark.is_none() && street_facing(map, a, bb) {
+                facade::slots_for(a, bb, height, french, hash2(bi as i32, i as i32))
+            } else {
+                (Vec::new(), 0.0)
+            };
+            let front = !slots.is_empty();
+            if front {
+                blocks
+                    .entry((cx, cz))
+                    .or_insert_with(|| facade::Block::new(Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK)))
+                    .slots
+                    .extend(slots);
+            }
             let u = (len / 3.0).max(1.0).round();
             let wall = |y0: f32, y1: f32| [Vec3::new(a.x, y0, a.y), Vec3::new(a.x, y1, a.y), Vec3::new(bb.x, y1, bb.y), Vec3::new(bb.x, y0, bb.y)];
-            chunks
-                .entry((cx, cz, 1, style))
-                .or_default()
+            let to = |k: u8| if front { k + FRONT } else { k };
+            pick(&mut chunks, &mut own, landmark, (cx, cz, to(1), style))
                 .quad(wall(0.0, ground), [Vec2::new(0.0, 1.0), Vec2::new(0.0, 0.0), Vec2::new(u, 0.0), Vec2::new(u, 1.0)]);
             if height > ground + 0.5 {
-                let floors = ((height - ground) / 3.3).max(1.0);
-                chunks
-                    .entry((cx, cz, 0, style))
-                    .or_default()
-                    .quad(wall(ground, height), [Vec2::new(0.0, floors), Vec2::new(0.0, 0.0), Vec2::new(u, 0.0), Vec2::new(u, floors)]);
+                // v counts storeys down from the roof line, so a split face keeps its windows.
+                let v = |y: f32| (height - y) / 3.3;
+                let split = if front { covered.clamp(ground, height) } else { ground };
+                if split > ground + 0.01 {
+                    pick(&mut chunks, &mut own, landmark, (cx, cz, to(0), style))
+                        .quad(wall(ground, split), [Vec2::new(0.0, v(ground)), Vec2::new(0.0, v(split)), Vec2::new(u, v(split)), Vec2::new(u, v(ground))]);
+                }
+                if height > split + 0.01 {
+                    pick(&mut chunks, &mut own, landmark, (cx, cz, 0, style))
+                        .quad(wall(split, height), [Vec2::new(0.0, v(split)), Vec2::new(0.0, 0.0), Vec2::new(u, 0.0), Vec2::new(u, v(split))]);
+                }
             }
         }
         let tris = earcut(&ring);
         let pts: Vec<Vec3> = ring.iter().map(|p| Vec3::new(p.x, height, p.y)).collect();
-        let tiled = b.kind == "temple" || b.kind == "church" || hash2(bi as i32, 3) % 9 == 0;
-        chunks.entry((cx, cz, if tiled { 3 } else { 2 }, 0)).or_default().tris(&pts, &tris, 0.25);
+        let tiled = b.kind == "temple" || b.kind == "church" || hash2(bi as i32, 3).is_multiple_of(9);
+        pick(&mut chunks, &mut own, landmark, (cx, cz, if tiled { 3 } else { 2 }, 0)).tris(&pts, &tris, 0.25);
         // Inox water tanks on the roofs of homes near the middle.
-        if !tiled && height < 25.0 && hash2(bi as i32, 11) % 4 == 0 && ring[0].distance(center) < 700.0 {
+        if !tiled && height < 25.0 && hash2(bi as i32, 11).is_multiple_of(4) && ring[0].distance(center) < 700.0 {
             let mid = ring.iter().copied().sum::<Vec2>() / n as f32;
             tanks.push(Vec3::new(mid.x, height, mid.y));
         }
     }
 
-    for ((cx, cz, kind, style), b) in chunks {
-        let b_center = Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK);
-        let mat = match kind {
+    let material = |kind: u8, style: u8| -> Handle<StandardMaterial> {
+        match kind {
             0 => m.walls_up[style as usize % m.walls_up.len()].clone(),
             1 => m.walls_ground[style as usize % m.walls_ground.len()].clone(),
             2 => m.roof.clone(),
@@ -422,13 +544,34 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             8 => m.steel.clone(),
             9 => m.rail_bed.clone(),
             _ => m.paving.clone(),
-        };
-        if let Some(mesh) = b.mesh() {
-            // Chunks beyond the fog aren't drawn at all (see cull_far).
-            let far = Far { at: b_center, limit: 450.0 + CHUNK };
-            commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(mat), far));
+        }
+    };
+    for (file, parts) in own {
+        for (key, b) in parts {
+            if let Some(mesh) = b.mesh() {
+                commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(material(key / 8, key % 8)), StandIn(file)));
+            }
         }
     }
+    for ((cx, cz, kind, style), b) in chunks {
+        let b_center = Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK);
+        let front = kind >= FRONT;
+        let mat = material(if front { kind - FRONT } else { kind }, style);
+        if let Some(mesh) = b.mesh() {
+            // Chunks beyond the fog aren't drawn at all (see cull_far).
+            let far = Far { at: b_center, limit: if crate::render::HIGH { 1100.0 } else { 450.0 } + CHUNK };
+            if front {
+                // Flat fronts are shown and hidden by the facade streamer, not by distance.
+                let e = commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(mat))).id();
+                if let Some(block) = blocks.get_mut(&(cx, cz)) {
+                    block.flat.push(e);
+                }
+            } else {
+                commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(mat), far));
+            }
+        }
+    }
+    let facades = facade::Facades { blocks: blocks.into_values().collect() };
 
     // Water tanks.
     let tank_mesh = meshes.add(Cylinder::new(0.45, 1.3));
@@ -452,6 +595,8 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
         let k = (hash2(t[0], t[1]) % 100) as f32 / 100.0;
         let s = 1.6 + k * 1.4;
         let far = Far { at: Vec3::new(p.x, 0.0, p.y), limit: 260.0 };
+        sites.push(Site { file: TREE_SITE, kind: "tree", at: Vec3::new(p.x, 0.0, p.y), yaw: k * std::f32::consts::TAU });
+        let far = (far, StandIn(TREE_SITE));
         commands.spawn((Mesh3d(trunk.clone()), MeshMaterial3d(m.bark.clone()), Transform::from_xyz(p.x, 1.5, p.y), far.clone()));
         commands.spawn((
             Mesh3d(crown.clone()),
@@ -529,6 +674,18 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
     }
     if let Some(mesh) = sign.mesh() {
         commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(m.signs.clone())));
+    }
+    Built { sites, facades }
+}
+
+type Chunks = HashMap<(i32, i32, u8, u8), Builder>;
+type Own = HashMap<&'static str, HashMap<u8, Builder>>;
+
+/// The mesh a building's faces go into: its chunk's, or its own if it stands in for a landmark.
+fn pick<'a>(chunks: &'a mut Chunks, own: &'a mut Own, landmark: Option<&'static str>, key: (i32, i32, u8, u8)) -> &'a mut Builder {
+    match landmark {
+        Some(f) => own.entry(f).or_default().entry(key.2 * 8 + key.3).or_default(),
+        None => chunks.entry(key).or_default(),
     }
 }
 

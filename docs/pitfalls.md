@@ -202,6 +202,10 @@ and check free space (`df -h`) before a build next to someone else's work.
 And again from the main `target/`: its incremental cache alone had reached 46 GB (81 GB in
 `target/debug`) and the drive hit 0 bytes mid-test. Delete `target/debug/incremental` when it
 grows, and build checks with `CARGO_INCREMENTAL=0`.
+And in a Bevy example: a second target folder for checks plus a native test build with debug info
+(11 GB) beside the wasm builds filled a session's allowance, and the linker died with "Bus error"
+(signal 7), which reads like a crash, not a full disk. Run native tests of Bevy code with
+`CARGO_PROFILE_DEV_DEBUG=0 CARGO_INCREMENTAL=0`, and read `df -h` first when a linker dies oddly.
 
 **A green PR that ran nothing.** `gh pr view` said `CLEAN`/`MERGEABLE`, but while the repository is
 private every CI job is skipped, so nothing had been checked. Read the checks' conclusions, not the
@@ -423,6 +427,14 @@ a file (`echo $! > server.pid`) and kill that, or match an exact name with `pgre
 **Backticks in a double-quoted script.** Python passed with `python3 -c "..."` contained Rust doc
 comments with `code` in backticks; bash ran them as commands, so the comments lost words and
 nothing failed. Write any script with quotes or backticks to a file with the editor tool first.
+
+**A renderer judged by a browser that can't run it.** The WebGPU build lost its device two
+seconds in ("A valid external Instance reference no longer exists") in headless Chromium on
+SwiftShader. Switching every effect off didn't help, and neither did a scene with only a cube, while
+a hand-written WebGPU page ran fine. So the fault was in the Bevy-on-software-WebGPU setup, not in
+the game. Before blaming your own code, try the smallest program the engine can run
+(`examples/webgpu_probe.rs`). When a back end can't be tested where you build, make the page fall
+back to one that can by itself (`device.lost` → WebGL2), and say what wasn't tested.
 
 **An engine feature that broke the web build.** Bevy's `VisibilityRange` worked natively but made
 every PBR pipeline invalid on WebGL2 ("Error matching ShaderStages(VERTEX) shader requirements"),
