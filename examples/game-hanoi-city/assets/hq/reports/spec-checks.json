@@ -1,0 +1,2895 @@
+{
+  "files": [
+    {
+      "file": "animals/cho_co.glb",
+      "triangles": 7586,
+      "triangle_limit": 8000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "1ffe05e474285b76d17676d68584f8eca891b344d1b149bd0bee3b72ff1e23f9",
+      "errors": []
+    },
+    {
+      "file": "animals/cho_co_lod1.glb",
+      "triangles": 2430,
+      "triangle_limit": 2500,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "09a0ae3943776eac4c2c38d2e0da3f71c919e6a7f1bbae5e34d2b8bcfb26b29d",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_01.glb",
+      "triangles": 3930,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "4a5070618afbed38ebbfa3f2186a359819447167f4e95d521ccd52ba1d00fc95",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_01_lod1.glb",
+      "triangles": 739,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "88059cf57d85734869d38fcd1dfb3c8cc73c449dc4027596ca19f46f21916532",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_02.glb",
+      "triangles": 3096,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "7f92be16763463d32b985fc3467164750bea9cdf041801937d0a194f92b01448",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_02_lod1.glb",
+      "triangles": 776,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "f11183f090ca89fbe567bba9b006b204b5de413072cbd35d7121c4615317d1bc",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_03.glb",
+      "triangles": 3930,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "a965290b0e1869acc6b0ef234784c492d63591d8269570b19dfff7bf482a4987",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_03_lod1.glb",
+      "triangles": 747,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "7d568871e65f0faedd4afaafeb101568d902acd80cbf51e3cc426640e3d20a02",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_04.glb",
+      "triangles": 3930,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "5c8fcfb2235def08721c9bd1301c4f3000f696511dcefd7a2247d81c0826e840",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tang_04_lod1.glb",
+      "triangles": 735,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "b34ef8d19a23baf71b54f6b13aecb18e4bacf8cfc67df5c126e75642cf3b53ef",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_01.glb",
+      "triangles": 3836,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "2d164557cc766b1af27dd64e1675cf913b251de16c53c4982676933c6ac6cde6",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_01_lod1.glb",
+      "triangles": 776,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "ee21e329d63bef10082e59c4301725639de22a104567d9268f2d4c4274d82ce5",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_02.glb",
+      "triangles": 3468,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "1a97a3469236df66fa5e846d83ecf9c861768172987077536684918e00c0a2e2",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_02_lod1.glb",
+      "triangles": 776,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "dd908436ab717bd366d8f3b78a872c2f5f3af71a1f258a741b6e66fa71108ef0",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_03.glb",
+      "triangles": 3930,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "5f1af3bff0b05c2a865a6dd2b3e6050644d811bd4a712aa91fff0a79e72c3ec9",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_03_lod1.glb",
+      "triangles": 765,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "b1af8e0b572490ad52b62ecf3d7a1fe0693de7013269f9825aaad50de5a5072a",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_04.glb",
+      "triangles": 3930,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "d95877c08fe2faa4be2e511f1f2ce7d69f071ed97cac94b9d347f6e2945a8502",
+      "errors": []
+    },
+    {
+      "file": "buildings/mat_tien_tret_04_lod1.glb",
+      "triangles": 767,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "a51095657e9772a7118ec26c03f80b9c19d0b6404a21aa5beeb1c54836d091b6",
+      "errors": []
+    },
+    {
+      "file": "landmarks/cau_the_huc.glb",
+      "triangles": 58704,
+      "triangle_limit": 60000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "f58091fdb494d2221f56191b8691bb425f1fdffa4b0acbd157e5df0a6eb1c382",
+      "errors": []
+    },
+    {
+      "file": "landmarks/cau_the_huc_lod1.glb",
+      "triangles": 14724,
+      "triangle_limit": 15000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "7eccb821953b2f223063171b62cb50a13f464ead87bd00de5ae7a858c57e90b0",
+      "errors": []
+    },
+    {
+      "file": "landmarks/cau_the_huc_lod2.glb",
+      "triangles": 2412,
+      "triangle_limit": 3000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "7c455e18b2f7dc4c262aaeddbd42fa3d0a29195204557e6a220e507cb7695213",
+      "errors": []
+    },
+    {
+      "file": "landmarks/den_ngoc_son.glb",
+      "triangles": 58705,
+      "triangle_limit": 60000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "892310a01137c1a611cbad56eab26f837dc3c8a19e6baba5d89cde23379f4b1a",
+      "errors": []
+    },
+    {
+      "file": "landmarks/den_ngoc_son_lod1.glb",
+      "triangles": 14661,
+      "triangle_limit": 15000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "98c1d3f2eb0b5290d9b346def1c5658ed3f911ead80dbdd1813ed3dfb0b79bf8",
+      "errors": []
+    },
+    {
+      "file": "landmarks/den_ngoc_son_lod2.glb",
+      "triangles": 2624,
+      "triangle_limit": 3000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "1584fd2371a7f4b7c677b6c89aff69c54c453d0bda04013ab7b949dc692575c4",
+      "errors": []
+    },
+    {
+      "file": "landmarks/thap_but_dai_nghien.glb",
+      "triangles": 6684,
+      "triangle_limit": 60000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "a22d93fa72ec4756cd8e57f1b48add9787b921237015080af1c6c798d348fdc8",
+      "errors": []
+    },
+    {
+      "file": "landmarks/thap_but_dai_nghien_lod1.glb",
+      "triangles": 6684,
+      "triangle_limit": 15000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "cf01e49d7fe92e5c0dd52e6bdeb7e399ed1a7826174b5a6f68cbb38126dc9197",
+      "errors": []
+    },
+    {
+      "file": "landmarks/thap_but_dai_nghien_lod2.glb",
+      "triangles": 2834,
+      "triangle_limit": 3000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "332cfb642ee535305cd7d638eaf989d3752da65cebd5f0678c97e75dc3a113a2",
+      "errors": []
+    },
+    {
+      "file": "landmarks/thap_rua.glb",
+      "triangles": 27968,
+      "triangle_limit": 60000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "5ffd2d6ff2d3afc794eefb2b737dfceac6004639bf99f0fb90e8f50a5cb6e78c",
+      "errors": []
+    },
+    {
+      "file": "landmarks/thap_rua_lod1.glb",
+      "triangles": 14725,
+      "triangle_limit": 15000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "c8393daf91ac2b196d6e7cac9bde4aa2620dde5b875f745235f195f974ade0b0",
+      "errors": []
+    },
+    {
+      "file": "landmarks/thap_rua_lod2.glb",
+      "triangles": 2832,
+      "triangle_limit": 3000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "f2d4b5865641cfdb36c787e36488ad91a0a2e445c395394c6c8c7ea0fb85d14c",
+      "errors": []
+    },
+    {
+      "file": "people/long_cho.glb",
+      "triangles": 1368,
+      "triangle_limit": 2000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "53263493a37efdd7bf9800947b1873e841c8a4d5513337802dfa5ef595aebc37",
+      "errors": []
+    },
+    {
+      "file": "people/long_cho_lod1.glb",
+      "triangles": 440,
+      "triangle_limit": 500,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "849705ea13f44d831b7b3536cab625ffc57c8db92b00080f45cc80c98d2a90ef",
+      "errors": []
+    },
+    {
+      "file": "people/minh.glb",
+      "triangles": 23876,
+      "triangle_limit": 25000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "daea71ab0bd293b0308848518ae7839cb93a75ccba72a5289681ceb91be9218b",
+      "errors": []
+    },
+    {
+      "file": "people/minh_lod1.glb",
+      "triangles": 7849,
+      "triangle_limit": 8000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "f06fff6deeefb3a142e30b4c57a5034d750fc296a8f4bc33d1cae0332f3828fc",
+      "errors": []
+    },
+    {
+      "file": "people/minh_lod2.glb",
+      "triangles": 1928,
+      "triangle_limit": 2000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "dfb3a715f923fa8f8f9d269349a80f58ba0db0f9af4dfe2d71582285f3b7305d",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_01.glb",
+      "triangles": 11724,
+      "triangle_limit": 12000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "186f5d5e647ffe718c8037a5e882ae2d5afecc4e65e1ac52be5677b7f49faa73",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_01_lod1.glb",
+      "triangles": 3866,
+      "triangle_limit": 4000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "babbb7a5fee2f1807fe53c609d2405ed7a842bf35df058dfe84f908da44a5084",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_01_lod2.glb",
+      "triangles": 939,
+      "triangle_limit": 1000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "ff3e9c90a9dd62f7725200d50d0ce5f5c39aa382a2d51472cdced21632dc62ec",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_02.glb",
+      "triangles": 11725,
+      "triangle_limit": 12000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "671472863443efeca2b42e1ed1023206c2bb7879aee914fcd3d49cd713226776",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_02_lod1.glb",
+      "triangles": 3866,
+      "triangle_limit": 4000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "0a5083c21cf31778eb046fd1cc22bd6aa36ca6891dfa1eeb18af929393e9c96e",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_02_lod2.glb",
+      "triangles": 939,
+      "triangle_limit": 1000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "e7b952a8ef992a2daa3c467f1fb2db7290e90d36787ac5249ae8ee9fdd7853f8",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_03.glb",
+      "triangles": 11727,
+      "triangle_limit": 12000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "74d963ebc4ada6ebea39eeee8d159c708299c881d39e47e70144bbee513d5a7c",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_03_lod1.glb",
+      "triangles": 3866,
+      "triangle_limit": 4000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "4301ee8f7a6353a77f273dd60a86cf76933134381800e5d1af06ff38d50032d3",
+      "errors": []
+    },
+    {
+      "file": "people/nguoi_di_duong_03_lod2.glb",
+      "triangles": 940,
+      "triangle_limit": 1000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "79e1b36f21e4155cf0568c1f851a3ac5230c8bcbdea0c9ec9d275807d80b68bb",
+      "errors": []
+    },
+    {
+      "file": "people/trom_01.glb",
+      "triangles": 21211,
+      "triangle_limit": 25000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "bfdaca32e57f6585f32556512332eed1df4a01bb117a6eca6424af23bd17823b",
+      "errors": []
+    },
+    {
+      "file": "people/trom_01_lod1.glb",
+      "triangles": 7812,
+      "triangle_limit": 8000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "1b991737cb2f0dd3d6a92a767da0ee62b01814b69304628e554ae484e400c76a",
+      "errors": []
+    },
+    {
+      "file": "people/trom_01_lod2.glb",
+      "triangles": 1888,
+      "triangle_limit": 2000,
+      "materials": 4,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": true,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "a25f764bd9ab16f96db40d582f6d0a42c639875af625eb7fb31a5a64a92a203e",
+      "errors": []
+    },
+    {
+      "file": "street/bo_via.glb",
+      "triangles": 108,
+      "triangle_limit": 2000,
+      "materials": 1,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "e2fa08bdc436b3f7cc45e3fa880e55b5af211bfb44d2b25ef03eaf914ca822ec",
+      "errors": []
+    },
+    {
+      "file": "street/bo_via_lod1.glb",
+      "triangles": 108,
+      "triangle_limit": 500,
+      "materials": 1,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "b552ac4c7b3cef8f8e159e1c86f4b8917cfe637ba18d24b1a8ebdbabe34d5205",
+      "errors": []
+    },
+    {
+      "file": "street/cot_bien_ten_pho.glb",
+      "triangles": 824,
+      "triangle_limit": 2000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "212e9d5d82c323a08627b0d3279f65b23aae4ce4d0f530ccce078f4780e9094c",
+      "errors": []
+    },
+    {
+      "file": "street/cot_bien_ten_pho_lod1.glb",
+      "triangles": 476,
+      "triangle_limit": 500,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "e2f7811145c9670e459e2327da9d2feeef27e4593bba79234f552ad793fd58c7",
+      "errors": []
+    },
+    {
+      "file": "street/den_duong_01.glb",
+      "triangles": 960,
+      "triangle_limit": 2000,
+      "materials": 1,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "4b32af6370b24be982e8c460f87ac22ede4cb1dba0f6afd2205fc10dd805f51f",
+      "errors": []
+    },
+    {
+      "file": "street/den_duong_01_lod1.glb",
+      "triangles": 476,
+      "triangle_limit": 500,
+      "materials": 1,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "e95fada947cf4a5d3217242580c825f5f897257867e0df66160934d084fa7f17",
+      "errors": []
+    },
+    {
+      "file": "street/dep_to_ong.glb",
+      "triangles": 1940,
+      "triangle_limit": 2000,
+      "materials": 1,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "1dae185667f3f26dd6bef0b00857c4e7828fb43b3050c87de044a717e7f557a6",
+      "errors": []
+    },
+    {
+      "file": "street/dep_to_ong_lod1.glb",
+      "triangles": 468,
+      "triangle_limit": 500,
+      "materials": 1,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "d258d4f1a8b3d389a233a656179ac319594af6ba35558ac73d7559fb5144fef0",
+      "errors": []
+    },
+    {
+      "file": "street/hang_rao_ho.glb",
+      "triangles": 1532,
+      "triangle_limit": 2000,
+      "materials": 1,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "812aec3396dcc6acb99d8e2cff04b51c5642dc52075d5792b7db73c4aca72e64",
+      "errors": []
+    },
+    {
+      "file": "street/hang_rao_ho_lod1.glb",
+      "triangles": 466,
+      "triangle_limit": 500,
+      "materials": 1,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "203454be6f031832f108ba45d90191ac2da40c904bde43141c9a7e8334b0326e",
+      "errors": []
+    },
+    {
+      "file": "street/so_tay.glb",
+      "triangles": 1200,
+      "triangle_limit": 2000,
+      "materials": 1,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "5dc27d7cc1d5bb6402a23e14b853435cd3944ecaac62276bfbaf3a8b9d5644c1",
+      "errors": []
+    },
+    {
+      "file": "street/so_tay_lod1.glb",
+      "triangles": 472,
+      "triangle_limit": 500,
+      "materials": 1,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "8ee409077f6522c3d9c5206787aedbcd70d5491b31bf80bb824c3a4ff28c8624",
+      "errors": []
+    },
+    {
+      "file": "street/thung_hang.glb",
+      "triangles": 156,
+      "triangle_limit": 2000,
+      "materials": 1,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "5bb9116aac5478011b586012aba27c4de011e0e83d25af25c82895938e717bc0",
+      "errors": []
+    },
+    {
+      "file": "street/thung_hang_lod1.glb",
+      "triangles": 156,
+      "triangle_limit": 500,
+      "materials": 1,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "165fce4cbe0648e93e46aeafc0a1c2a5616b1cebf739bc870da68b23d233880c",
+      "errors": []
+    },
+    {
+      "file": "street/xe_may_01_chay.glb",
+      "triangles": 14626,
+      "triangle_limit": 15000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "a70ea95a20fc942a7bb767ee263ba2109156218b7817a1c96ef2dddf34b1baa6",
+      "errors": []
+    },
+    {
+      "file": "street/xe_may_01_chay_lod1.glb",
+      "triangles": 3822,
+      "triangle_limit": 4000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "7bac77d74643efd1422323d4865f2a497501d7f34f88dc9185db2a23d5c0e82f",
+      "errors": []
+    },
+    {
+      "file": "street/xe_may_01_chay_lod2.glb",
+      "triangles": 700,
+      "triangle_limit": 800,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "13871d32b7e8ec9c91d1f3aac6828bd8159cdb0cbee7350b3061014b128d84e2",
+      "errors": []
+    },
+    {
+      "file": "trees/xa_cu.glb",
+      "triangles": 6852,
+      "triangle_limit": 15000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "fa24bd6c084e835970e16609b6abbc0ddabbfb36547de3c5935d2f11a77b9315",
+      "errors": []
+    },
+    {
+      "file": "trees/xa_cu_lod1.glb",
+      "triangles": 2736,
+      "triangle_limit": 3000,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "6f8b730be9a48a96498f3c6157d361fe7b635455c506525d64023ee83ea62f29",
+      "errors": []
+    }
+  ],
+  "external_animation_count": 43,
+  "source_rig_sha256": "7401c7f78e2fcfa6584ffd1f4dbe1cbc2a6ab5d645f8a732d21224d0475f3bd6",
+  "art_final_approved": false,
+  "physical_mobile_tested": false,
+  "failures": []
+}

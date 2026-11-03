@@ -1,0 +1,271 @@
+[
+  {
+    "file": "animals/cho_co.glb",
+    "errors": [],
+    "image": "review/cho_co.jpg",
+    "file_bytes": 114314,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/nguoi_di_duong_01.glb",
+    "errors": [],
+    "image": "review/nguoi_di_duong_01.jpg",
+    "file_bytes": 132914,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/nguoi_di_duong_02.glb",
+    "errors": [],
+    "image": "review/nguoi_di_duong_02.jpg",
+    "file_bytes": 132709,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/nguoi_di_duong_03.glb",
+    "errors": [],
+    "image": "review/nguoi_di_duong_03.jpg",
+    "file_bytes": 132770,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/minh.glb",
+    "errors": [],
+    "image": "review/minh.jpg",
+    "file_bytes": 132086,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/trom_01.glb",
+    "errors": [],
+    "image": "review/trom_01.jpg",
+    "file_bytes": 132436,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/bo_via.glb",
+    "errors": [],
+    "image": "review/bo_via.jpg",
+    "file_bytes": 113981,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/hang_rao_ho.glb",
+    "errors": [],
+    "image": "review/hang_rao_ho.jpg",
+    "file_bytes": 135360,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/cot_bien_ten_pho.glb",
+    "errors": [],
+    "image": "review/cot_bien_ten_pho.jpg",
+    "file_bytes": 137214,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/den_duong_01.glb",
+    "errors": [],
+    "image": "review/den_duong_01.jpg",
+    "file_bytes": 133759,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/dep_to_ong.glb",
+    "errors": [],
+    "image": "review/dep_to_ong.jpg",
+    "file_bytes": 94706,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/so_tay.glb",
+    "errors": [],
+    "image": "review/so_tay.jpg",
+    "file_bytes": 86296,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/thung_hang.glb",
+    "errors": [],
+    "image": "review/thung_hang.jpg",
+    "file_bytes": 105407,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/long_cho.glb",
+    "errors": [],
+    "image": "review/long_cho.jpg",
+    "file_bytes": 121997,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "street/xe_may_01_chay.glb",
+    "errors": [],
+    "image": "review/xe_may_01_chay.jpg",
+    "file_bytes": 132598,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "trees/xa_cu.glb",
+    "errors": [],
+    "image": "review/xa_cu.jpg",
+    "file_bytes": 98954,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tret_01.glb",
+    "errors": [],
+    "image": "review/mat_tien_tret_01.jpg",
+    "file_bytes": 133778,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tret_02.glb",
+    "errors": [],
+    "image": "review/mat_tien_tret_02.jpg",
+    "file_bytes": 132789,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tret_03.glb",
+    "errors": [],
+    "image": "review/mat_tien_tret_03.jpg",
+    "file_bytes": 133047,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tret_04.glb",
+    "errors": [],
+    "image": "review/mat_tien_tret_04.jpg",
+    "file_bytes": 134885,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tang_01.glb",
+    "errors": [],
+    "image": "review/mat_tien_tang_01.jpg",
+    "file_bytes": 134111,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tang_02.glb",
+    "errors": [],
+    "image": "review/mat_tien_tang_02.jpg",
+    "file_bytes": 134198,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tang_03.glb",
+    "errors": [],
+    "image": "review/mat_tien_tang_03.jpg",
+    "file_bytes": 133259,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "buildings/mat_tien_tang_04.glb",
+    "errors": [],
+    "image": "review/mat_tien_tang_04.jpg",
+    "file_bytes": 134845,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "landmarks/cau_the_huc.glb",
+    "errors": [],
+    "image": "review/cau_the_huc.jpg",
+    "file_bytes": 86346,
+    "mode": "Bevy isolated asset, fallback surroundings",
+    "preferred_review_image": "review/bridge.jpg",
+    "note": "Isolated framing is weak; use the full-world bridge camera to inspect this asset."
+  },
+  {
+    "file": "landmarks/thap_but_dai_nghien.glb",
+    "errors": [],
+    "image": "review/thap_but_dai_nghien.jpg",
+    "file_bytes": 94030,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "landmarks/den_ngoc_son.glb",
+    "errors": [],
+    "image": "review/den_ngoc_son.jpg",
+    "file_bytes": 96356,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "landmarks/thap_rua.glb",
+    "errors": [],
+    "image": "review/thap_rua.jpg",
+    "file_bytes": 96904,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "_qa/material_via_he_da_xam.glb",
+    "errors": [],
+    "image": "review/material_via_he_da_xam.jpg",
+    "file_bytes": 126450,
+    "mode": "Bevy PBR swatch"
+  },
+  {
+    "file": "_qa/material_duong_nhua.glb",
+    "errors": [],
+    "image": "review/material_duong_nhua.jpg",
+    "file_bytes": 126967,
+    "mode": "Bevy PBR swatch"
+  },
+  {
+    "file": "_qa/material_co.glb",
+    "errors": [],
+    "image": "review/material_co.jpg",
+    "file_bytes": 131389,
+    "mode": "Bevy PBR swatch"
+  },
+  {
+    "file": "_qa/material_gach_lat_ho.glb",
+    "errors": [],
+    "image": "review/material_gach_lat_ho.jpg",
+    "file_bytes": 134198,
+    "mode": "Bevy PBR swatch"
+  },
+  {
+    "file": "_qa/material_nuoc_ho.glb",
+    "errors": [],
+    "image": "review/material_nuoc_ho.jpg",
+    "file_bytes": 126729,
+    "mode": "Bevy PBR swatch"
+  },
+  {
+    "file": "people/minh_lod1.glb",
+    "errors": [],
+    "image": "review/minh_lod1.jpg",
+    "file_bytes": 132090,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "people/minh_lod2.glb",
+    "errors": [],
+    "image": "review/minh_lod2.jpg",
+    "file_bytes": 132373,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "trees/xa_cu_lod1.glb",
+    "errors": [],
+    "image": "review/xa_cu_lod1.jpg",
+    "file_bytes": 100280,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  },
+  {
+    "file": "landmarks/cau_the_huc_lod2.glb",
+    "errors": [],
+    "image": "review/cau_the_huc_lod2.jpg",
+    "file_bytes": 86475,
+    "mode": "Bevy isolated asset, fallback surroundings",
+    "note": "Loaded in isolated asset camera; framing is insufficient for detailed visual sign-off."
+  },
+  {
+    "file": "buildings/mat_tien_tret_01_lod1.glb",
+    "errors": [],
+    "image": "review/mat_tien_tret_01_lod1.jpg",
+    "file_bytes": 133000,
+    "mode": "Bevy isolated asset, fallback surroundings"
+  }
+]

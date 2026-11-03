@@ -1,4 +1,984 @@
 {
   "version": 1,
-  "assets": []
+  "assets": [
+    {
+      "file": "animals/cho_co.glb",
+      "lods": [
+        "animals/cho_co_lod1.glb"
+      ],
+      "kind": "animal",
+      "size_m": [
+        0.2784,
+        0.6953,
+        0.9439
+      ],
+      "triangles": [
+        7586,
+        2430
+      ],
+      "textures": 6,
+      "skeleton": "own",
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Sit",
+        "Bark"
+      ],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Unmet: UV occupancy remains below the requested 70% on several atlases; garment texel density is below 10 px/cm. See reports/uv-measurements.json. No claim of final art acceptance or collision-free clothing in every frame.",
+        "Anatomy and coat remain visibly stylized; coat uses authored procedural fibres, not a fur photo scan. 0.94 m is total tail-to-muzzle bounds; torso is approximately 0.6 m."
+      ],
+      "preview": "previews/cho_co.jpg",
+      "in_game_preview": "review/cho_co.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tang_01.glb",
+      "lods": [
+        "buildings/mat_tien_tang_01_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.3,
+        0.775
+      ],
+      "triangles": [
+        3930,
+        739
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tang_01.jpg",
+      "in_game_preview": "review/mat_tien_tang_01.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tang_02.glb",
+      "lods": [
+        "buildings/mat_tien_tang_02_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.3,
+        0.775
+      ],
+      "triangles": [
+        3096,
+        776
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tang_02.jpg",
+      "in_game_preview": "review/mat_tien_tang_02.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tang_03.glb",
+      "lods": [
+        "buildings/mat_tien_tang_03_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.3,
+        0.775
+      ],
+      "triangles": [
+        3930,
+        747
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tang_03.jpg",
+      "in_game_preview": "review/mat_tien_tang_03.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tang_04.glb",
+      "lods": [
+        "buildings/mat_tien_tang_04_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.3,
+        0.775
+      ],
+      "triangles": [
+        3930,
+        735
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tang_04.jpg",
+      "in_game_preview": "review/mat_tien_tang_04.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tret_01.glb",
+      "lods": [
+        "buildings/mat_tien_tret_01_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.6,
+        0.77
+      ],
+      "triangles": [
+        3836,
+        776
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tret_01.jpg",
+      "in_game_preview": "review/mat_tien_tret_01.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tret_02.glb",
+      "lods": [
+        "buildings/mat_tien_tret_02_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.6,
+        0.56
+      ],
+      "triangles": [
+        3468,
+        776
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tret_02.jpg",
+      "in_game_preview": "review/mat_tien_tret_02.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tret_03.glb",
+      "lods": [
+        "buildings/mat_tien_tret_03_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.6,
+        0.77
+      ],
+      "triangles": [
+        3930,
+        765
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tret_03.jpg",
+      "in_game_preview": "review/mat_tien_tret_03.jpg"
+    },
+    {
+      "file": "buildings/mat_tien_tret_04.glb",
+      "lods": [
+        "buildings/mat_tien_tret_04_lod1.glb"
+      ],
+      "kind": "facade",
+      "size_m": [
+        4.0,
+        3.6,
+        0.77
+      ],
+      "triangles": [
+        3930,
+        767
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/mat_tien_tret_04.jpg",
+      "in_game_preview": "review/mat_tien_tret_04.jpg"
+    },
+    {
+      "file": "landmarks/cau_the_huc.glb",
+      "lods": [
+        "landmarks/cau_the_huc_lod1.glb",
+        "landmarks/cau_the_huc_lod2.glb"
+      ],
+      "kind": "landmark",
+      "size_m": [
+        3.3771,
+        3.8089,
+        46.016
+      ],
+      "triangles": [
+        58704,
+        14724,
+        2412
+      ],
+      "textures": 6,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Simplified architecture and ornament; not an exact historical reconstruction."
+      ],
+      "preview": "previews/cau_the_huc.jpg",
+      "in_game_preview": "review/bridge.jpg"
+    },
+    {
+      "file": "landmarks/den_ngoc_son.glb",
+      "lods": [
+        "landmarks/den_ngoc_son_lod1.glb",
+        "landmarks/den_ngoc_son_lod2.glb"
+      ],
+      "kind": "landmark",
+      "size_m": [
+        26.0,
+        5.635,
+        26.0
+      ],
+      "triangles": [
+        58705,
+        14661,
+        2624
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Simplified architecture and ornament; not an exact historical reconstruction."
+      ],
+      "preview": "previews/den_ngoc_son.jpg",
+      "in_game_preview": "review/den_ngoc_son.jpg"
+    },
+    {
+      "file": "landmarks/thap_but_dai_nghien.glb",
+      "lods": [
+        "landmarks/thap_but_dai_nghien_lod1.glb",
+        "landmarks/thap_but_dai_nghien_lod2.glb"
+      ],
+      "kind": "landmark",
+      "size_m": [
+        11.0998,
+        8.0217,
+        10.0
+      ],
+      "triangles": [
+        6684,
+        6684,
+        2834
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Simplified architecture and ornament; not an exact historical reconstruction.",
+        "Full-manifest lineup camera is obstructed by this gate cluster and surrounding facade placement. Placement/footprint needs integration adjustment before acceptance."
+      ],
+      "preview": "previews/thap_but_dai_nghien.jpg",
+      "in_game_preview": "review/thap_but_dai_nghien.jpg"
+    },
+    {
+      "file": "landmarks/thap_rua.glb",
+      "lods": [
+        "landmarks/thap_rua_lod1.glb",
+        "landmarks/thap_rua_lod2.glb"
+      ],
+      "kind": "landmark",
+      "size_m": [
+        6.4106,
+        7.93,
+        4.6106
+      ],
+      "triangles": [
+        27968,
+        14725,
+        2832
+      ],
+      "textures": 8,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Simplified architecture and ornament; not an exact historical reconstruction."
+      ],
+      "preview": "previews/thap_rua.jpg",
+      "in_game_preview": "review/thap_rua.jpg"
+    },
+    {
+      "file": "people/long_cho.glb",
+      "lods": [
+        "people/long_cho_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.932,
+        0.7139,
+        0.7485
+      ],
+      "triangles": [
+        1368,
+        440
+      ],
+      "textures": 5,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/long_cho.jpg",
+      "in_game_preview": "review/long_cho.jpg"
+    },
+    {
+      "file": "people/minh.glb",
+      "lods": [
+        "people/minh_lod1.glb",
+        "people/minh_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.7077,
+        1.7393,
+        0.3157
+      ],
+      "triangles": [
+        23876,
+        7849,
+        1928
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Original 65 joint nodes, rest transforms and inverse bind matrices retained; nearest-face interpolated skin transfer. Uses the game animation library, no replacement clips embedded.",
+        "Unmet: UV occupancy remains below the requested 70% on several atlases; garment texel density is below 10 px/cm. See reports/uv-measurements.json. No claim of final art acceptance or collision-free clothing in every frame.",
+        "Sampled Roll screenshot shows visible dark breaks on the upper garment; this deformation/shading defect remains unresolved."
+      ],
+      "preview": "previews/minh.jpg",
+      "in_game_preview": "review/minh.jpg"
+    },
+    {
+      "file": "people/nguoi_di_duong_01.glb",
+      "lods": [
+        "people/nguoi_di_duong_01_lod1.glb",
+        "people/nguoi_di_duong_01_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.7076,
+        1.7394,
+        0.3168
+      ],
+      "triangles": [
+        11724,
+        3866,
+        939
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Original 65 joint nodes, rest transforms and inverse bind matrices retained; nearest-face interpolated skin transfer. Uses the game animation library, no replacement clips embedded.",
+        "Unmet: UV occupancy remains below the requested 70% on several atlases; garment texel density is below 10 px/cm. See reports/uv-measurements.json. No claim of final art acceptance or collision-free clothing in every frame.",
+        "Shared fitted young male base with material and face-width variations; these are not three independently sculpted people.",
+        "Sampled Roll screenshot shows visible dark breaks on the upper garment; this deformation/shading defect remains unresolved."
+      ],
+      "preview": "previews/nguoi_di_duong_01.jpg",
+      "in_game_preview": "review/nguoi_di_duong_01.jpg"
+    },
+    {
+      "file": "people/nguoi_di_duong_02.glb",
+      "lods": [
+        "people/nguoi_di_duong_02_lod1.glb",
+        "people/nguoi_di_duong_02_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.7076,
+        1.7394,
+        0.3168
+      ],
+      "triangles": [
+        11725,
+        3866,
+        939
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Original 65 joint nodes, rest transforms and inverse bind matrices retained; nearest-face interpolated skin transfer. Uses the game animation library, no replacement clips embedded.",
+        "Unmet: UV occupancy remains below the requested 70% on several atlases; garment texel density is below 10 px/cm. See reports/uv-measurements.json. No claim of final art acceptance or collision-free clothing in every frame.",
+        "Shared fitted young male base with material and face-width variations; these are not three independently sculpted people.",
+        "Sampled Roll screenshot shows visible dark breaks on the upper garment; this deformation/shading defect remains unresolved."
+      ],
+      "preview": "previews/nguoi_di_duong_02.jpg",
+      "in_game_preview": "review/nguoi_di_duong_02.jpg"
+    },
+    {
+      "file": "people/nguoi_di_duong_03.glb",
+      "lods": [
+        "people/nguoi_di_duong_03_lod1.glb",
+        "people/nguoi_di_duong_03_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.7076,
+        1.7394,
+        0.3168
+      ],
+      "triangles": [
+        11727,
+        3866,
+        940
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Original 65 joint nodes, rest transforms and inverse bind matrices retained; nearest-face interpolated skin transfer. Uses the game animation library, no replacement clips embedded.",
+        "Unmet: UV occupancy remains below the requested 70% on several atlases; garment texel density is below 10 px/cm. See reports/uv-measurements.json. No claim of final art acceptance or collision-free clothing in every frame.",
+        "Shared fitted young male base with material and face-width variations; these are not three independently sculpted people.",
+        "Sampled Roll screenshot shows visible dark breaks on the upper garment; this deformation/shading defect remains unresolved."
+      ],
+      "preview": "previews/nguoi_di_duong_03.jpg",
+      "in_game_preview": "review/nguoi_di_duong_03.jpg"
+    },
+    {
+      "file": "people/trom_01.glb",
+      "lods": [
+        "people/trom_01_lod1.glb",
+        "people/trom_01_lod2.glb"
+      ],
+      "kind": "character",
+      "size_m": [
+        1.7077,
+        1.7579,
+        0.3998
+      ],
+      "triangles": [
+        21211,
+        7812,
+        1888
+      ],
+      "textures": 12,
+      "skeleton": "armature-65",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Original 65 joint nodes, rest transforms and inverse bind matrices retained; nearest-face interpolated skin transfer. Uses the game animation library, no replacement clips embedded.",
+        "Unmet: UV occupancy remains below the requested 70% on several atlases; garment texel density is below 10 px/cm. See reports/uv-measurements.json. No claim of final art acceptance or collision-free clothing in every frame.",
+        "Sampled Roll screenshot shows visible dark breaks on the upper garment; this deformation/shading defect remains unresolved."
+      ],
+      "preview": "previews/trom_01.jpg",
+      "in_game_preview": "review/trom_01.jpg"
+    },
+    {
+      "file": "street/bo_via.glb",
+      "lods": [
+        "street/bo_via_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        1.0,
+        0.28,
+        0.32
+      ],
+      "triangles": [
+        108,
+        108
+      ],
+      "textures": 3,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/bo_via.jpg",
+      "in_game_preview": "review/bo_via.jpg"
+    },
+    {
+      "file": "street/cot_bien_ten_pho.glb",
+      "lods": [
+        "street/cot_bien_ten_pho_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        1.03,
+        2.965,
+        0.11
+      ],
+      "triangles": [
+        824,
+        476
+      ],
+      "textures": 5,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/cot_bien_ten_pho.jpg",
+      "in_game_preview": "review/cot_bien_ten_pho.jpg"
+    },
+    {
+      "file": "street/den_duong_01.glb",
+      "lods": [
+        "street/den_duong_01_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.36,
+        4.6333,
+        1.49
+      ],
+      "triangles": [
+        960,
+        476
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/den_duong_01.jpg",
+      "in_game_preview": "review/den_duong_01.jpg"
+    },
+    {
+      "file": "street/dep_to_ong.glb",
+      "lods": [
+        "street/dep_to_ong_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.2575,
+        0.067,
+        0.27
+      ],
+      "triangles": [
+        1940,
+        468
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/dep_to_ong.jpg",
+      "in_game_preview": "review/dep_to_ong.jpg"
+    },
+    {
+      "file": "street/hang_rao_ho.glb",
+      "lods": [
+        "street/hang_rao_ho_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        2.104,
+        1.085,
+        0.104
+      ],
+      "triangles": [
+        1532,
+        466
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/hang_rao_ho.jpg",
+      "in_game_preview": "review/hang_rao_ho.jpg"
+    },
+    {
+      "file": "street/so_tay.glb",
+      "lods": [
+        "street/so_tay_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.1527,
+        0.0254,
+        0.21
+      ],
+      "triangles": [
+        1200,
+        472
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/so_tay.jpg",
+      "in_game_preview": "review/so_tay.jpg"
+    },
+    {
+      "file": "street/thung_hang.glb",
+      "lods": [
+        "street/thung_hang_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.58,
+        0.4465,
+        0.405
+      ],
+      "triangles": [
+        156,
+        156
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+      ],
+      "preview": "previews/thung_hang.jpg",
+      "in_game_preview": "review/thung_hang.jpg"
+    },
+    {
+      "file": "street/xe_may_01_chay.glb",
+      "lods": [
+        "street/xe_may_01_chay_lod1.glb",
+        "street/xe_may_01_chay_lod2.glb"
+      ],
+      "kind": "vehicle",
+      "size_m": [
+        0.7033,
+        1.6871,
+        1.8215
+      ],
+      "triangles": [
+        14626,
+        3822,
+        700
+      ],
+      "textures": 6,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Static rider baked from the original Driving_Loop pose; helmet, grip contact and close-up anatomy require art refinement."
+      ],
+      "preview": "previews/xe_may_01_chay.jpg",
+      "in_game_preview": "review/xe_may_01_chay.jpg"
+    },
+    {
+      "file": "trees/xa_cu.glb",
+      "lods": [
+        "trees/xa_cu_lod1.glb"
+      ],
+      "kind": "tree",
+      "size_m": [
+        16.6183,
+        22.5818,
+        15.9734
+      ],
+      "triangles": [
+        6852,
+        2736
+      ],
+      "textures": 7,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "notes": [
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Repeated mature trees crowd the island in the current game placement; review density and variation before acceptance."
+      ],
+      "billboard": "trees/xa_cu_billboard.png",
+      "billboard_plane_size_m": [
+        26,
+        52
+      ],
+      "billboard_pivot_uv": [
+        0.5,
+        0.28846153846153844
+      ],
+      "preview": "previews/xa_cu.jpg",
+      "in_game_preview": "review/xa_cu.jpg"
+    },
+    {
+      "file": "materials/co/basecolor.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_co.jpg",
+      "in_game_preview": "review/material_co.jpg"
+    },
+    {
+      "file": "materials/co/normal.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_co.jpg",
+      "in_game_preview": "review/material_co.jpg"
+    },
+    {
+      "file": "materials/co/orm.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_co.jpg",
+      "in_game_preview": "review/material_co.jpg"
+    },
+    {
+      "file": "materials/duong_nhua/basecolor.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_duong_nhua.jpg",
+      "in_game_preview": "review/material_duong_nhua.jpg"
+    },
+    {
+      "file": "materials/duong_nhua/normal.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_duong_nhua.jpg",
+      "in_game_preview": "review/material_duong_nhua.jpg"
+    },
+    {
+      "file": "materials/duong_nhua/orm.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_duong_nhua.jpg",
+      "in_game_preview": "review/material_duong_nhua.jpg"
+    },
+    {
+      "file": "materials/gach_lat_ho/basecolor.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_gach_lat_ho.jpg",
+      "in_game_preview": "review/material_gach_lat_ho.jpg"
+    },
+    {
+      "file": "materials/gach_lat_ho/normal.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_gach_lat_ho.jpg",
+      "in_game_preview": "review/material_gach_lat_ho.jpg"
+    },
+    {
+      "file": "materials/gach_lat_ho/orm.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_gach_lat_ho.jpg",
+      "in_game_preview": "review/material_gach_lat_ho.jpg"
+    },
+    {
+      "file": "materials/nuoc_ho/normal.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_nuoc_ho.jpg",
+      "in_game_preview": "review/material_nuoc_ho.jpg"
+    },
+    {
+      "file": "materials/via_he_da_xam/basecolor.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_via_he_da_xam.jpg",
+      "in_game_preview": "review/material_via_he_da_xam.jpg"
+    },
+    {
+      "file": "materials/via_he_da_xam/normal.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_via_he_da_xam.jpg",
+      "in_game_preview": "review/material_via_he_da_xam.jpg"
+    },
+    {
+      "file": "materials/via_he_da_xam/orm.png",
+      "kind": "material-texture",
+      "size_m": [
+        2,
+        2
+      ],
+      "metres": 2,
+      "license": "CC0-1.0",
+      "made_with": "Poly Haven CC0 scans and original processing; water normal authored mathematically",
+      "notes": [],
+      "preview": "previews/material_via_he_da_xam.jpg",
+      "in_game_preview": "review/material_via_he_da_xam.jpg"
+    }
+  ],
+  "review_status": "draft: technical checks passed; art acceptance pending",
+  "notes": [
+    "Reference is the previously generated game-style concept, not a photograph or survey.",
+    "Not yet accepted as photorealistic. See README.md for unmet UV, garment, anatomy, reconstruction and placement requirements.",
+    "Bevy WebGL review only; WebGPU and physical mobile devices not tested.",
+    "Large objects use repeating PBR on UV0 and separately baked occlusion on UV1. Small props use packed ORM on UV1."
+  ]
 }

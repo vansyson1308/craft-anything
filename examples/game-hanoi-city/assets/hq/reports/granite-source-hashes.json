@@ -1,0 +1,17 @@
+[
+  {
+    "file": "diff.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/granite_tile/granite_tile_diff_2k.jpg",
+    "sha256": "758f9b1cdce11bc6f6a805cdea18fb789639befe40608020ab6087c5c1cba1e5"
+  },
+  {
+    "file": "nor_gl.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/granite_tile/granite_tile_nor_gl_2k.jpg",
+    "sha256": "53a80f10b8a8b38ac6551e4a838d1ef77602e74858dfb2364f96be5450c3bc11"
+  },
+  {
+    "file": "arm.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/granite_tile/granite_tile_arm_2k.jpg",
+    "sha256": "d3f326fdddbc57341c15bb7f3dbb93a851d5625709b9aecf70f490c66618f23b"
+  }
+]

@@ -1,0 +1,138 @@
+{
+  "resolution": 512,
+  "note": "Raster coverage estimate, separate material atlases. Texel density is area average; no claim of 2x face priority.",
+  "materials": [
+    {
+      "file": "animals/cho_co.glb",
+      "material": "cho_co_fur",
+      "uv0_coverage_percent": 51.14,
+      "nominal_texels_per_cm_at_1024": 7.56
+    },
+    {
+      "file": "animals/cho_co.glb",
+      "material": "cho_co_details",
+      "uv0_coverage_percent": 39.83,
+      "nominal_texels_per_cm_at_1024": 65.23
+    },
+    {
+      "file": "people/minh.glb",
+      "material": "minh_skin",
+      "uv0_coverage_percent": 60.7,
+      "nominal_texels_per_cm_at_1024": 16.13
+    },
+    {
+      "file": "people/minh.glb",
+      "material": "minh_cloth",
+      "uv0_coverage_percent": 48.01,
+      "nominal_texels_per_cm_at_1024": 3.8
+    },
+    {
+      "file": "people/minh.glb",
+      "material": "minh_pants",
+      "uv0_coverage_percent": 51.97,
+      "nominal_texels_per_cm_at_1024": 5.29
+    },
+    {
+      "file": "people/minh.glb",
+      "material": "minh_hair_MASK",
+      "uv0_coverage_percent": 45.45,
+      "nominal_texels_per_cm_at_1024": 21.7
+    },
+    {
+      "file": "people/nguoi_di_duong_01.glb",
+      "material": "nguoi_di_duong_01_skin",
+      "uv0_coverage_percent": 54.25,
+      "nominal_texels_per_cm_at_1024": 15.43
+    },
+    {
+      "file": "people/nguoi_di_duong_01.glb",
+      "material": "nguoi_di_duong_01_cloth",
+      "uv0_coverage_percent": 46.42,
+      "nominal_texels_per_cm_at_1024": 3.75
+    },
+    {
+      "file": "people/nguoi_di_duong_01.glb",
+      "material": "nguoi_di_duong_01_pants",
+      "uv0_coverage_percent": 50.11,
+      "nominal_texels_per_cm_at_1024": 5.21
+    },
+    {
+      "file": "people/nguoi_di_duong_01.glb",
+      "material": "nguoi_di_duong_01_hair_MASK",
+      "uv0_coverage_percent": 44.57,
+      "nominal_texels_per_cm_at_1024": 21.76
+    },
+    {
+      "file": "people/nguoi_di_duong_02.glb",
+      "material": "nguoi_di_duong_02_skin",
+      "uv0_coverage_percent": 55.67,
+      "nominal_texels_per_cm_at_1024": 15.43
+    },
+    {
+      "file": "people/nguoi_di_duong_02.glb",
+      "material": "nguoi_di_duong_02_pants",
+      "uv0_coverage_percent": 50.08,
+      "nominal_texels_per_cm_at_1024": 5.21
+    },
+    {
+      "file": "people/nguoi_di_duong_02.glb",
+      "material": "nguoi_di_duong_02_cloth",
+      "uv0_coverage_percent": 46.4,
+      "nominal_texels_per_cm_at_1024": 3.75
+    },
+    {
+      "file": "people/nguoi_di_duong_02.glb",
+      "material": "nguoi_di_duong_02_hair_MASK",
+      "uv0_coverage_percent": 44.65,
+      "nominal_texels_per_cm_at_1024": 21.36
+    },
+    {
+      "file": "people/nguoi_di_duong_03.glb",
+      "material": "nguoi_di_duong_03_skin",
+      "uv0_coverage_percent": 56.33,
+      "nominal_texels_per_cm_at_1024": 15.57
+    },
+    {
+      "file": "people/nguoi_di_duong_03.glb",
+      "material": "nguoi_di_duong_03_pants",
+      "uv0_coverage_percent": 50.09,
+      "nominal_texels_per_cm_at_1024": 5.21
+    },
+    {
+      "file": "people/nguoi_di_duong_03.glb",
+      "material": "nguoi_di_duong_03_cloth",
+      "uv0_coverage_percent": 46.42,
+      "nominal_texels_per_cm_at_1024": 3.75
+    },
+    {
+      "file": "people/nguoi_di_duong_03.glb",
+      "material": "nguoi_di_duong_03_hair_MASK",
+      "uv0_coverage_percent": 44.66,
+      "nominal_texels_per_cm_at_1024": 21.5
+    },
+    {
+      "file": "people/trom_01.glb",
+      "material": "trom_01_skin",
+      "uv0_coverage_percent": 60.93,
+      "nominal_texels_per_cm_at_1024": 15.59
+    },
+    {
+      "file": "people/trom_01.glb",
+      "material": "trom_01_cloth",
+      "uv0_coverage_percent": 38.13,
+      "nominal_texels_per_cm_at_1024": 3.32
+    },
+    {
+      "file": "people/trom_01.glb",
+      "material": "trom_01_pants",
+      "uv0_coverage_percent": 49.96,
+      "nominal_texels_per_cm_at_1024": 13.34
+    },
+    {
+      "file": "people/trom_01.glb",
+      "material": "trom_01_hair_MASK",
+      "uv0_coverage_percent": 18.38,
+      "nominal_texels_per_cm_at_1024": 21.36
+    }
+  ]
+}

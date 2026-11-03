@@ -1,0 +1,39 @@
+[
+  {
+    "view": "thehuc",
+    "manifest_entries": 41,
+    "errors": [],
+    "image": "review/thehuc.jpg",
+    "file_bytes": 167123
+  },
+  {
+    "view": "bridge",
+    "manifest_entries": 41,
+    "errors": [],
+    "image": "review/bridge.jpg",
+    "file_bytes": 126562
+  },
+  {
+    "view": "tree",
+    "manifest_entries": 41,
+    "errors": [],
+    "image": "review/tree.jpg",
+    "file_bytes": 211116
+  },
+  {
+    "view": "lineup",
+    "manifest_entries": 41,
+    "errors": [],
+    "visual_issue": "Gate cluster occludes the requested character lineup; see lineup_isolated.jpg.",
+    "image": "review/lineup.jpg",
+    "file_bytes": 112832
+  },
+  {
+    "view": "lineup_isolated",
+    "manifest_entries": 4,
+    "image": "review/lineup_isolated.jpg",
+    "errors": [],
+    "file_bytes": 143174,
+    "note": "Minh, thief, dog and bridge enabled to expose the actors; other HQ assets disabled for this capture."
+  }
+]
