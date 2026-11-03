@@ -331,6 +331,8 @@ pub struct Built {
     pub facades: facade::Facades,
     /// A loop round Hồ Gươm a few metres out from the shore, where people stroll.
     pub promenade: Vec<Vec2>,
+    /// What gives light at night: street lamps and the Hàng Mã lanterns.
+    pub glows: Vec<crate::night::Glow>,
 }
 
 /// Mesh kinds at or above this are the street-facing part of a wall kind (kind + FRONT).
@@ -348,6 +350,7 @@ fn street_facing(map: &Map, a: Vec2, b: Vec2) -> bool {
 /// Spawns the whole district. `center` is where the lake is (metres).
 pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, c: &City, map: &Map, center: Vec2, signs: &[(String, Dm)]) -> Built {
     let mut sites = Vec::new();
+    let mut glows = Vec::new();
     let mut blocks: HashMap<(i32, i32), facade::Block> = HashMap::new();
     // Stand-ins for delivered landmarks get meshes of their own, so they can be hidden.
     let mut own: Own = HashMap::new();
@@ -651,7 +654,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             }
         }
     }
-    street_furniture(c, map, &near, &chunk_of, &mut blocks, &facade::street_atlas().0, &decks);
+    street_furniture(c, map, &near, &chunk_of, &mut blocks, &facade::street_atlas().0, &decks, &mut glows);
     let facades = facade::Facades { blocks: blocks.into_values().collect() };
 
     // Water tanks.
@@ -707,6 +710,9 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                 for (side, red) in [(1.0f32, k % 2 == 0), (-1.0, k % 2 == 1)] {
                     let q = p + n * side;
                     let mat = if red { m.lantern_red.clone() } else { m.lantern_yellow.clone() };
+                    if k % 4 == 0 {
+                        glows.push(crate::night::Glow::lantern(Vec3::new(q.x, 4.4, q.y), red));
+                    }
                     commands.spawn((
                         Mesh3d(lantern.clone()),
                         MeshMaterial3d(mat),
@@ -775,7 +781,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                 .collect()
         })
         .unwrap_or_default();
-    Built { sites, facades, promenade }
+    Built { sites, facades, promenade, glows }
 }
 
 type Chunks = HashMap<(i32, i32, u8, u8), Builder>;
@@ -801,6 +807,7 @@ fn street_furniture(
     blocks: &mut HashMap<(i32, i32), facade::Block>,
     streets: &HashMap<String, u16>,
     decks: &[Vec2],
+    glows: &mut Vec<crate::night::Glow>,
 ) {
     let mut put = |at: Vec2, slot: facade::PropSlot| {
         let (cx, cz) = chunk_of(at);
@@ -858,7 +865,8 @@ fn street_furniture(
                 let foot = p + n * lamp_side * (half + 0.7);
                 if !road_at(foot) && near(foot) {
                     let at = Transform::from_translation(Vec3::new(foot.x, 0.0, foot.y)).with_rotation(turn(d, -n * lamp_side));
-                    put(foot, facade::PropSlot { file: "street/den_duong_01.glb", at, upto: 260.0, street: None });
+                    glows.push(crate::night::Glow::lamp(&at));
+                    put(foot, facade::PropSlot { file: crate::night::STREET_LAMP, at, upto: 260.0, street: None });
                 }
                 lamp_side = -lamp_side;
                 next_lamp += 30.0;
@@ -889,6 +897,9 @@ fn street_furniture(
             ring.reverse();
         }
         let n = ring.len();
+        // Lamps on the lake path every 25 m, 2 m in from the railing.
+        let mut along = 0.0f32;
+        let mut next_lamp = 10.0f32;
         for i in 0..n {
             let (a, b) = (ring[i], ring[(i + 1) % n]);
             let len = a.distance(b);
@@ -897,6 +908,16 @@ fn street_furniture(
             }
             let d = (b - a) / len;
             let out = Vec2::new(d.y, -d.x);
+            while next_lamp <= along + len {
+                let p = a + d * (next_lamp - along) + out * 2.6;
+                if !decks.iter().any(|q| q.distance(p) < 20.0) {
+                    let at = Transform::from_translation(Vec3::new(p.x, 0.0, p.y)).with_rotation(turn(d, out));
+                    glows.push(crate::night::Glow::lake_lamp(&at));
+                    put(p, facade::PropSlot { file: crate::night::LAKE_LAMP, at, upto: 220.0, street: None });
+                }
+                next_lamp += 25.0;
+            }
+            along += len;
             let pieces = (len / 2.1).round().max(1.0) as i32;
             let step = len / pieces as f32;
             for k in 0..pieces {

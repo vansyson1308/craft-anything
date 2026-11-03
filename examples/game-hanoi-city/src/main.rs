@@ -9,6 +9,7 @@ mod crowd;
 mod facade;
 mod hq;
 mod mips;
+mod night;
 mod render;
 mod world;
 
@@ -35,6 +36,8 @@ use actors::{AnimLib, Dog, Move, Person, Props};
 const CITY_JSON: &str = include_str!("../assets/hoankiem.json");
 const SIGNS_JSON: &str = include_str!("../assets/signs.json");
 const TILE_M: f32 = 2.0;
+/// The chapters the story sets after dark ("Đêm mất Bơ"): played at night.
+const NIGHT_CHAPTERS: &[usize] = &[0];
 /// The controls, shown along the bottom during a raid.
 const PC_KEYS: &str = "WASD đi · Shift lén · bấm để khoá chuột, di chuột nhìn · chuột trái đánh · chuột phải ném dép · Space lăn · giữ E mở/trói · Esc dừng";
 
@@ -63,6 +66,9 @@ fn main() {
                 crowd::spawn,
                 crowd::walk,
                 world::ripple,
+                (choose_sky, night::apply, night::pool).chain().after(menus),
+                night::wet,
+                night::torch_prop,
             ),
         )
         .run();
@@ -90,6 +96,8 @@ struct Game {
     map: Map,
     profile: Profile,
     raid: Option<Raid>,
+    /// What the current (or last) raid is.
+    mission: Option<Mission>,
     screen: Screen,
     shown: Option<Screen>,
     result: Option<(Report, Earned)>,
@@ -271,6 +279,8 @@ fn setup(
     commands.insert_resource(hq::Sites(built.sites));
     commands.insert_resource(built.facades);
     commands.insert_resource(crowd::Promenade::new(built.promenade));
+    commands.insert_resource(night::Glows(built.glows));
+    commands.insert_resource(night::Sky::default());
     let (_, cols, rows) = facade::street_atlas();
     let sign_mat = mats.add(StandardMaterial { base_color_texture: Some(assets.load("tex/street_names.png")), perceptual_roughness: 0.45, ..default() });
     commands.insert_resource(facade::SignFaces::new(sign_mat, cols, rows));
@@ -337,6 +347,7 @@ fn setup(
         map,
         profile,
         raid: None,
+        mission: None,
         screen: Screen::Loading,
         shown: None,
         result: None,
@@ -584,6 +595,7 @@ fn start_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &
     g.cam_target = world_pos(raid.player.pos);
     g.cam_yaw = PI;
     g.raid = Some(raid);
+    g.mission = Some(mission);
     end_raid(commands, g);
     spawn_raid(commands, assets, hq, lib, props, g);
     g.screen = Screen::Playing;
@@ -928,6 +940,40 @@ fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>
 
 /// How far the camera can sit behind `target` along `back` before a building gets in the way,
 /// so it never looks out from inside a wall.
+/// Night for the chapters the story sets after dark (or what the address asks for), the lights
+/// nearest the camera, and a torch in Minh's hand at night.
+fn choose_sky(
+    mut commands: Commands,
+    g: Res<Game>,
+    mut sky: ResMut<night::Sky>,
+    cam: Query<&GlobalTransform, With<MainCamera>>,
+    torches: Query<(Entity, &ChildOf), With<night::Torch>>,
+    mut forced: Local<Option<Option<bool>>>,
+) {
+    let forced = *forced.get_or_insert_with(night::from_page);
+    let in_raid = matches!(g.screen, Screen::Playing | Screen::Paused | Screen::Result);
+    let story_night = matches!(g.mission, Some(Mission::Story(ch)) if NIGHT_CHAPTERS.contains(&ch));
+    let night = forced.unwrap_or(in_raid && story_night);
+    if sky.night != night {
+        sky.night = night;
+    }
+    if let Ok(t) = cam.single() {
+        sky.focus = t.translation();
+    }
+    let holder = if night { g.player } else { None };
+    let mut held = false;
+    for (e, parent) in &torches {
+        if Some(parent.parent()) == holder {
+            held = true;
+        } else {
+            commands.entity(e).despawn();
+        }
+    }
+    if !held && let Some(p) = holder {
+        night::torch(&mut commands, p);
+    }
+}
+
 fn camera_room(map: &Map, target: Vec3, back: Vec3, want: f32) -> f32 {
     let mut d = 0.0;
     while d < want {
