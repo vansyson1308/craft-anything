@@ -8,6 +8,7 @@ mod actors;
 mod crowd;
 mod dressing;
 mod facade;
+mod guide;
 mod hq;
 mod mips;
 mod night;
@@ -56,7 +57,7 @@ fn main() {
         }))
         .add_plugins(hq::HqPlugin)
         .init_resource::<Clicked>()
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (setup, guide::setup))
         .add_systems(
             Update,
             (
@@ -68,6 +69,7 @@ fn main() {
                 crowd::walk,
                 world::ripple,
                 (choose_sky, night::apply, night::pool).chain().after(menus),
+                (fill_guide, guide::draw, guide::hud).chain().after(hud),
                 night::wet,
                 night::torch_prop,
             ),
@@ -90,6 +92,33 @@ enum Screen {
 /// Story scenes: the intro, then each chapter's ending.
 fn story_lines(which: usize) -> &'static [content::Line] {
     if which == 0 { content::INTRO } else { CHAPTERS.get(which - 1).map_or(&[], |c| c.after) }
+}
+
+#[cfg(test)]
+mod pacing_tests {
+    use super::*;
+    use hanoi_rescue::meta::Profile;
+
+    /// On the real map every chapter starts within a short walk of its first goal (no minutes of
+    /// empty road), and never on top of a thief.
+    #[test]
+    fn every_chapter_starts_near_its_first_goal() {
+        let city = City::from_json(CITY_JSON).unwrap_or_default();
+        let mut map = Map::from_city(&city, TILE_M);
+        map.fence_shore(&city, world::LAKE, world::LAKE_RAILING_M, world::BRIDGE_GAP_M);
+        let stats = Profile::default().stats();
+        for ch in 0..CHAPTERS.len() {
+            for seed in 0..6u64 {
+                let r = Raid::new(&map, RaidSetup::story(&map, ch, stats, seed));
+                let Some((at, kind)) = r.goal(&map) else { panic!("ch{ch} seed{seed}: no goal") };
+                let d = r.player.pos.dist(at) * TILE_M;
+                assert!(d < 450.0, "ch{ch} seed{seed}: the first goal ({kind:?}) is {d:.0} m away");
+                for t in &r.thieves {
+                    assert!(t.pos.dist(r.player.pos) * TILE_M > 12.0 || t.kind.is_boss(), "ch{ch} seed{seed}: a thief at the start");
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -327,6 +356,7 @@ fn setup(
     commands.insert_resource(crowd::Promenade::new(built.promenade));
     commands.insert_resource(night::Glows(built.glows));
     commands.insert_resource(night::Sky::default());
+    commands.insert_resource(guide::Guide::default());
     let (_, cols, rows) = facade::street_atlas();
     let sign_mat = mats.add(StandardMaterial { base_color_texture: Some(assets.load("tex/street_names.png")), perceptual_roughness: 0.45, ..default() });
     commands.insert_resource(facade::SignFaces::new(sign_mat, cols, rows));
@@ -988,6 +1018,103 @@ fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>
 
 /// How far the camera can sit behind `target` along `back` before a building gets in the way,
 /// so it never looks out from inside a wall.
+/// Tips shown once each, the first time their moment comes (see `fill_guide`).
+#[derive(Default)]
+struct Tips {
+    shown: std::collections::HashSet<&'static str>,
+    queue: std::collections::VecDeque<String>,
+    now: Option<(String, f32)>,
+}
+
+impl Tips {
+    fn offer(&mut self, id: &'static str, text: impl Into<String>) {
+        if self.shown.insert(id) {
+            self.queue.push_back(text.into());
+        }
+    }
+}
+
+/// How long a tip stays up (seconds).
+const TIP_S: f32 = 7.0;
+
+/// What the guide shows (see `guide`): where to go next and what is there, each thief's view, and
+/// a tip the first time each thing happens.
+fn fill_guide(g: Res<Game>, mut guide: ResMut<guide::Guide>, time: Res<Time>, mut tips: Local<Tips>) {
+    let raid = g.raid.as_ref().filter(|_| matches!(g.screen, Screen::Playing | Screen::Paused) && g.look.is_none());
+    guide.on = raid.is_some();
+    let Some(r) = raid else {
+        guide.goal = None;
+        guide.cones.clear();
+        guide.tip = None;
+        tips.now = None;
+        tips.queue.clear();
+        return;
+    };
+    let exit_name = |id| g.map.exits.iter().find(|e| e.id == id).map_or("điểm thoát", |e| e.name);
+    let goal = r.goal(&g.map);
+    guide.goal = goal.map(|(at, kind)| {
+        use hanoi_rescue::raid::Goal;
+        let (mark, label) = match kind {
+            Goal::Cage => (guide::Mark::Get, "Lồng chó".to_string()),
+            Goal::Dog => (guide::Mark::Get, "Chú chó".to_string()),
+            Goal::Clue => (guide::Mark::Get, "Cuốn sổ của bọn trộm".to_string()),
+            Goal::Boss => (guide::Mark::Get, r.setup.boss.map_or("Trùm", |b| b.name()).to_string()),
+            Goal::Exit(id) => (guide::Mark::Out, exit_name(id).to_string()),
+        };
+        (world_pos(at), mark, label)
+    });
+    guide.cones.clear();
+    for t in &r.thieves {
+        let mood = match t.state {
+            TState::Stunned(_) | TState::Down(_) | TState::Tied => continue,
+            TState::Chase | TState::Windup(_) | TState::Charge(_) => guide::Mood::Hunting,
+            TState::Investigate | TState::Search(_) => guide::Mood::Wary,
+            _ if t.alert > 0.3 => guide::Mood::Wary,
+            _ => guide::Mood::Calm,
+        };
+        let (range, half) = r.sight_cone(t);
+        guide.cones.push(guide::Cone { at: world_pos(t.pos), turn: yaw_of(t.facing), range: range * TILE_M, half, mood });
+    }
+
+    // Tips, in the order things usually happen.
+    use hanoi_rescue::raid::Goal;
+    match goal.map(|g| g.1) {
+        Some(Goal::Clue) => tips.offer("clue", "Tìm cuốn sổ của bọn trộm: cột sáng vàng chỉ chỗ. WASD để đi, di chuột để nhìn."),
+        Some(Goal::Boss) => tips.offer("boss", "Hạ gục tên trùm (chuột trái), rồi giữ E để trói hắn. Cột sáng vàng chỉ chỗ hắn."),
+        _ => tips.offer("start", "Đi theo cột sáng vàng: chú chó bị nhốt ở đó. WASD để đi, di chuột để nhìn, Shift để đi lén."),
+    }
+    let me = r.player.pos;
+    if r.thieves.iter().any(|t| t.pos.dist(me) * TILE_M < 16.0 && !matches!(t.state, TState::Down(_) | TState::Tied)) {
+        tips.offer("thief", "Có trộm gần đây! Vùng sáng trước mặt hắn là tầm nhìn: đừng bước vào. Giữ Shift để lén vòng sau lưng.");
+    }
+    if matches!(r.context, Context::Cage { .. }) {
+        tips.offer("cage", "Giữ E để mở lồng.");
+    }
+    if r.thieves.iter().any(|t| matches!(t.state, TState::Chase)) {
+        tips.offer("seen", "Bị phát hiện (dấu !)! Chạy đi; chuột phải ném dép làm choáng, Space để lăn né.");
+    }
+    if r.objective_met()
+        && let Some((_, Goal::Exit(id))) = goal
+    {
+        tips.offer("out", format!("Xong rồi! Đi theo cột sáng xanh để thoát ra {}.", exit_name(id)));
+    }
+    if r.player.hp < r.setup.stats.max_hp * 0.4 {
+        tips.offer("hurt", "Máu thấp: tránh đánh nhau, lẩn vào đám đông hoặc ngõ nhỏ.");
+    }
+    let dt = time.delta_secs();
+    let expired = match tips.now.as_mut() {
+        Some((_, left)) => {
+            *left -= dt;
+            *left <= 0.0
+        }
+        None => true,
+    };
+    if expired {
+        tips.now = tips.queue.pop_front().map(|t| (t, TIP_S));
+    }
+    guide.tip = tips.now.as_ref().map(|t| t.0.clone());
+}
+
 /// The game's speed from the page's address (`?speed=0.1` runs it at a tenth of real time, for
 /// recording video on a computer too slow to draw it live), between 0.001 and 4. The game moves at
 /// most 0.05 s per frame, so for smooth video pick about 1 / (24 × seconds a frame takes to draw).

@@ -97,7 +97,7 @@ pub struct Pooled;
 pub struct Torch;
 
 /// The light settings of the night.
-const MOON_LUX: f32 = 3.0;
+const MOON_LUX: f32 = 12.0;
 /// Exposure at night: lamps light the street to a few dozen lux, the moon to a few.
 const NIGHT_EV100: f32 = 3.5;
 /// Wet roads: roughness is multiplied by this.
@@ -151,7 +151,7 @@ pub fn apply(
         }
         day.ambient = Some(ambient.clone());
         ambient.color = Color::srgb(0.45, 0.55, 0.9);
-        ambient.brightness = if ambient.brightness > 0.0 { 1.6 } else { 0.0 };
+        ambient.brightness = if ambient.brightness > 0.0 { 5.0 } else { 0.0 };
         if let Some(c) = clear.as_mut() {
             day.clear = Some((**c).clone());
             c.0 = Color::srgb(0.012, 0.016, 0.035);
@@ -267,6 +267,14 @@ pub fn torch(commands: &mut Commands, holder: Entity) {
             Transform::from_xyz(0.22, 1.15, 0.35).looking_to(Vec3::new(0.0, -0.22, 1.0), Vec3::Y),
         ))
         .id();
+    // A soft light round Minh, so the street right around him can always be read at night.
+    let fill = commands
+        .spawn((
+            PointLight { intensity: 6_000.0, range: 14.0, color: Color::srgb(0.85, 0.88, 1.0), shadow_maps_enabled: false, ..default() },
+            Transform::from_xyz(0.0, 1.6, -1.0),
+        ))
+        .id();
+    commands.entity(light).add_child(fill);
     commands.entity(holder).add_child(light);
 }
 

@@ -153,6 +153,17 @@ pub enum TState {
     Tied,
 }
 
+/// What the player should head for next (see `Raid::goal`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Goal {
+    Clue,
+    Boss,
+    Cage,
+    /// A freed dog that isn't following yet.
+    Dog,
+    Exit(ExitId),
+}
+
 pub struct Thief {
     pub pos: V2,
     pub facing: f32,
@@ -608,6 +619,36 @@ impl Raid {
         self.following() as u32 >= self.setup.need_dogs && (!self.setup.clue || self.clue) && (self.setup.boss.is_none() || self.boss_tied) && puppy_ok
     }
 
+    /// Where the player should head next, and what is there: the clue, then the boss, then the
+    /// nearest dog still to be freed, and once the objective is met, the nearest open exit. A
+    /// client points the way with it (a beam of light, a compass) so nobody wanders lost.
+    pub fn goal(&self, map: &Map) -> Option<(V2, Goal)> {
+        let me = self.player.pos;
+        let nearest = |pts: &mut dyn Iterator<Item = (V2, Goal)>| pts.min_by(|a, b| a.0.dist(me).total_cmp(&b.0.dist(me)));
+        if self.objective_met() {
+            return nearest(&mut map.exits.iter().filter(|e| self.exit_open(e.id)).map(|e| (e.center(), Goal::Exit(e.id))));
+        }
+        if self.setup.clue
+            && !self.clue
+            && let Some(g) = nearest(&mut self.pickups.iter().filter(|p| !p.taken && p.kind == PickupKind::Clue).map(|p| (p.pos, Goal::Clue)))
+        {
+            return Some(g);
+        }
+        if self.setup.boss.is_some()
+            && !self.boss_tied
+            && let Some(g) = nearest(&mut self.thieves.iter().filter(|t| t.kind.is_boss() && t.state != TState::Tied).map(|t| (t.pos, Goal::Boss)))
+        {
+            return Some(g);
+        }
+        // While the puppy is still caged, it is the dog to go for; then any dog not yet following.
+        let puppy_left = self.setup.puppy && !self.dogs.iter().any(|d| d.puppy && d.state == DogState::Following);
+        let wanted = |d: &Dog| d.state != DogState::Following && (!puppy_left || d.puppy);
+        if let Some(g) = nearest(&mut self.cages.iter().filter(|c| !c.open && self.dogs.get(c.dog).is_some_and(wanted)).map(|c| (c.pos, Goal::Cage))) {
+            return Some(g);
+        }
+        nearest(&mut self.dogs.iter().filter(|d| wanted(d)).map(|d| (d.pos, Goal::Dog)))
+    }
+
     /// The objective as a short line for the HUD.
     pub fn objective_text(&self) -> String {
         let mut parts = Vec::new();
@@ -1031,16 +1072,21 @@ impl Raid {
         }
     }
 
+    /// How far thief `t` sees (tiles) and half the width of its view (radians): the cone a client
+    /// draws on the ground, the same one `sight` uses.
+    pub fn sight_cone(&self, t: &Thief) -> (f32, f32) {
+        let (_, _, _, _, mult) = t.kind.stats();
+        (self.setup.diff.vision * mult, self.setup.diff.fov_deg.to_radians() / 2.0)
+    }
+
     /// Whether thief `t` sees the player, and how quickly that raises its alert.
     fn sight(&self, map: &Map, t: &Thief) -> Option<f32> {
         let p = &self.player;
-        let (_, _, _, _, mult) = t.kind.stats();
-        let range = self.setup.diff.vision * mult;
+        let (range, half_fov) = self.sight_cone(t);
         let d = t.pos.dist(p.pos);
         if d > range {
             return None;
         }
-        let half_fov = self.setup.diff.fov_deg.to_radians() / 2.0;
         let ang = angle_diff((p.pos - t.pos).angle(), t.facing).abs();
         let close = d < 1.3 && !p.sneaking;
         if ang > half_fov && !close {
@@ -1442,6 +1488,38 @@ mod tests {
             }
         }
         false
+    }
+
+    #[test]
+    fn the_goal_leads_to_a_cage_then_out() {
+        let map = Map::hoan_kiem();
+        let mut r = Raid::new(&map, RaidSetup::story(&map, 0, stats(), 3));
+        let (at, kind) = r.goal(&map).expect("a goal at the start");
+        assert_eq!(kind, Goal::Cage);
+        assert!(r.cages.iter().any(|c| c.pos.dist(at) < 1e-3), "the goal is a cage");
+        // Once the objective is met (every dog following), the goal is an open exit.
+        for d in r.dogs.iter_mut() {
+            d.state = DogState::Following;
+        }
+        for c in r.cages.iter_mut() {
+            c.open = true;
+        }
+        assert!(r.objective_met());
+        let (at, kind) = r.goal(&map).expect("a way out");
+        let Goal::Exit(id) = kind else { panic!("not an exit: {kind:?}") };
+        assert!(r.exit_open(id));
+        assert!(map.exits.iter().any(|e| e.id == id && e.center().dist(at) < 1e-3));
+    }
+
+    #[test]
+    fn every_chapter_has_a_goal_to_start_with() {
+        let map = Map::hoan_kiem();
+        for ch in 0..CHAPTERS.len() {
+            for seed in 0..10u64 {
+                let r = Raid::new(&map, RaidSetup::story(&map, ch, stats(), seed));
+                assert!(r.goal(&map).is_some(), "ch{ch} seed{seed}: nowhere to go");
+            }
+        }
     }
 
     #[test]
