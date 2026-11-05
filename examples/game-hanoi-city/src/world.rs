@@ -196,6 +196,11 @@ const LANDMARK_BUILDINGS: [(&str, &str); 6] = [
     ("Chợ Đồng Xuân", "landmarks/cho_dong_xuan.glb"),
 ];
 const THE_HUC: (&str, &str) = ("Cầu Thê Húc", "landmarks/cau_the_huc.glb");
+/// Hồ Gươm, and how its railing stands: 0.6 m out from the shore, open within a few metres of a
+/// bridge. The game's map is fenced the same way, so nobody walks out past the railing.
+pub const LAKE: &str = "Hồ Hoàn Kiếm";
+pub const LAKE_RAILING_M: f32 = 0.6;
+pub const BRIDGE_GAP_M: f32 = 4.0;
 /// Landmarks whose delivered model covers more than their main building: everything standing within
 /// this many metres of it (Đình Trấn Ba beside the temple, the tower's parts) is part of its stand-in.
 const LANDMARK_GROUNDS: [(&str, f32); 2] = [("Đền Ngọc Sơn", 30.0), ("Tháp Rùa", 6.0)];
@@ -577,11 +582,14 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             };
             let front = !slots.is_empty();
             if front {
-                blocks
-                    .entry((cx, cz))
-                    .or_insert_with(|| facade::Block::new(Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK)))
-                    .slots
-                    .extend(slots);
+                let open = |p: Vec2| {
+                    matches!(map.tile_at(V2 { x: p.x / map.tile_m, y: p.y / map.tile_m }), Tile::Street | Tile::Alley | Tile::Crowd | Tile::Plaza | Tile::Park)
+                };
+                let block = blocks.entry((cx, cz)).or_insert_with(|| facade::Block::new(Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK)));
+                for s in &slots {
+                    block.props.extend(crate::dressing::for_bay(s, &open));
+                }
+                block.slots.extend(slots);
             }
             let u = (len / 3.0).max(1.0).round();
             let wall = |y0: f32, y1: f32| [Vec3::new(a.x, y0, a.y), Vec3::new(a.x, y1, a.y), Vec3::new(bb.x, y1, bb.y), Vec3::new(bb.x, y0, bb.y)];
@@ -856,7 +864,7 @@ fn street_furniture(
                         continue;
                     }
                     let at = Transform::from_translation(Vec3::new(edge.x, 0.0, edge.y)).with_rotation(turn(d, -n * side)).with_scale(Vec3::new(2.0, 1.0, 1.0));
-                    put(edge, facade::PropSlot { file: "street/bo_via.glb", at, upto: 70.0, street: None });
+                    put(edge, facade::PropSlot::new("street/bo_via.glb", at, 70.0));
                 }
             }
             // Lamps every 30 m along the main roads, side to side, their arms over the road.
@@ -866,7 +874,7 @@ fn street_furniture(
                 if !road_at(foot) && near(foot) {
                     let at = Transform::from_translation(Vec3::new(foot.x, 0.0, foot.y)).with_rotation(turn(d, -n * lamp_side));
                     glows.push(crate::night::Glow::lamp(&at));
-                    put(foot, facade::PropSlot { file: crate::night::STREET_LAMP, at, upto: 260.0, street: None });
+                    put(foot, facade::PropSlot::new(crate::night::STREET_LAMP, at, 260.0));
                 }
                 lamp_side = -lamp_side;
                 next_lamp += 30.0;
@@ -884,7 +892,7 @@ fn street_furniture(
                     continue;
                 }
                 let at = Transform::from_translation(Vec3::new(foot.x, 0.0, foot.y)).with_rotation(turn(n, -d));
-                put(foot, facade::PropSlot { file: "street/cot_bien_ten_pho.glb", at, upto: 140.0, street: Some(*i) });
+                put(foot, facade::PropSlot { file: "street/cot_bien_ten_pho.glb", at, upto: 140.0, street: Some(*i), alts: &[] });
             }
         }
     }
@@ -913,7 +921,7 @@ fn street_furniture(
                 if !decks.iter().any(|q| q.distance(p) < 20.0) {
                     let at = Transform::from_translation(Vec3::new(p.x, 0.0, p.y)).with_rotation(turn(d, out));
                     glows.push(crate::night::Glow::lake_lamp(&at));
-                    put(p, facade::PropSlot { file: crate::night::LAKE_LAMP, at, upto: 220.0, street: None });
+                    put(p, facade::PropSlot::new(crate::night::LAKE_LAMP, at, 220.0));
                 }
                 next_lamp += 25.0;
             }
@@ -926,7 +934,7 @@ fn street_furniture(
                     continue;
                 }
                 let at = Transform::from_translation(Vec3::new(p.x, 0.0, p.y)).with_rotation(turn(d, out)).with_scale(Vec3::new(step / 2.1, 1.0, 1.0));
-                put(p, facade::PropSlot { file: "street/hang_rao_ho.glb", at, upto: 160.0, street: None });
+                put(p, facade::PropSlot::new("street/hang_rao_ho.glb", at, 160.0));
             }
         }
     }
@@ -949,4 +957,60 @@ fn seg_dist(p: Vec2, a: Vec2, b: Vec2) -> f32 {
     let ab = b - a;
     let t = if ab.length_squared() > 1e-6 { ((p - a).dot(ab) / ab.length_squared()).clamp(0.0, 1.0) } else { 0.0 };
     p.distance(a + ab * t)
+}
+
+#[cfg(test)]
+mod lake_tests {
+    use super::*;
+
+    /// Nobody walks on Hồ Gươm: once its shore is fenced, no point in the water (away from the
+    /// bridges and islands) and no point between the shore and the railing 0.6 m outside it can be
+    /// stood on, while the path round the lake and the Thê Húc bridge stay open.
+    #[test]
+    fn the_lake_is_fenced() {
+        let c = City::from_json(include_str!("../assets/hoankiem.json")).unwrap_or_default();
+        let mut map = Map::from_city(&c, 2.0);
+        assert!(map.fence_shore(&c, LAKE, LAKE_RAILING_M, BRIDGE_GAP_M));
+        let Some(lake) = c.water.iter().find(|w| w.name.as_deref() == Some(LAKE)) else { panic!("no lake") };
+        let ring: Vec<Vec2> = lake.outer.iter().map(|p| to_world(&c, p)).collect();
+        let holes: Vec<Vec<Vec2>> = lake.holes.iter().map(|h| h.iter().map(|p| to_world(&c, p)).collect()).collect();
+        let bridges: Vec<Vec<Vec2>> = c.roads.iter().filter(|r| r.bridge).map(|r| r.pts.iter().map(|p| to_world(&c, p)).collect()).collect();
+        let tile = |p: Vec2| V2 { x: p.x / map.tile_m, y: p.y / map.tile_m };
+        let mut closed = ring.clone();
+        closed.extend(ring.first().copied());
+        let near = |p: Vec2, line: &[Vec2], d: f32| line.windows(2).any(|s| seg_dist(p, s[0], s[1]) <= d);
+        let (mut lo, mut hi) = (ring[0], ring[0]);
+        for p in &ring {
+            lo = lo.min(*p);
+            hi = hi.max(*p);
+        }
+        let (mut bad, mut path_open) = (Vec::new(), 0);
+        let mut y = lo.y - 6.0;
+        while y < hi.y + 6.0 {
+            let mut x = lo.x - 6.0;
+            while x < hi.x + 6.0 {
+                let p = Vec2::new(x, y);
+                let skip = bridges.iter().any(|b| near(p, b, BRIDGE_GAP_M + 1.5)) || holes.iter().any(|h| contains(h, p) || near(p, h, 2.5));
+                let wet = contains(&ring, p) || near(p, &closed, LAKE_RAILING_M);
+                if !skip && wet && map.walkable_at(tile(p)) {
+                    bad.push(p);
+                }
+                if !contains(&ring, p) && !near(p, &closed, 4.0) && near(p, &closed, 6.0) && map.walkable_at(tile(p)) {
+                    path_open += 1;
+                }
+                x += 0.5;
+            }
+            y += 0.5;
+        }
+        assert!(bad.is_empty(), "{} points on the water or past the railing can be stood on, e.g. {:?}", bad.len(), &bad[..bad.len().min(6)]);
+        assert!(path_open > 500, "the path round the lake is still open ({path_open} points)");
+        // The Thê Húc bridge (straight on the map) still leads from the shore to the temple island.
+        let Some(the_huc) = c.roads.iter().find(|r| r.bridge && r.name.as_deref() == Some(THE_HUC.0)) else { panic!("no Thê Húc") };
+        let deck: Vec<Vec2> = the_huc.pts.iter().map(|p| to_world(&c, p)).collect();
+        for s in deck.windows(2) {
+            for k in 0..=10 {
+                assert!(map.walkable_at(tile(s[0].lerp(s[1], k as f32 / 10.0))), "the Thê Húc bridge is cut");
+            }
+        }
+    }
 }

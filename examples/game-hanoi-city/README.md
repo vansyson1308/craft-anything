@@ -34,6 +34,11 @@ lên web.
     - lan can quanh Hồ Gươm, chừa đầu cầu Thê Húc;
     - biển tên ở hai đầu mỗi phố, chữ in tên phố thật (`tools/make_street_names.py` vẽ atlas tên phố);
   - người đi dạo quanh hồ (`src/crowd.rs`), mặt hồ gợn sóng, đường dạo lát gạch;
+  - đồ trên vỉa hè trước từng ô cửa hàng (`src/dressing.rs`):
+    - xe máy dựng đầu vào tường, bàn ghế nhựa, chậu cây, thùng rác;
+    - đặt theo bản đồ, chỉ trên vỉa hè còn trống;
+    - món nào được nộp thì hiện ra món đó;
+  - bờ Hồ Gươm có rào trên bản đồ đi lại, nên không ai bước qua lan can xuống nước;
   - ban đêm cho Chương 1 "Đêm mất Bơ" (`src/night.rs`):
     - trăng xanh thấp;
     - đèn đường, đèn ven hồ và đèn lồng Hàng Mã chiếu sáng thật, bật 20 ngọn gần người chơi nhất;
@@ -111,6 +116,7 @@ máy tính.
 | `src/world.rs` | Dựng phố 3D từ dữ liệu, đánh dấu chỗ của công trình, cây và mặt tiền cho tài nguyên thật |
 | `src/hq.rs` | Đọc tài nguyên đã nộp (`assets/hq/`), đặt vào đúng chỗ, LOD, vật liệu nền |
 | `src/facade.rs` | Cắt mặt nhà nhìn ra phố thành ô mô-đun; dựng và gỡ mô-đun theo khu |
+| `src/dressing.rs` | Đồ trên vỉa hè trước cửa hàng: xe máy, bàn ghế nhựa, chậu cây, thùng rác |
 | `src/render.rs` | Ánh sáng và hậu kỳ cho WebGPU và WebGL2, công tắc hiệu ứng |
 | `src/night.rs` | Ban đêm: trăng, đèn đường, đèn lồng, đường ướt, đèn pin |
 | `src/mips.rs` | Mipmap và lọc anisotropic cho texture |

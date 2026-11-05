@@ -6,6 +6,7 @@
 
 mod actors;
 mod crowd;
+mod dressing;
 mod facade;
 mod hq;
 mod mips;
@@ -283,7 +284,8 @@ fn setup(
         clock.set_max_delta(std::time::Duration::from_secs(10));
     }
     let city = City::from_json(CITY_JSON).unwrap_or_default();
-    let map = Map::from_city(&city, TILE_M);
+    let mut map = Map::from_city(&city, TILE_M);
+    map.fence_shore(&city, world::LAKE, world::LAKE_RAILING_M, world::BRIDGE_GAP_M);
     let lake = map.labels.iter().find(|l| l.text == "HỒ GƯƠM").map(|l| world_pos(l.at)).unwrap_or(Vec3::new(1000.0, 0.0, 1000.0));
     let signs: Vec<(String, [i32; 2])> = serde_json::from_str::<Vec<serde_json::Value>>(SIGNS_JSON)
         .unwrap_or_default()
@@ -382,8 +384,10 @@ fn setup(
         train: Vec::new(),
         exits: Vec::new(),
         cam_yaw: PI,
-        cam_pitch: 0.42,
-        cam_dist: 6.5,
+        // Low and close behind Minh, at street level like a person following him; the wheel moves
+        // it back and up for an overview.
+        cam_pitch: 0.2,
+        cam_dist: 4.2,
         cam_target: lake,
         locked: false,
         touch_seen: false,
@@ -904,7 +908,7 @@ fn play(
         }
         g.cam_yaw = cur + d * (dt * 0.9).min(1.0);
     }
-    let target = g.cam_target.lerp(ppos + Vec3::Y * 1.3, (dt * 8.0).min(1.0));
+    let target = g.cam_target.lerp(ppos + Vec3::Y * 1.45, (dt * 8.0).min(1.0));
     g.cam_target = target;
     let yaw = g.cam_yaw;
     let shake = if raid.shake > 0.0 { Vec3::new((g.t * 90.0).sin(), (g.t * 77.0).cos(), 0.0) * 0.08 } else { Vec3::ZERO };

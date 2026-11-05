@@ -874,6 +874,44 @@ impl Map {
         }
     }
 
+    /// Puts a railing round the water called `name`: the tiles are 2 m wide and count as water only
+    /// when their centre is in it, so a shore tile could hold someone a metre and more out over
+    /// the water. Every walkable tile whose centre is outside the water but any part of which is within
+    /// `margin_m` of its shore becomes water too, except within `gap_m` of a bridge, where people
+    /// step on and off. Returns whether the water was found.
+    pub fn fence_shore(&mut self, c: &City, name: &str, margin_m: f32, gap_m: f32) -> bool {
+        let tm = self.tile_m;
+        let to = |p: &Dm| -> V2 { v2((p[0] - c.bounds[0]) as f32 / 10.0 / tm, (p[1] - c.bounds[1]) as f32 / 10.0 / tm) };
+        let Some(lake) = c.water.iter().find(|w| w.name.as_deref() == Some(name)) else { return false };
+        let ring: Vec<V2> = lake.outer.iter().map(to).collect();
+        let bridges: Vec<Vec<V2>> = c.roads.iter().filter(|r| r.bridge).map(|r| r.pts.iter().map(to).collect()).collect();
+        let reach = (margin_m.max(0.0) + tm * std::f32::consts::FRAC_1_SQRT_2) / tm;
+        let gap = gap_m.max(0.0) / tm;
+        let (mut x0, mut y0, mut x1, mut y1) = (f32::MAX, f32::MAX, f32::MIN, f32::MIN);
+        for q in &ring {
+            x0 = x0.min(q.x);
+            y0 = y0.min(q.y);
+            x1 = x1.max(q.x);
+            y1 = y1.max(q.y);
+        }
+        if ring.len() < 3 {
+            return true;
+        }
+        let near = |p: V2, line: &[V2], d: f32| line.windows(2).any(|w| matches!(w, [a, b] if seg_dist(p, *a, *b) <= d));
+        let mut closed = ring.clone();
+        closed.extend(ring.first().copied());
+        for y in ((y0 - reach).floor() as i32).max(0)..=((y1 + reach).ceil() as i32).min(self.h - 1) {
+            for x in ((x0 - reach).floor() as i32).max(0)..=((x1 + reach).ceil() as i32).min(self.w - 1) {
+                let t = self.tile(x, y);
+                let p = center(x, y);
+                if t.walkable() && t != Tile::Bridge && !inside(&ring, p) && near(p, &closed, reach) && !bridges.iter().any(|b| near(p, b, gap)) {
+                    self.set(x, y, Tile::Water);
+                }
+            }
+        }
+        true
+    }
+
     /// Sets every tile whose centre is within `half` tiles of the polyline.
     fn stamp_line(&mut self, pts: &[V2], half: f32, tile: impl Fn(Tile) -> Tile) {
         for seg in pts.windows(2) {
@@ -897,6 +935,27 @@ impl Map {
             }
         }
     }
+}
+
+/// Whether `p` is inside the polygon `ring` (even-odd rule).
+fn inside(ring: &[V2], p: V2) -> bool {
+    let n = ring.len();
+    let mut ins = false;
+    for i in 0..n {
+        let (Some(a), Some(b)) = (ring.get(i), ring.get((i + 1) % n)) else { continue };
+        if (a.y > p.y) != (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x {
+            ins = !ins;
+        }
+    }
+    ins
+}
+
+/// Distance from `p` to the segment `a`–`b`.
+fn seg_dist(p: V2, a: V2, b: V2) -> f32 {
+    let ab = b - a;
+    let len2 = ab.dot(ab);
+    let t = if len2 > 1e-9 { ((p - a).dot(ab) / len2).clamp(0.0, 1.0) } else { 0.0 };
+    p.dist(a + ab * t)
 }
 
 /// Joins lines that share end points and returns the longest chain.
@@ -955,6 +1014,35 @@ fn longest_chain(lines: &[Vec<Dm>]) -> Option<Vec<Dm>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::city::{Area, Road};
+
+    /// A 40 m square pond in a 100 m plaza, with a bridge from its south shore to the middle.
+    fn pond() -> City {
+        let sq = |x0: i32, y0: i32, x1: i32, y1: i32| vec![[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+        City {
+            version: crate::city::CITY_VERSION,
+            bounds: [0, 0, 1000, 1000],
+            water: vec![Area { outer: sq(300, 300, 700, 700), holes: vec![sq(450, 450, 550, 550)], name: Some("Ao".into()) }],
+            roads: vec![Road { pts: vec![[500, 750], [500, 520]], w: 25, kind: "footway".into(), name: Some("Cầu".into()), bridge: true }],
+            ..City::default()
+        }
+    }
+
+    #[test]
+    fn the_shore_is_fenced_but_the_bridge_stays_open() {
+        let c = pond();
+        let mut m = Map::from_city(&c, 2.0);
+        // Before: a tile whose centre is 0.6 m outside the west shore (x = 30 m) can be stood on.
+        let west = v2(29.0 / 2.0, 40.0 / 2.0);
+        assert!(m.walkable_at(west));
+        assert!(m.fence_shore(&c, "Ao", 0.6, 3.0));
+        assert!(!m.walkable_at(west), "the shore is fenced");
+        assert!(m.walkable_at(v2(26.0 / 2.0, 40.0 / 2.0)), "the path along the shore is still there");
+        // The bridge still reaches the island from the land.
+        let path = m.path(v2(50.0 / 2.0, 80.0 / 2.0), v2(50.0 / 2.0, 50.0 / 2.0), 20_000);
+        assert!(path.is_some(), "the island can still be reached over the bridge");
+        assert!(!m.fence_shore(&c, "Nowhere", 0.6, 3.0));
+    }
 
     fn spawn() -> (i32, i32) {
         (5, 40)

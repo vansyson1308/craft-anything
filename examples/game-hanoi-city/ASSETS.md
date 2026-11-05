@@ -158,10 +158,13 @@ Mô-đun: mặt tường nằm trong mặt phẳng **z = 0**, nhìn ra **+Z**, c
 | `den_duong_01.glb` | Cột đèn đường Hà Nội, có `emissive`. |
 | `hang_rao_ho.glb` | Đoạn hàng rào sắt thấp ven hồ dài 2 m, lặp được. |
 | `bo_via.glb` | Đoạn bó vỉa đá granite dài 1 m, lặp được. |
-| `ghe_nhua_xanh.glb`, `ghe_nhua_do.glb`, `ban_nhua.glb` | Ghế đẩu nhựa, bàn nhựa vỉa hè. |
-| `xe_may_01…04.glb` | Xe máy số và tay ga **chung chung, không logo hãng**. Có bản đậu (`_dau`) và bản đang chạy kèm người lái đội mũ bảo hiểm (`_chay`). |
+| `ghe_nhua_xanh.glb`, `ghe_nhua_do.glb`, `ban_nhua.glb` | Ghế đẩu nhựa (cao 0,25–0,45 m), bàn nhựa vỉa hè (khoảng 0,6 × 0,6 × 0,5 m). Pivot giữa đáy. Game xếp 3–4 ghế quanh một bàn trước khoảng 1/5 số cửa hàng. |
+| `xe_may_01…04.glb` | Xe máy số và tay ga **chung chung, không logo hãng**. Có bản đậu (`_dau`) và bản đang chạy kèm người lái đội mũ bảo hiểm (`_chay`). Bản `_dau`: dựng chân chống, hơi nghiêng, dài khoảng 1,9 m; pivot ở mặt đất giữa hai bánh, **đầu xe hướng +Z**. Game dựng 1–3 chiếc, đầu quay vào tường, trước khoảng một nửa số cửa hàng. |
 | `xe_dap_tho.glb`, `ganh_hang_rong.glb`, `xe_banh_mi.glb` | Xe đạp chở hàng, gánh hàng rong, xe bánh mì của cô Hằng. |
-| `thung_rac.glb`, `chau_cay.glb`, `cot_dien_day.glb` | Thùng rác, chậu cây, cột điện chằng chịt dây. |
+| `thung_rac.glb`, `chau_cay.glb`, `cot_dien_day.glb` | Thùng rác, chậu cây (pivot giữa đáy; game đặt sát tường cạnh cửa hàng), cột điện chằng chịt dây. |
+| `day_dien_ngang.glb` | Một bó dây điện, dây cáp chùng võng, dài 8 m, căng ngang ngõ ở độ cao 5–7 m, lặp được. |
+| `co_do.glb` | Cờ đỏ sao vàng cắm cán nghiêng trên mặt tiền, có xương hoặc morph để bay nhẹ. Pivot ở chân cán. |
+| `dieu_hoa_cuc_nong.glb`, `bien_hieu_dung.glb` | Cục nóng điều hoà treo tường; biển hiệu dựng trên vỉa hè (mặt chữ để trống, vật liệu `sign_text`). |
 | `dep_to_ong.glb`, `so_tay.glb`, `thung_hang.glb` | Đồ nhặt được trong game: đôi dép tổ ong (ném để đánh lạc hướng), sổ ghi chép của bọn trộm (manh mối), thùng hàng nhỏ (chiến lợi phẩm). Pivot giữa đáy, dài 0,25–0,6 m. |
 | `den_long_01…03.glb` | Đèn lồng phố Hàng Mã (đỏ, vàng), `emissive`, treo được trên dây. |
 | `toa_tau.glb`, `dau_may.glb` | Toa tàu khách và đầu máy kiểu Đường sắt Việt Nam (xanh lam sọc trắng/vàng), **không logo thật**, dài khoảng 20 m. |
@@ -177,7 +180,7 @@ nền trong suốt 512 × 1024) cho tầm xa. Lá dùng `alphaMode: MASK`.
 Mỗi thư mục gồm `basecolor.png`, `normal.png`, `orm.png`, 2048 × 2048, lặp liền mạch, kèm
 `info.json` ghi số mét mỗi ảnh phủ:
 
-`via_he_da_xam` (vỉa hè lát đá xám như ảnh mẫu), `bo_via_granite`, `duong_nhua` (có vết bẩn),
+`via_he_da_xam` (vỉa hè lát đá xám như ảnh mẫu), `via_he_gach_do` (gạch đỏ lát vỉa hè phố cổ, có viên vỡ, mòn, vết dầu), `bo_via_granite`, `duong_nhua` (có vết bẩn),
 `duong_nhua_vach` (vạch kẻ trắng), `gach_lat_ho` (lối dạo ven hồ), `co`, `dat_goc_cay`,
 `nuoc_ho` (chỉ cần `normal.png` sóng nhẹ, lặp), `tuong_vua_vang`, `tuong_vua_kem`, `ngoi_do`, `be_tong_mai`.
 

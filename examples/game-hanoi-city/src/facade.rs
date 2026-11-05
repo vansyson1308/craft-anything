@@ -77,6 +77,27 @@ pub struct PropSlot {
     pub at: Transform,
     pub upto: f32,
     pub street: Option<u16>,
+    /// Other files that may stand here instead (variants of the same thing): one of those
+    /// delivered is picked, the same one every time for this spot.
+    pub alts: &'static [&'static str],
+}
+
+impl PropSlot {
+    pub fn new(file: &'static str, at: Transform, upto: f32) -> PropSlot {
+        PropSlot { file, at, upto, street: None, alts: &[] }
+    }
+
+    /// The file to stand here among those delivered: the slot's own if it was delivered, else a
+    /// delivered variant picked by where it stands.
+    pub fn pick(&self, delivered: impl Fn(&str) -> bool) -> Option<&'static str> {
+        if delivered(self.file) {
+            return Some(self.file);
+        }
+        let there: Vec<&'static str> = self.alts.iter().copied().filter(|f| delivered(f)).collect();
+        let t = self.at.translation;
+        let h = (t.x * 7.31 + t.z * 3.17).abs() as usize;
+        there.get(h % there.len().max(1)).copied()
+    }
 }
 
 /// A block's street: its front slots, the flat stand-in fronts they replace, and its furniture.
@@ -221,7 +242,7 @@ pub fn stream(
                     }
                 }
                 for p in &block.props {
-                    let Some(entry) = hq.get(p.file) else { continue };
+                    let Some(entry) = p.pick(|f| hq.get(f).is_some()).and_then(|f| hq.get(f)) else { continue };
                     let levels = crate::hq::levels_of(entry);
                     let n = levels.len();
                     let upto = (0..n).map(|i| p.upto * (i + 1) as f32 / n as f32).collect();
