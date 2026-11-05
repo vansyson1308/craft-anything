@@ -187,7 +187,7 @@ struct Look {
     spawned: bool,
 }
 
-fn look_from_page(sites: &[hq::Site], facades: &facade::Facades) -> Option<Look> {
+fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> Option<Look> {
     let which = render::page_query("look");
     if which.is_empty() {
         return None;
@@ -204,26 +204,36 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades) -> Option<Look>
             Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, spawned: true })
         }
         // The pavement life (tables and stools, else any piece) nearest the bridge's shore end, from
-        // the street at eye level, 4 m out.
+        // the street at eye level, up to 4 m out. In a narrow street 4 m out can be inside the
+        // building across it (the view was black), so the eye is moved in until the map is open
+        // all the way to it, or the next piece is tried.
         "streetlife" => {
-            let props = facades.blocks.iter().flat_map(|b| b.props.iter());
-            let near = |files: &[&str]| {
-                props
-                    .clone()
-                    .filter(|p| files.contains(&p.file) || p.alts.iter().any(|a| files.contains(a)))
-                    .min_by(|a, b| a.at.translation.distance(shore).total_cmp(&b.at.translation.distance(shore)))
-            };
-            let all: Vec<&str> = [dressing::PARKED_BIKES, dressing::STOOLS, &[dressing::TABLE, dressing::PLANT, dressing::BIN]].concat();
-            let p = near(&[dressing::TABLE]).or_else(|| near(&all))?;
-            let slot = facades
+            let open = |v: Vec3| map.walkable_at(V2 { x: v.x / TILE_M, y: v.z / TILE_M });
+            let ground: Vec<&facade::Slot> = facades
                 .blocks
                 .iter()
                 .flat_map(|b| b.slots.iter())
                 .filter(|s| matches!(s.storey, facade::Storey::Ground | facade::Storey::FrenchGround))
-                .min_by(|a, b| a.corner.distance(p.at.translation).total_cmp(&b.corner.distance(p.at.translation)))?;
-            let out = slot.transform().rotation * Vec3::Z;
-            let at = p.at.translation;
-            Some(Look { eye: at + out * 4.2 + Vec3::Y * 1.6, target: at + Vec3::Y * 0.35, lineup: None, spawned: true })
+                .collect();
+            let view = |p: &facade::PropSlot| {
+                let at = p.at.translation;
+                let slot = ground.iter().min_by(|a, b| a.corner.distance(at).total_cmp(&b.corner.distance(at)))?;
+                let out = slot.transform().rotation * Vec3::Z;
+                let away = eye_distance(at, out, &open)?;
+                Some(Look { eye: at + out * away + Vec3::Y * 1.6, target: at + Vec3::Y * 0.35, lineup: None, spawned: true })
+            };
+            let nearest = |files: &[&str]| {
+                let mut props: Vec<&facade::PropSlot> = facades
+                    .blocks
+                    .iter()
+                    .flat_map(|b| b.props.iter())
+                    .filter(|p| files.contains(&p.file) || p.alts.iter().any(|a| files.contains(a)))
+                    .collect();
+                props.sort_by(|a, b| a.at.translation.distance(shore).total_cmp(&b.at.translation.distance(shore)));
+                props.into_iter().take(40).find_map(view)
+            };
+            let all: Vec<&str> = [dressing::PARKED_BIKES, dressing::STOOLS, &[dressing::TABLE, dressing::PLANT, dressing::BIN]].concat();
+            nearest(&[dressing::TABLE]).or_else(|| nearest(&all))
         }
         "bridge" => Some(Look { eye: bridge.at + right * 38.0 - north * 6.0 + Vec3::Y * 11.0, target: bridge.at + Vec3::Y * 1.0, lineup: None, spawned: true }),
         // From the lakeside path just north of the bridge's shore end, looking along it to the island.
@@ -233,6 +243,30 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades) -> Option<Look>
             lineup: None,
             spawned: true,
         }),
+    }
+}
+
+/// How far out from a pavement piece (along `out`) a review camera can stand: the farthest of
+/// 4.2, 3.6, 3.0 and 2.5 m with open ground every 0.5 m from the piece to 0.8 m past the eye, so the
+/// eye is not inside, or against, the building across the street.
+fn eye_distance(at: Vec3, out: Vec3, open: &dyn Fn(Vec3) -> bool) -> Option<f32> {
+    [4.2f32, 3.6, 3.0, 2.5].into_iter().find(|&d| {
+        let steps = ((d + 0.8) / 0.5).ceil() as i32;
+        (1..=steps).all(|i| open(at + out * (i as f32 * 0.5).min(d + 0.8)))
+    })
+}
+
+#[cfg(test)]
+mod look_tests {
+    use super::*;
+
+    #[test]
+    fn the_eye_stays_out_of_the_building_across_the_street() {
+        // Open for 4 m along +X, then a wall.
+        let open = |v: Vec3| v.x < 4.0;
+        assert_eq!(eye_distance(Vec3::ZERO, Vec3::X, &open), Some(3.0));
+        assert_eq!(eye_distance(Vec3::ZERO, Vec3::X, &|_| true), Some(4.2));
+        assert_eq!(eye_distance(Vec3::ZERO, Vec3::X, &|v: Vec3| v.x < 2.0), None);
     }
 }
 
@@ -350,7 +384,7 @@ fn setup(
         .collect();
     let m = world::materials(&assets, &mut mats);
     let built = world::spawn_city(&mut commands, &mut meshes, &m, &city, &map, Vec2::new(lake.x, lake.z), &signs);
-    let look = look_from_page(&built.sites, &built.facades);
+    let look = look_from_page(&built.sites, &built.facades, &map);
     commands.insert_resource(hq::Sites(built.sites));
     commands.insert_resource(built.facades);
     commands.insert_resource(crowd::Promenade::new(built.promenade));
