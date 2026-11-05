@@ -99,10 +99,12 @@ Tổng dài khoảng 150 mm, giữ nguyên gốc ở giữa thân. Một atlas 5
 
 ## 4. Phía game sẽ làm
 
-- Khung **`?look=streetlife` ra màn hình đen**: bạn đã chứng minh không phải do tài nguyên, nên đây là lỗi camera
-  của phía game. Camera có thể đặt vào trong một mô-đun cửa hàng ở bên kia ngõ hẹp. Phía game sẽ sửa.
-- **Tư thế cầm đèn pin:** phía game tính hướng của xương `hand_r` để đèn nằm đúng trong tay. Bạn chỉ cần giữ quy
-  ước: gốc ở chỗ cầm, kính quay ra +Z.
+- **Đã sửa:** khung **`?look=streetlife` ra màn hình đen**. Đúng là lỗi camera của phía game: camera đứng cách bộ
+  bàn ghế 4,2 m, mà ở chỗ đó phố hẹp nên điểm ấy nằm trong toà nhà bên kia. Giờ camera lùi vào (4,2 → 3,6 → 3,0
+  → 2,5 m) tới khi đường từ bàn tới mắt thoáng hẳn, nếu không được thì chọn bộ bàn ghế kế tiếp.
+- **Đã sửa:** **tư thế cầm đèn pin.** Trước đây gốc đèn đặt ở cổ tay. Giờ đèn nằm giữa lòng bàn tay
+  (`hand_r`: X −0,035, Y 0,075 m) và nghiêng xuống, nên khi đi, đèn chĩa ra trước và hơi chúc xuống, theo hướng
+  ánh sáng. Bạn chỉ cần giữ quy ước: gốc ở giữa thân đèn, kính quay ra +Z.
 - **Cửa lồng mở theo khớp `door_hinge`**, cùng âm thanh 3D: tiếng rên của chó dẫn người chơi tới lồng, tiếng sủa
   mừng khi lồng mở. Phía game sẽ nối khi có bộ âm thanh đạt.
 

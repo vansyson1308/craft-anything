@@ -282,6 +282,17 @@ pub fn torch(commands: &mut Commands, holder: Entity) {
 const TORCH_FILE: &str = "people/den_pin.glb";
 const HAND: &str = "hand_r";
 
+/// Where the torch sits in the hand, in the hand bone's space. The bone starts at the wrist and runs
+/// along +Y to the knuckles (about 0.1 m); +Z goes from the little finger to the index finger, and
+/// the palm faces −X (measured on `people/minh.glb`). A fist closes around a line from the little
+/// finger to the thumb, so the torch's own convention (its origin mid-body, its lens towards +Z)
+/// needs only a move from the wrist to the middle of the palm, and a tilt in the palm's plane: with
+/// the arm hanging while walking, the hand alone would point the torch 32° up, and people carry one
+/// tipped a little down, towards where its light falls (about 11° down with this tilt, from the
+/// hand's pose measured in a night raid; see the test).
+const GRIP: Vec3 = Vec3::new(-0.035, 0.075, 0.0);
+const GRIP_TILT: f32 = -0.75;
+
 /// The torch model in a hand, and the light it belongs to.
 #[derive(Component)]
 pub struct HandTorch(Entity);
@@ -314,7 +325,7 @@ pub fn torch_prop(
     }
     for (light, holder) in &torches {
         let Some(hand) = kids.iter_descendants(holder.parent()).find(|k| names.get(*k).is_ok_and(|n| n.as_str() == HAND)) else { continue };
-        if let Some(m) = crate::hq::prop(&mut commands, &hq, &[TORCH_FILE], Transform::IDENTITY) {
+        if let Some(m) = crate::hq::prop(&mut commands, &hq, &[TORCH_FILE], Transform::from_translation(GRIP).with_rotation(Quat::from_rotation_x(GRIP_TILT))) {
             commands.entity(m).insert(HandTorch(light));
             commands.entity(hand).add_child(m);
             commands.entity(light).insert(Held);
@@ -355,6 +366,21 @@ pub fn wet(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_torch_points_ahead_and_a_little_down_while_walking() {
+        // The hand bone's axes in Minh's own space (+Z ahead, +Y up), measured while walking in a
+        // night raid: its Z (towards the index finger) and its Y (down the fingers).
+        let z = Vec3::new(0.06, 0.52, 0.85).normalize();
+        let y = Vec3::new(0.0, -0.85, 0.52).normalize();
+        let hand = Quat::from_mat3(&Mat3::from_cols(y.cross(z), y, z));
+        let lens = hand * Quat::from_rotation_x(GRIP_TILT) * Vec3::Z;
+        let down = (-lens.y).asin().to_degrees();
+        assert!(lens.z > 0.9, "ahead: {lens:?}");
+        assert!((5.0..25.0).contains(&down), "{down}° down");
+        // In the middle of the palm, a few centimetres from the wrist.
+        assert!((0.05..0.1).contains(&GRIP.length()));
+    }
 
     fn at(x: f32) -> Glow {
         Glow::lantern(Vec3::new(x, 0.0, 0.0), true)
