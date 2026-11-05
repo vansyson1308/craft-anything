@@ -56,7 +56,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tang_01.jpg",
       "in_game_preview": "review/mat_tien_tang_01.jpg"
@@ -82,7 +83,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tang_02.jpg",
       "in_game_preview": "review/mat_tien_tang_02.jpg"
@@ -108,7 +110,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tang_03.jpg",
       "in_game_preview": "review/mat_tien_tang_03.jpg"
@@ -134,7 +137,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tang_04.jpg",
       "in_game_preview": "review/mat_tien_tang_04.jpg"
@@ -160,7 +164,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tret_01.jpg",
       "in_game_preview": "review/mat_tien_tret_01.jpg"
@@ -186,7 +191,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tret_02.jpg",
       "in_game_preview": "review/mat_tien_tret_02.jpg"
@@ -212,7 +218,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tret_03.jpg",
       "in_game_preview": "review/mat_tien_tret_03.jpg"
@@ -238,7 +245,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/mat_tien_tret_04.jpg",
       "in_game_preview": "review/mat_tien_tret_04.jpg"
@@ -617,7 +625,8 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey.",
+        "Batch 03 interim: shared joinery emission disabled; dedicated illuminated window or lamp glass materials are not yet supplied. Existing review images predate this change."
       ],
       "preview": "previews/den_duong_01.jpg",
       "in_game_preview": "review/den_duong_01.jpg"

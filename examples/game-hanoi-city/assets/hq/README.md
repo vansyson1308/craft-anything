@@ -4,6 +4,10 @@ This replaces the five batch 01 models and adds the requested batch 02 inventory
 
 The manifest contains measured bounds, triangle counts, LOD paths, skeleton/animation metadata, tools, licence and limitations. Existing asset names are preserved. Human files use the exact original 65-joint rig and the game's external 43-animation library. Dog files contain Idle, Walk, Run, Sit and Bark. Source materials and editable Blender files are retained outside the repository.
 
+## Batch 03 interim night fix
+
+The shared joinery material in the street lamp and the eight facade modules (including LOD1) has its emissive factor set to zero. The original textures and geometry are unchanged. This stops the metal from emitting, but it also leaves these models without emissive lamp glass or lit windows until the dedicated materials are authored. The existing review images predate this change; it has not yet been checked in Blender or in the game at night. The remainder of batch 03 is not delivered here.
+
 ## Review and integration
 
 Open [REVIEW.md](REVIEW.md) for side-by-side Cycles and actual Bevy images of all 33 model/material items. All review images are JPEG, at most 1280 px. Four full-manifest review cameras are included. The full lineup view is obstructed by the new gate/nearby facade placement, so a separately labelled isolated lineup is also included. Individual model views use the actual Bevy game with only the requested HQ asset enabled and fallback surroundings. Material views use temporary 2 m swatches, not a claim that every ground placement was visually inspected.
