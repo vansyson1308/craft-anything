@@ -11,6 +11,8 @@ không API.
 the desktop browser (WebGPU, WebGL2 fallback). Its real art is delivered separately into
 `assets/hq/` to the spec in [ASSETS.md](ASSETS.md).*
 
+Thiết kế lối chơi (vòng lặp, cảm xúc, dẫn đường, độ khó): [DESIGN.md](DESIGN.md).
+
 ## Hình và kỹ thuật: hai phần tách bạch
 
 Game làm như cách bản GTA V từng được đưa lên web: người làm hình làm hình, game lo phần đưa hình
@@ -47,7 +49,8 @@ lên web.
     - mặt đường ướt phản chiếu đèn;
     - đèn pin trong tay Minh (mô hình đèn pin gắn vào tay khi agent nộp `people/den_pin.glb`);
   - mỗi bản LOD chỉ tải khi lần đầu cần tới; người chơi không lại gần một công trình thì không tải bản đẹp nhất của nó;
-  - mipmap và lọc anisotropic cho mọi texture;
+  - mipmap và lọc anisotropic cho mọi texture, tính dần từng hàng, mỗi khung hình tối đa 4 ms, để
+    đi vào phố mới không bị khựng;
   - nhân vật dùng chung 43 động tác qua khung xương 65 xương, hoặc dùng động tác có sẵn trong file;
   - WebGPU có bầu trời vật lý, ánh sáng bầu trời, bóng đổ mềm nhiều tầng, SSAO, bloom, TAA.
     WebGL2 dùng bản gọn hơn.
@@ -120,6 +123,7 @@ máy tính.
 | `src/dressing.rs` | Đồ trên vỉa hè trước cửa hàng: xe máy, bàn ghế nhựa, chậu cây, thùng rác |
 | `src/render.rs` | Ánh sáng và hậu kỳ cho WebGPU và WebGL2, công tắc hiệu ứng |
 | `src/night.rs` | Ban đêm: trăng, đèn đường, đèn lồng, đường ướt, đèn pin |
+| `src/guide.rs` | Dẫn đường: cột sáng ở mục tiêu, la bàn, tầm nhìn của trộm trên mặt đất, dấu ? và !, lời mẹo đúng lúc |
 | `src/mips.rs` | Mipmap và lọc anisotropic cho texture |
 | `src/actors.rs` | Nhân vật, chó, hoạt ảnh, đồ vật |
 | `src/main.rs` | Vòng chơi, camera góc thứ ba, chuột và phím, HUD, các màn hình, lưu game |

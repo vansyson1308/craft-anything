@@ -41,6 +41,15 @@ game ở ngay sau lưng nhân vật, ngang tầm mắt người.
 
 ## Kỹ thuật cho đồ lặp nhiều lần
 
+- **Dựng đồ cứng bằng code:** với vật có hình khối rõ ràng, nên dựng bằng
+  [sand3d](https://github.com/Sandflow-ai/sand3d) (Apache-2.0, chạy trên Blender `bpy`, xuất GLB). Những vật đó
+  là ghế đẩu, bàn nhựa, xe đẩy, cục nóng điều hoà, bồn nước, cột đèn, lồng chó, khung đèn lồng.
+  - Mỗi món là một chương trình ngắn, các phần có tên.
+  - Cùng chương trình cho ra cùng một mô hình, nên dễ sửa và dễ làm biến thể (đổi kích thước, số chân, màu).
+  - Sau đó vẫn UV, gán vật liệu quét CC0 và bake AO như mục A của AGENT_PROMPT_02.
+  - Ghi `sand3d` cùng phiên bản trong `made_with` và `SOURCES.md`.
+  - Không dùng cho người, chó, cây: những thứ đó vẫn sculpt và retopo.
+
 - **Texture dùng chung:** gom các món cùng chất liệu (nhựa, sơn xe, kim loại) vào một atlas 1024 px cho
   cả nhóm. Như vậy game vẽ hàng trăm chiếc xe với rất ít lần đổi vật liệu.
 - **Biến thể màu không cần hình mới:** cùng một khung xe, đổi màu thân bằng atlas, nộp thành

@@ -745,6 +745,15 @@ impl Map {
         let cathedral = at(places::CATHEDRAL).map(|p| near(&m, p + v2(0.0, 25.0 / tile_m)));
         let start = |p: Option<V2>| near(&m, p.unwrap_or(lake));
         let warehouse = bridge_end.map(|_| ()).and(at(places::QUAN_CHUONG)).map(|p| p + v2(0.0, -150.0 / tile_m));
+        // Each chapter starts a short walk outside its zone, on the side toward the lake: time to
+        // take in the street and see where to go, not minutes of empty road before anything happens.
+        let approach = |c: Option<V2>, half_m: f32| {
+            c.map(|c| {
+                let d = lake - c;
+                let len = d.len();
+                if len < 1e-3 { c } else { c + d * ((half_m + APPROACH_M) / tile_m / len).min(1.0) }
+            })
+        };
         let scenario = Scenario {
             zones: vec![
                 zone(at(places::HANG_MA), 90.0),
@@ -754,11 +763,11 @@ impl Map {
                 zone(warehouse, 70.0),
             ],
             spawns: vec![
-                start(at(places::DINH_TIEN_HOANG)),
-                start(cathedral),
-                start(at(places::HANG_MA).map(|p| p + v2(0.0, 120.0 / tile_m))),
-                start(at(places::DINH_TIEN_HOANG)),
-                start(cathedral),
+                start(approach(at(places::HANG_MA), 90.0)),
+                start(approach(at(places::TA_HIEN), 90.0)),
+                start(approach(at(places::DONG_XUAN), 100.0)),
+                start(approach(at(places::PHUNG_HUNG), 160.0)),
+                start(approach(warehouse, 70.0)),
             ],
             free_spawns: vec![start(cathedral), start(Some(lake)), start(at(places::OPERA))],
             puppy_cage: start(warehouse),
@@ -957,6 +966,9 @@ fn seg_dist(p: V2, a: V2, b: V2) -> f32 {
     let t = if len2 > 1e-9 { ((p - a).dot(ab) / len2).clamp(0.0, 1.0) } else { 0.0 };
     p.dist(a + ab * t)
 }
+
+/// How far outside its zone a chapter starts (metres).
+pub const APPROACH_M: f32 = 150.0;
 
 /// Joins lines that share end points and returns the longest chain.
 fn longest_chain(lines: &[Vec<Dm>]) -> Option<Vec<Dm>> {
