@@ -2,7 +2,7 @@
   "uri": "people/long_cho.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-05T21:32:48.724Z",
+  "validatedAt": "2026-11-05T23:01:09.809Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
@@ -19,15 +19,15 @@
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 1849648
+        "byteLength": 3853384
       },
       {
         "pointer": "/images/0",
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 512,
-          "height": 512,
+          "width": 1024,
+          "height": 1024,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -39,8 +39,8 @@
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 512,
-          "height": 512,
+          "width": 1024,
+          "height": 1024,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -52,34 +52,8 @@
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 512,
-          "height": 512,
-          "format": "rgb",
-          "primaries": "srgb",
-          "transfer": "srgb",
-          "bits": 8
-        }
-      },
-      {
-        "pointer": "/images/3",
-        "mimeType": "image/png",
-        "storage": "buffer-view",
-        "image": {
-          "width": 512,
-          "height": 512,
-          "format": "rgb",
-          "primaries": "srgb",
-          "transfer": "srgb",
-          "bits": 8
-        }
-      },
-      {
-        "pointer": "/images/4",
-        "mimeType": "image/png",
-        "storage": "buffer-view",
-        "image": {
-          "width": 512,
-          "height": 512,
+          "width": 1024,
+          "height": 1024,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -88,14 +62,14 @@
       }
     ],
     "animationCount": 0,
-    "materialCount": 2,
+    "materialCount": 1,
     "hasMorphTargets": false,
     "hasSkins": false,
     "hasTextures": true,
     "hasDefaultScene": true,
-    "drawCallCount": 4,
-    "totalVertexCount": 2360,
-    "totalTriangleCount": 1204,
+    "drawCallCount": 2,
+    "totalVertexCount": 2824,
+    "totalTriangleCount": 1664,
     "maxUVs": 1,
     "maxInfluences": 0,
     "maxAttributes": 4

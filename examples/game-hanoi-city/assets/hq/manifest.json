@@ -5,16 +5,16 @@
       "file": "people/den_pin.glb",
       "lods": ["people/den_pin_lod1.glb"],
       "kind": "prop",
-      "size_m": [0.04, 0.04, 0.151],
-      "triangles": [828, 324],
-      "textures": 3,
+      "size_m": [0.038, 0.038, 0.148],
+      "triangles": [1136, 400],
+      "textures": 4,
       "skeleton": "",
       "animations": [],
-      "license": "CC0-1.0; original construction and CC0 scan, see SOURCES.md",
-      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
+      "license": "CC0-1.0; original construction, see SOURCES.md",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Python/NumPy, glTF Validator",
       "notes": [
-        "Draft: lens faces +Z and the root is at the grip; lamp_glass is the sole emissive material.",
-        "LOD0 metal UV coverage measured approximately 73.7%; high-poly normal and AO are baked. Hand attachment, seams and in-game appearance still require review."
+        "QC draft: lens faces +Z and the root is at the grip; lamp_glass uses an emissive texture over a reflector.",
+        "Four 512px texture images include an emissive map; the knurl is procedural normal detail combined with a high-to-low bake, and AO is baked. The measured grip UV scale is about 2.75 px/mm; visual inspection of knurl spacing and edge wear, UV seams, hand attachment and in-game appearance remain pending."
       ]
     },
     {
@@ -437,18 +437,18 @@
         0.733
       ],
       "triangles": [
-        1204,
-        356
+        1664,
+        424
       ],
-      "textures": 5,
+      "textures": 3,
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
         "Draft revision: named door_hinge holds a 0-110 degree revolute joint in glTF extras; game-side interaction is not yet implemented.",
-        "LOD0 uses two 512px atlases with measured UV coverage 87.3% and 87.5%, approximately 5.7 pixels per cm; LOD1 uses 256px atlases.",
-        "Game day/night captures, listening review of the opening sound, and close inspection of UV seams and LOD transitions remain outstanding. Existing cage review images and earlier aggregate reports predate this revision."
+        "LOD0 uses one 1024px atlas set; LOD1 uses one 512px set. The movable door and fixed body share one material and remain separate draw calls.",
+        "Four Cycles views and game day/night close-ups are supplied. One test placement is raised 0.15 m to clear the curb, and the lit night view is beneath an existing street lamp. Opening-sound listening, UV seams, LOD transitions and artistic acceptance remain outstanding."
       ]
     },
     {

@@ -25,7 +25,7 @@ def unwrap(meshes, size=512, padding=1, axis_override=None):
         low = [min(p[i] for p in positions) for i in range(3)]
         high = [max(p[i] for p in positions) for i in range(3)]
         spans = [high[i] - low[i] for i in range(3)]
-        if obj.name.startswith("padlock_body"):
+        if obj.name.startswith(("padlock_body", "tray_floor", "paper_")):
             faces = {}
             for poly in data.polygons:
                 axis = max(range(3), key=lambda i: abs(poly.normal[i]))

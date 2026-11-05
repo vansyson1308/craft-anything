@@ -14,34 +14,34 @@ original names. Output directories in this example are scratch directories.
 ```sh
 python sand3d/long_cho.py work/cage.glb
 python sand3d/long_cho.py work/cage_high.glb --high-poly
-python sand3d/finish_cage_two.py work/cage.glb scans work/cage_result --high work/cage_high.glb
+python sand3d/finish_cage_one.py work/cage.glb work/cage_high.glb scans work/cage_result
 python sand3d/long_cho.py work/cage_lod.glb --lod
 python sand3d/long_cho.py work/cage_lod_high.glb --lod --high-poly
-python sand3d/finish_cage_two.py work/cage_lod.glb scans work/cage_lod_result --texture-size 256 --high work/cage_lod_high.glb
+python sand3d/finish_cage_one.py work/cage_lod.glb work/cage_lod_high.glb scans work/cage_lod_result --texture-size 512
 ```
 
-The finish pass packs two UV atlases, bakes AO and selected-to-active normals,
-combines the normal bake with the scan, and joins static and moving parts by
-material. The hinged door remains separate. Review the result in Blender and
+The finish pass packs one UV atlas set, bakes AO and selected-to-active normals,
+combines the normal bake with the scan, and joins static and moving parts. The
+hinged door remains separate. Review the result in Blender and
 the real game, run Khronos glTF Validator, and update the manifest and reports
 before replacing an asset. The scripts do not guarantee artistic acceptance.
 
 ## Flashlight
 
-Using the same environment and scan directory:
+Using the same environment:
 
 ```sh
-python sand3d/den_pin.py work/flash.glb
-python sand3d/den_pin.py work/flash_high.glb --high-poly
-python sand3d/finish_flashlight.py work/flash.glb work/flash_high.glb scans work/flash_result
-python sand3d/den_pin.py work/flash_lod.glb --lod
-python sand3d/den_pin.py work/flash_lod_high.glb --lod --high-poly
-python sand3d/finish_flashlight.py work/flash_lod.glb work/flash_lod_high.glb scans work/flash_lod_result --texture-size 256
+python sand3d/flashlight_qc_geometry.py work/flash.glb
+python sand3d/flashlight_qc_geometry.py work/flash_high.glb --high-poly
+python sand3d/finish_flashlight_qc.py work/flash.glb work/flash_result --high work/flash_high.glb
+python sand3d/flashlight_qc_geometry.py work/flash_lod.glb --lod
+python sand3d/finish_flashlight_qc.py work/flash_lod.glb work/flash_lod_result --size 256 --high work/flash_high.glb
 ```
 
-The metal UV atlas, high-to-low normal and AO are baked; the lens has its own
-emissive `lamp_glass` material. Verify `hand_r` placement in-game before
-acceptance.
+The QC draft combines high-to-low normal baking with procedural normal detail
+on the grip, a baked AO channel and separate reflector, rubber and emissive
+`lamp_glass` materials. Knurl spacing, edge wear, `hand_r` placement and in-game
+appearance remain to be checked before acceptance.
 
 ## Audio
 

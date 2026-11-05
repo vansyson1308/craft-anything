@@ -1,12 +1,12 @@
-"""Draft cage geometry. Run with sand3d 1.6.2 / Blender 4.5 Python.
+"""Editable cage geometry. Run with sand3d 1.6.2 / Blender 4.5 Python.
 
-This is an editable blockout, not a delivery-ready asset: UVs, scanned metal,
-high-to-low bakes and LOD remain to be authored and visually reviewed.
+The finish pipeline supplies the UV, scanned material and bakes.
 Dimensions below are expressed in millimetres and converted to metres before
 construction. Blender Z is up; glTF export converts to Y-up.
 """
 
 import argparse
+import math
 from pathlib import Path
 
 import bpy  # Initializes Blender's Python modules before importing bmesh.
@@ -74,6 +74,33 @@ def build_cage(lod=False, high_poly=False):
         for i in range(1, cross_count + 1):
             x = -441 + i * 882 / (cross_count + 1)
             fixed.append(bar(f"{face}_bar_{i:02}", (x, -341, z), (x, 341, z)))
+
+    # A shallow tray and two overlapping sheets of crumpled old newspaper.
+    # The paper's ink and stains are authored into the shared atlas, not logos.
+    tray = s3d.at(s3d.box("tray_floor", .836, .616, .012), z=.012)
+    paper = s3d.at(s3d.box("paper_main", .695, .50, .002), x=-.025, y=.015, z=.025 if lod else .034)
+    scrap = s3d.at(s3d.box("paper_scrap", .23, .32, .002), x=.25, y=-.10, z=.027 if lod else .046, rz=8)
+    if not lod:
+        for sheet in (paper, scrap):
+            bm = bmesh.new()
+            bm.from_mesh(sheet.data)
+            bmesh.ops.subdivide_edges(bm, edges=list(bm.edges), cuts=3, use_grid_fill=True)
+            for vertex in bm.verts:
+                x, y = vertex.co.x, vertex.co.y
+                vertex.co.z += .008 * math.sin(34*x + 19*y) + .004 * math.sin(67*y - 11*x)
+            bm.normal_update()
+            bm.to_mesh(sheet.data)
+            bm.free()
+    for obj in (tray, paper, scrap):
+        s3d.material(obj, "painted_metal", color="#4b4a40", roughness=.78, metallic=.75)
+        fixed.append(obj)
+    # Twine temporarily knots the right front corner, with a loose hanging end.
+    fixed.extend([
+        bar("rope_front", (422, -357, 480), (449, -357, 480), 3),
+        bar("rope_side", (449, -357, 480), (449, -325, 480), 3),
+        bar("rope_back", (449, -325, 480), (422, -325, 480), 3),
+        bar("rope_end", (449, -357, 480), (449, -357, 390), 3),
+    ])
 
     # Front doorway: outer frame is fixed; door rotates around its left edge.
     for x, side in ((-360, "left"), (360, "right")):
