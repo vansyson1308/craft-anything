@@ -388,6 +388,13 @@ wrote its own pak reader in Python for a large archive. Tools an AI drives make 
 can (folders), take whole sets in one call, and every brief says to fix the call rather than
 replace the tool. Read an AI run's transcript for tools it gave up on.
 
+**A shore drawn in 2 m tiles.** The game's walking map counts a tile as water only when its
+centre is in the lake, so a shore tile let Minh stand more than a metre out over Hồ Gươm, past a
+railing that was only scenery; a recorded video showed him walking on the water. A first guess
+(a curved bridge under a straight model) was wrong and only measuring the map's data showed it.
+Where a coarse grid meets an edge people can see, fence it to where the visible barrier stands
+(`Map::fence_shore`), and measure before fixing.
+
 **Two engines, two address spaces.** Ghidra loads a position-independent ELF (lowest segment at
 0) at 0x100000, while the built-in engine reads it where its headers say. Handing Ghidra our
 address found nothing there, and Deep mode quietly fell back to the built-in decompiler for every

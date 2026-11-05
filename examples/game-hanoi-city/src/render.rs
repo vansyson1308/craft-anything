@@ -63,10 +63,19 @@ pub fn glow(r: f32, g: f32, b: f32) -> LinearRgba {
 #[derive(Component)]
 pub struct Sun;
 
-/// Where the sun stands: late afternoon, low in the west-south-west, so the streets running
-/// east-west catch long shadows and the lake turns gold.
+/// Where the sun stands: late morning, high in the south-east, so the streets are bright with
+/// sharp shadows under the trees and awnings, the way Hanoi looks on a clear day.
 fn sun_transform() -> Transform {
-    Transform::from_rotation(Quat::from_euler(EulerRot::YXZ, 1.15, -0.26, 0.0))
+    Transform::from_rotation(Quat::from_euler(EulerRot::YXZ, 0.6, -0.95, 0.0))
+}
+
+/// A gentle grade toward a sunny street photo: a little more colour and a little more contrast.
+/// The same on both renderers.
+fn grade() -> bevy::render::view::ColorGrading {
+    use bevy::render::view::{ColorGrading, ColorGradingGlobal, ColorGradingSection};
+    let global = ColorGradingGlobal { post_saturation: 1.05, ..default() };
+    let section = ColorGradingSection { saturation: 1.1, contrast: 1.05, ..default() };
+    ColorGrading::with_identical_sections(global, section)
 }
 
 /// The sun and the global light settings.
@@ -92,11 +101,11 @@ pub fn spawn_sun(commands: &mut Commands, fx: Fx) {
     } else {
         // WebGL2 gets a single cascade, so it is a large one.
         commands.insert_resource(DirectionalLightShadowMap { size: 4096 });
-        commands.insert_resource(ClearColor(Color::srgb(0.56, 0.66, 0.82)));
-        commands.insert_resource(GlobalAmbientLight { color: Color::srgb(0.7, 0.75, 0.95), brightness: 520.0, ..default() });
+        commands.insert_resource(ClearColor(Color::srgb(0.5, 0.66, 0.88)));
+        commands.insert_resource(GlobalAmbientLight { color: Color::srgb(0.72, 0.8, 1.0), brightness: 480.0, ..default() });
         commands.spawn((
             Sun,
-            DirectionalLight { illuminance: 9000.0, color: Color::srgb(1.0, 0.82, 0.62), shadow_maps_enabled: fx.shadows, ..default() },
+            DirectionalLight { illuminance: 8_500.0, color: Color::srgb(1.0, 0.93, 0.82), shadow_maps_enabled: fx.shadows, ..default() },
             sun_transform(),
             if HIGH {
                 CascadeShadowConfigBuilder {
@@ -116,12 +125,12 @@ pub fn spawn_sun(commands: &mut Commands, fx: Fx) {
 
 /// Adds the renderer's settings to the main camera.
 pub fn setup_camera(e: &mut EntityCommands, media: &mut Assets<bevy::light::atmosphere::ScatteringMedium>, fx: Fx) {
-    e.insert(Tonemapping::AgX);
+    e.insert((Tonemapping::AgX, grade()));
     if fx.bloom {
         e.insert(Bloom::NATURAL);
     }
     if !fx.atmo {
-        e.insert(DistanceFog { color: Color::srgb(0.62, 0.68, 0.8), falloff: FogFalloff::Linear { start: 140.0, end: 650.0 }, ..default() });
+        e.insert(DistanceFog { color: Color::srgb(0.62, 0.72, 0.86), falloff: FogFalloff::Linear { start: 200.0, end: 600.0 }, ..default() });
     }
     #[cfg(any(feature = "webgpu", not(target_arch = "wasm32")))]
     {
