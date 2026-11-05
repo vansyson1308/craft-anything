@@ -1,0 +1,77 @@
+{
+  "uri": "people/den_pin.glb",
+  "mimeType": "model/gltf-binary",
+  "validatorVersion": "2.0.0-dev.3.10",
+  "validatedAt": "2026-11-05T21:38:05.822Z",
+  "issues": {
+    "numErrors": 0,
+    "numWarnings": 0,
+    "numInfos": 0,
+    "numHints": 0,
+    "messages": [],
+    "truncated": false
+  },
+  "info": {
+    "version": "2.0",
+    "generator": "Khronos glTF Blender I/O v4.5.51",
+    "resources": [
+      {
+        "pointer": "/buffers/0",
+        "mimeType": "application/gltf-buffer",
+        "storage": "glb",
+        "byteLength": 577340
+      },
+      {
+        "pointer": "/images/0",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/1",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/2",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      }
+    ],
+    "animationCount": 0,
+    "materialCount": 2,
+    "hasMorphTargets": false,
+    "hasSkins": false,
+    "hasTextures": true,
+    "hasDefaultScene": true,
+    "drawCallCount": 2,
+    "totalVertexCount": 1296,
+    "totalTriangleCount": 828,
+    "maxUVs": 1,
+    "maxInfluences": 0,
+    "maxAttributes": 4
+  }
+}

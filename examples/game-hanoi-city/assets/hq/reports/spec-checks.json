@@ -1312,7 +1312,7 @@
     },
     {
       "file": "people/long_cho.glb",
-      "triangles": 1368,
+      "triangles": 1204,
       "triangle_limit": 2000,
       "materials": 2,
       "image_sizes": [
@@ -1340,12 +1340,13 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "53263493a37efdd7bf9800947b1873e841c8a4d5513337802dfa5ef595aebc37",
-      "errors": []
+      "sha256": "2da54bf10c42907813fde0ed1315d71b07ea08df033c902523dd6fe09bdee68e",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other previous aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "people/long_cho_lod1.glb",
-      "triangles": 440,
+      "triangles": 356,
       "triangle_limit": 500,
       "materials": 2,
       "image_sizes": [
@@ -1373,8 +1374,9 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "849705ea13f44d831b7b3536cab625ffc57c8db92b00080f45cc80c98d2a90ef",
-      "errors": []
+      "sha256": "bd13dbe102a012c978b4cc3f37c26835efcf765f0664e1e673be3af1e31dd863",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other previous aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "people/minh.glb",
@@ -2885,6 +2887,58 @@
       "validator_warnings": 0,
       "sha256": "6f8b730be9a48a96498f3c6157d361fe7b635455c506525d64023ee83ea62f29",
       "errors": []
+    },
+    {
+      "file": "people/den_pin.glb",
+      "triangles": 828,
+      "triangle_limit": 1500,
+      "materials": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "b4469b9bd63fd1e05ffc5eeb12bb2aaf65bd851610e148fd4736d27553d91a68",
+      "errors": [],
+      "check_scope": "Triangle count, materials, image dimensions and glTF Validator measured; hand attachment, UV seams and in-game review are pending."
+    },
+    {
+      "file": "people/den_pin_lod1.glb",
+      "triangles": 324,
+      "triangle_limit": 500,
+      "materials": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "exact_original_65_joint_rig": null,
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "4b1186409a3c222d47bdd36a6786638e22e2bb91fac011e0ef41ef2d706697b1",
+      "errors": [],
+      "check_scope": "Triangle count, materials, image dimensions and glTF Validator measured; hand attachment, UV seams and in-game review are pending."
     }
   ],
   "external_animation_count": 43,

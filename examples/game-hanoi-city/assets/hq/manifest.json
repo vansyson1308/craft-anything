@@ -2,6 +2,71 @@
   "version": 1,
   "assets": [
     {
+      "file": "people/den_pin.glb",
+      "lods": ["people/den_pin_lod1.glb"],
+      "kind": "prop",
+      "size_m": [0.04, 0.04, 0.151],
+      "triangles": [828, 324],
+      "textures": 3,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original construction and CC0 scan, see SOURCES.md",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
+      "notes": [
+        "Draft: lens faces +Z and the root is at the grip; lamp_glass is the sole emissive material.",
+        "LOD0 metal UV coverage measured approximately 73.7%; high-poly normal and AO are baked. Hand attachment, seams and in-game appearance still require review."
+      ]
+    },
+    {
+      "file": "audio/cho_rit.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.4 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/cho_sua_01.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -17.1 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/cho_sua_02.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.2 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/cho_sua_03.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.0 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/long_mo.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; themightyglider and forseti1121, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.1 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/ui_bam.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; original synthesized sound",
+      "made_with": "Python/NumPy synthesis and FFmpeg Vorbis",
+      "notes": ["Mono, 44100 Hz; measured integrated loudness -16.4 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/ui_meo.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; original synthesized sound",
+      "made_with": "Python/NumPy synthesis and FFmpeg Vorbis",
+      "notes": ["Mono, 44100 Hz; measured integrated loudness -15.9 LUFS. Listening and in-game review pending."]
+    },
+    {
       "file": "animals/cho_co.glb",
       "lods": [
         "animals/cho_co_lod1.glb"
@@ -367,24 +432,24 @@
       ],
       "kind": "prop",
       "size_m": [
-        0.932,
-        0.7139,
-        0.7485
+        0.9,
+        0.682,
+        0.733
       ],
       "triangles": [
-        1368,
-        440
+        1204,
+        356
       ],
       "textures": 5,
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
-      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
-      ],
-      "preview": "previews/long_cho.jpg",
-      "in_game_preview": "review/long_cho.jpg"
+        "Draft revision: named door_hinge holds a 0-110 degree revolute joint in glTF extras; game-side interaction is not yet implemented.",
+        "LOD0 uses two 512px atlases with measured UV coverage 87.3% and 87.5%, approximately 5.7 pixels per cm; LOD1 uses 256px atlases.",
+        "Game day/night captures, listening review of the opening sound, and close inspection of UV seams and LOD transitions remain outstanding. Existing cage review images and earlier aggregate reports predate this revision."
+      ]
     },
     {
       "file": "people/minh.glb",

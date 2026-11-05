@@ -20,6 +20,7 @@ Poly Haven assets are CC0: https://polyhaven.com/license . Each texture set was 
 - [roof_tiles_14](https://polyhaven.com/a/roof_tiles_14): diffuse, OpenGL normal, ARM and displacement.
 
 - [old_linoleum_flooring_01](https://polyhaven.com/a/old_linoleum_flooring_01): CC0 diffuse scan, high-pass processed to make shared worn-plastic colour, normal and roughness detail for the draft stools and table. The original linoleum tile pattern is not intended as the plastic surface. AO is not yet baked.
+- [rusty_metal_02](https://polyhaven.com/a/rusty_metal_02), by Rob Tuytel, CC0: diffuse, OpenGL normal and ARM scans, resampled for the draft cage and flashlight. The flashlight's diffuse scan is converted to a dark neutral finish and its normal detail is attenuated. Normal maps combine scan detail with a selected-to-active high-poly bake; AO is baked into each atlas.
 
 ## Characters and source rig
 
@@ -39,3 +40,13 @@ Poly Haven assets are CC0: https://polyhaven.com/license . Each texture set was 
 ## Tools
 
 Blender 4.5.3 LTS: metre-scale A-pose Cloth settling, fitted garment thickness, Multires detail meshes, Cycles selected-to-active cage baking and static AO baking; NumPy/Pillow for packed image data and LOD resampling; Khronos glTF Validator; the actual Bevy WebGL game for review captures.
+
+## Original interface audio
+
+- `audio/ui_bam.ogg` and `audio/ui_meo.ogg`: original synthesized tones and seeded noise, authored by Codex for this project without recorded samples, released under CC0-1.0. The reproducible generator is `../../art-src/audio/ui_sounds.py`; FFmpeg converts and normalizes the output to Ogg Vorbis. Listening and in-game reviews remain pending.
+
+## CC0 sound recordings
+
+- `audio/cho_sua_01.ogg`, `audio/cho_sua_02.ogg`, `audio/cho_sua_03.ogg`, and `audio/cho_rit.ogg`: converted respectively from `Dog Bark 1.wav`, `Dog Bark 2.wav`, `Dog Bark 3.wav`, and `Sad Dog 1.wav` in [Dog sounds by pauliuw](https://opengameart.org/content/dog-sounds), CC0. The source pack notes that some sounds were recorded through an MP3 player. Barks use transient compression; all have short edge fades and loudness normalization.
+- `audio/long_mo.ogg`: converted from [Iron Door by themightyglider](https://opengameart.org/content/iron-door), CC0, itself derived from [open the iron door.wav by forseti1121](https://freesound.org/people/forseti1121/sounds/319324/), also CC0. Converted with edge fades and loudness normalization.
+- Reproduce conversions with `../../art-src/audio/cc0_foley.py` and the linked source files. These sounds have not yet had listening or in-game review.

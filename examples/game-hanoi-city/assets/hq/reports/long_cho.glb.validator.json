@@ -2,7 +2,7 @@
   "uri": "people/long_cho.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-03T08:43:15.421Z",
+  "validatedAt": "2026-11-05T21:32:48.724Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
@@ -13,13 +13,13 @@
   },
   "info": {
     "version": "2.0",
-    "generator": "Blender 4.5.3 + Codex asset pipeline",
+    "generator": "Khronos glTF Blender I/O v4.5.51",
     "resources": [
       {
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 623404
+        "byteLength": 1849648
       },
       {
         "pointer": "/images/0",
@@ -49,12 +49,14 @@
       },
       {
         "pointer": "/images/2",
-        "mimeType": "image/jpeg",
+        "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
           "width": 512,
           "height": 512,
           "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
           "bits": 8
         }
       },
@@ -91,11 +93,11 @@
     "hasSkins": false,
     "hasTextures": true,
     "hasDefaultScene": true,
-    "drawCallCount": 2,
-    "totalVertexCount": 2574,
-    "totalTriangleCount": 1368,
-    "maxUVs": 2,
+    "drawCallCount": 4,
+    "totalVertexCount": 2360,
+    "totalTriangleCount": 1204,
+    "maxUVs": 1,
     "maxInfluences": 0,
-    "maxAttributes": 5
+    "maxAttributes": 4
   }
 }
