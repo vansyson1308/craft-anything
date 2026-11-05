@@ -2,7 +2,7 @@
   "uri": "people/long_cho_lod1.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-03T08:43:15.436Z",
+  "validatedAt": "2026-11-05T23:01:09.825Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
@@ -13,21 +13,21 @@
   },
   "info": {
     "version": "2.0",
-    "generator": "Blender 4.5.3 + Codex asset pipeline",
+    "generator": "Khronos glTF Blender I/O v4.5.51",
     "resources": [
       {
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 217444
+        "byteLength": 983584
       },
       {
         "pointer": "/images/0",
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -39,8 +39,8 @@
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -49,35 +49,11 @@
       },
       {
         "pointer": "/images/2",
-        "mimeType": "image/jpeg",
-        "storage": "buffer-view",
-        "image": {
-          "width": 256,
-          "height": 256,
-          "format": "rgb",
-          "bits": 8
-        }
-      },
-      {
-        "pointer": "/images/3",
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
-          "format": "rgb",
-          "primaries": "srgb",
-          "transfer": "srgb",
-          "bits": 8
-        }
-      },
-      {
-        "pointer": "/images/4",
-        "mimeType": "image/png",
-        "storage": "buffer-view",
-        "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -86,16 +62,16 @@
       }
     ],
     "animationCount": 0,
-    "materialCount": 2,
+    "materialCount": 1,
     "hasMorphTargets": false,
     "hasSkins": false,
     "hasTextures": true,
     "hasDefaultScene": true,
     "drawCallCount": 2,
-    "totalVertexCount": 1050,
-    "totalTriangleCount": 440,
-    "maxUVs": 2,
+    "totalVertexCount": 848,
+    "totalTriangleCount": 424,
+    "maxUVs": 1,
     "maxInfluences": 0,
-    "maxAttributes": 5
+    "maxAttributes": 4
   }
 }

@@ -2,6 +2,71 @@
   "version": 1,
   "assets": [
     {
+      "file": "people/den_pin.glb",
+      "lods": ["people/den_pin_lod1.glb"],
+      "kind": "prop",
+      "size_m": [0.038, 0.038, 0.148],
+      "triangles": [1136, 400],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original construction, see SOURCES.md",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Python/NumPy, glTF Validator",
+      "notes": [
+        "QC draft: lens faces +Z and the root is at the grip; lamp_glass uses an emissive texture over a reflector.",
+        "Four 512px texture images include an emissive map; the knurl is procedural normal detail combined with a high-to-low bake, and AO is baked. The measured grip UV scale is about 2.75 px/mm; visual inspection of knurl spacing and edge wear, UV seams, hand attachment and in-game appearance remain pending."
+      ]
+    },
+    {
+      "file": "audio/cho_rit.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.4 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/cho_sua_01.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -17.1 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/cho_sua_02.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.2 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/cho_sua_03.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; pauliuw recording, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.0 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/long_mo.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; themightyglider and forseti1121, see SOURCES.md",
+      "made_with": "FFmpeg conversion of CC0 recording",
+      "notes": ["Mono, 44100 Hz; measured -16.1 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/ui_bam.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; original synthesized sound",
+      "made_with": "Python/NumPy synthesis and FFmpeg Vorbis",
+      "notes": ["Mono, 44100 Hz; measured integrated loudness -16.4 LUFS. Listening and in-game review pending."]
+    },
+    {
+      "file": "audio/ui_meo.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; original synthesized sound",
+      "made_with": "Python/NumPy synthesis and FFmpeg Vorbis",
+      "notes": ["Mono, 44100 Hz; measured integrated loudness -15.9 LUFS. Listening and in-game review pending."]
+    },
+    {
       "file": "animals/cho_co.glb",
       "lods": [
         "animals/cho_co_lod1.glb"
@@ -367,24 +432,24 @@
       ],
       "kind": "prop",
       "size_m": [
-        0.932,
-        0.7139,
-        0.7485
+        0.9,
+        0.682,
+        0.733
       ],
       "triangles": [
-        1368,
-        440
+        1664,
+        424
       ],
-      "textures": 5,
+      "textures": 3,
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
-      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
-      ],
-      "preview": "previews/long_cho.jpg",
-      "in_game_preview": "review/long_cho.jpg"
+        "Draft revision: named door_hinge holds a 0-110 degree revolute joint in glTF extras; game-side interaction is not yet implemented.",
+        "LOD0 uses one 1024px atlas set; LOD1 uses one 512px set. The movable door and fixed body share one material and remain separate draw calls.",
+        "Four Cycles views and game day/night close-ups are supplied. One test placement is raised 0.15 m to clear the curb, and the lit night view is beneath an existing street lamp. Opening-sound listening, UV seams, LOD transitions and artistic acceptance remain outstanding."
+      ]
     },
     {
       "file": "people/minh.glb",
