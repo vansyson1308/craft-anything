@@ -972,6 +972,81 @@
       "notes": [],
       "preview": "previews/material_via_he_da_xam.jpg",
       "in_game_preview": "review/material_via_he_da_xam.jpg"
+    },
+    {
+      "file": "street/ghe_nhua_xanh.glb",
+      "lods": [
+        "street/ghe_nhua_xanh_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.32,
+        0.3,
+        0.32
+      ],
+      "triangles": [
+        746,
+        402
+      ],
+      "textures": 3,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS and processed Poly Haven CC0 scan",
+      "notes": [
+        "Batch 04 draft: estimated UV coverage 67.4% at 2048-pixel raster resolution. The stools are below the required 70%.",
+        "Shared plastic maps and baseColorFactor variants; ORM occlusion is white, not baked. High-poly bake and review across several streets remain outstanding; one daytime review and an underexposed night view are in review/04."
+      ]
+    },
+    {
+      "file": "street/ghe_nhua_do.glb",
+      "lods": [
+        "street/ghe_nhua_do_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.32,
+        0.3,
+        0.32
+      ],
+      "triangles": [
+        746,
+        402
+      ],
+      "textures": 3,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS and processed Poly Haven CC0 scan",
+      "notes": [
+        "Batch 04 draft: estimated UV coverage 67.4% at 2048-pixel raster resolution. The stools are below the required 70%.",
+        "Shared plastic maps and baseColorFactor variants; ORM occlusion is white, not baked. High-poly bake and review across several streets remain outstanding; one daytime review and an underexposed night view are in review/04."
+      ]
+    },
+    {
+      "file": "street/ban_nhua.glb",
+      "lods": [
+        "street/ban_nhua_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.58,
+        0.43,
+        0.48
+      ],
+      "triangles": [
+        716,
+        386
+      ],
+      "textures": 3,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
+      "made_with": "Blender 4.5.3 LTS and processed Poly Haven CC0 scan",
+      "notes": [
+        "Batch 04 draft: estimated UV coverage 76.3% at 2048-pixel raster resolution. The stools are below the required 70%.",
+        "Shared plastic maps and baseColorFactor variants; ORM occlusion is white, not baked. High-poly bake and review across several streets remain outstanding; one daytime review and an underexposed night view are in review/04."
+      ]
     }
   ],
   "review_status": "draft: technical checks passed; art acceptance pending",

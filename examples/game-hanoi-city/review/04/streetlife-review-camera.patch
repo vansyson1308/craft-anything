@@ -1,0 +1,23 @@
+diff --git a/examples/game-hanoi-city/src/main.rs b/examples/game-hanoi-city/src/main.rs
+index eb8fc87..5313ad2 100644
+--- a/examples/game-hanoi-city/src/main.rs
++++ b/examples/game-hanoi-city/src/main.rs
+@@ -298,7 +298,17 @@ fn setup(
+         .collect();
+     let m = world::materials(&assets, &mut mats);
+     let built = world::spawn_city(&mut commands, &mut meshes, &m, &city, &map, Vec2::new(lake.x, lake.z), &signs);
+-    let look = look_from_page(&built.sites);
++    // Review-only camera for a naturally placed table and stools in a shop bay.
++    let look = if render::page_query("look") == "streetlife" {
++        built.facades.blocks.iter().find_map(|block| {
++            let table = block.props.iter().find(|p| p.file == dressing::TABLE)?;
++            let slot = block.slots.iter().filter(|s| matches!(s.storey, facade::Storey::Ground))
++                .min_by(|a, b| a.corner.distance(table.at.translation).total_cmp(&b.corner.distance(table.at.translation)))?;
++            let outside = slot.transform().rotation * Vec3::Z;
++            let target = table.at.translation + Vec3::Y * 0.35;
++            Some(Look { eye: table.at.translation + outside * 4.2 + Vec3::Y * 1.6, target, lineup: None, spawned: true })
++        })
++    } else { look_from_page(&built.sites) };
+     commands.insert_resource(hq::Sites(built.sites));
+     commands.insert_resource(built.facades);
+     commands.insert_resource(crowd::Promenade::new(built.promenade));
