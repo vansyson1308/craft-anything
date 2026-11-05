@@ -19,6 +19,8 @@ Poly Haven assets are CC0: https://polyhaven.com/license . Each texture set was 
 - [brown_leather](https://polyhaven.com/a/brown_leather): diffuse, OpenGL normal, ARM and displacement.
 - [roof_tiles_14](https://polyhaven.com/a/roof_tiles_14): diffuse, OpenGL normal, ARM and displacement.
 
+- [old_linoleum_flooring_01](https://polyhaven.com/a/old_linoleum_flooring_01): CC0 diffuse scan, high-pass processed to make shared worn-plastic colour, normal and roughness detail for the draft stools and table. The original linoleum tile pattern is not intended as the plastic surface. AO is not yet baked.
+
 ## Characters and source rig
 
 - MakeHuman Community base mesh, synthetic Asian young male macro shapes: CC0 core assets, commit a8bc2d54ff0ac92e78ff71431b1023eda42bf482. https://github.com/makehumancommunity/makehuman
