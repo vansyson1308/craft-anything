@@ -49,6 +49,8 @@ pub struct Glow {
 /// The street lamp along the main roads, and the cast-iron lamps round Hồ Gươm.
 pub const STREET_LAMP: &str = "street/den_duong_01.glb";
 pub const LAKE_LAMP: &str = "street/den_ven_ho.glb";
+/// Shop light needs the delivered shopfronts to come from.
+pub const SHOPFRONT: &str = "buildings/mat_tien_tret_01.glb";
 
 impl Glow {
     /// A street lamp's head, from where its model stands (the arm reaches over the road along +Z).
@@ -59,6 +61,17 @@ impl Glow {
     /// A lamp on the path round the lake, its lantern on top of the post (ASSETS.md §12).
     pub fn lake_lamp(foot: &Transform) -> Glow {
         Glow { at: foot.transform_point(Vec3::new(0.0, 3.5, 0.0)), color: Color::srgb(1.0, 0.85, 0.62), lumens: 9_000.0, range: 16.0, file: LAKE_LAMP }
+    }
+
+    /// Light from an open shop spilling onto the pavement, for about one ground-floor shopfront in
+    /// three (the same ones every time). It comes on once the shopfront modules are delivered.
+    pub fn shop(slot: &crate::facade::Slot) -> Option<Glow> {
+        if slot.storey != crate::facade::Storey::Ground || !slot.seed.is_multiple_of(3) {
+            return None;
+        }
+        let t = slot.transform();
+        let at = t.transform_point(Vec3::new(crate::facade::BAY_W / 2.0, 2.6, 0.7));
+        Some(Glow { at, color: Color::srgb(1.0, 0.84, 0.6), lumens: 7_000.0, range: 11.0, file: SHOPFRONT })
     }
 
     /// A string of Hàng Mã lanterns.
@@ -346,6 +359,16 @@ mod tests {
         assert_eq!(nearest(&glows, Vec3::ZERO, 9).len(), 5);
         assert!(nearest(&glows, Vec3::ZERO, 0).is_empty());
         assert!(nearest(&[], Vec3::ZERO, 4).is_empty());
+    }
+
+    #[test]
+    fn some_shops_light_the_pavement() {
+        let slot = |seed, storey| crate::facade::Slot { corner: Vec3::ZERO, right: Vec2::X, stretch: 1.0, storey, seed };
+        let lit = (0..300).filter_map(|s| Glow::shop(&slot(s, crate::facade::Storey::Ground))).collect::<Vec<_>>();
+        assert_eq!(lit.len(), 100);
+        // In front of the shop (out of the wall is +z here), above head height, within the bay.
+        assert!(lit.iter().all(|g| g.at.z > 0.3 && g.at.y > 2.0 && (0.0..=4.0).contains(&g.at.x)));
+        assert!(Glow::shop(&slot(3, crate::facade::Storey::Upper)).is_none());
     }
 
     #[test]

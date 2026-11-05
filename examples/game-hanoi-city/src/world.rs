@@ -588,6 +588,9 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                 let block = blocks.entry((cx, cz)).or_insert_with(|| facade::Block::new(Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK)));
                 for s in &slots {
                     block.props.extend(crate::dressing::for_bay(s, &open));
+                    if let Some(g) = crate::night::Glow::shop(s) {
+                        glows.push(g);
+                    }
                 }
                 block.slots.extend(slots);
             }

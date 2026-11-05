@@ -43,6 +43,7 @@ lên web.
     - trăng xanh thấp;
     - đèn đường, đèn ven hồ và đèn lồng Hàng Mã chiếu sáng thật, bật 20 ngọn gần người chơi nhất;
     - mỗi ngọn chỉ sáng khi đã có mô hình cột đèn của nó, nên không có đèn lơ lửng giữa trời;
+    - khoảng một phần ba số cửa hàng hắt đèn ra vỉa hè;
     - mặt đường ướt phản chiếu đèn;
     - đèn pin trong tay Minh (mô hình đèn pin gắn vào tay khi agent nộp `people/den_pin.glb`);
   - mỗi bản LOD chỉ tải khi lần đầu cần tới; người chơi không lại gần một công trình thì không tải bản đẹp nhất của nó;
@@ -76,8 +77,8 @@ Thêm vào cuối địa chỉ trang:
     nhanh lên 250 lần (`ffmpeg -i in.webm -vf setpts=0.004*PTS out.mp4`).
 - `?time=night` hoặc `?time=day`: luôn là đêm hoặc ngày, kể cả với `?look=…`. Mặc định Chương 1 là đêm, còn lại là
   chiều muộn.
-- `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`: camera duyệt hình cố định, không có menu. Dùng để
-  chụp tài nguyên trong game và đặt cạnh ảnh tham chiếu. `lineup` cho Minh, tên trộm và chó đứng ở đầu cầu Thê Húc.
+- `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`, `?look=streetlife`: camera duyệt hình cố định, không có menu. Dùng để
+  chụp tài nguyên trong game và đặt cạnh ảnh tham chiếu. `lineup` cho Minh, tên trộm và chó đứng ở đầu cầu Thê Húc; `streetlife` nhìn bộ bàn ghế (hoặc món đồ vỉa hè) gần nhất từ lòng đường, ngang tầm mắt.
 
 Nếu WebGPU mất GPU (lỗi driver hoặc trình duyệt), trang tự chuyển sang WebGL2 và nhớ lựa chọn đó
 trong phiên.
