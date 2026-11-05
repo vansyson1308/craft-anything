@@ -47,7 +47,7 @@ game ở ngay sau lưng nhân vật, ngang tầm mắt người.
   `xe_may_0N_dau.glb` riêng.
 - **Mặt người nhìn:** ghế, bàn, xe nhìn từ ngang tầm mắt 1,6 m ở 3–5 m. Mép bo tròn (bevel nhỏ rồi bake
   normal), nhựa có độ bóng khác nhau giữa chỗ mới và chỗ mòn, xe có bụi bám ở dưới.
-- **Kiểm tra trong game:** build như mục A.7 của AGENT_PROMPT_02, rồi chơi Chương 1 hoặc mở
-  `?gl&look=lineup`. Đi dọc vài con phố, chụp lại và nộp kèm trong `review/04/`.
+- **Kiểm tra trong game:** build như mục A.7 của AGENT_PROMPT_02, rồi mở `?gl&look=streetlife` (bộ bàn
+  ghế gần nhất, ngang tầm mắt; thêm `&time=night` để xem ban đêm), hoặc chơi Chương 1. Đi dọc vài con phố, chụp lại và nộp kèm trong `review/04/`.
 - Không logo hãng xe thật, không chữ của thương hiệu có thật, không lấy hình từ game khác.
 - Mỗi đợt nộp nhỏ một PR. Đợt đầu nên là mục 1 và 2: chỉ riêng chúng đã đổi hẳn cảm giác của phố.

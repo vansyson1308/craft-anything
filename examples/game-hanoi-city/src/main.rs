@@ -147,7 +147,8 @@ struct Game {
 /// A fixed view for reviewing delivered art against the reference photo, from the page's address:
 /// `?look=thehuc` (from the lakeside by its shore end along the Thê Húc bridge), `?look=bridge` (the
 /// bridge from above the water), `?look=lineup` (Minh, a thief and the dog standing at the bridge's
-/// shore end) or `?look=tree` (the nearest street tree).
+/// shore end), `?look=tree` (the nearest street tree) or `?look=streetlife` (the nearest table and
+/// stools on a pavement, or else the nearest pavement piece).
 #[derive(Clone, Copy)]
 struct Look {
     eye: Vec3,
@@ -157,7 +158,7 @@ struct Look {
     spawned: bool,
 }
 
-fn look_from_page(sites: &[hq::Site]) -> Option<Look> {
+fn look_from_page(sites: &[hq::Site], facades: &facade::Facades) -> Option<Look> {
     let which = render::page_query("look");
     if which.is_empty() {
         return None;
@@ -172,6 +173,28 @@ fn look_from_page(sites: &[hq::Site]) -> Option<Look> {
         "tree" => {
             let tree = sites.iter().filter(|s| s.kind == "tree").min_by(|a, b| a.at.distance(shore).total_cmp(&b.at.distance(shore)))?;
             Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, spawned: true })
+        }
+        // The pavement life (tables and stools, else any piece) nearest the bridge's shore end, from
+        // the street at eye level, 4 m out.
+        "streetlife" => {
+            let props = facades.blocks.iter().flat_map(|b| b.props.iter());
+            let near = |files: &[&str]| {
+                props
+                    .clone()
+                    .filter(|p| files.contains(&p.file) || p.alts.iter().any(|a| files.contains(a)))
+                    .min_by(|a, b| a.at.translation.distance(shore).total_cmp(&b.at.translation.distance(shore)))
+            };
+            let all: Vec<&str> = [dressing::PARKED_BIKES, dressing::STOOLS, &[dressing::TABLE, dressing::PLANT, dressing::BIN]].concat();
+            let p = near(&[dressing::TABLE]).or_else(|| near(&all))?;
+            let slot = facades
+                .blocks
+                .iter()
+                .flat_map(|b| b.slots.iter())
+                .filter(|s| matches!(s.storey, facade::Storey::Ground | facade::Storey::FrenchGround))
+                .min_by(|a, b| a.corner.distance(p.at.translation).total_cmp(&b.corner.distance(p.at.translation)))?;
+            let out = slot.transform().rotation * Vec3::Z;
+            let at = p.at.translation;
+            Some(Look { eye: at + out * 4.2 + Vec3::Y * 1.6, target: at + Vec3::Y * 0.35, lineup: None, spawned: true })
         }
         "bridge" => Some(Look { eye: bridge.at + right * 38.0 - north * 6.0 + Vec3::Y * 11.0, target: bridge.at + Vec3::Y * 1.0, lineup: None, spawned: true }),
         // From the lakeside path just north of the bridge's shore end, looking along it to the island.
@@ -298,7 +321,7 @@ fn setup(
         .collect();
     let m = world::materials(&assets, &mut mats);
     let built = world::spawn_city(&mut commands, &mut meshes, &m, &city, &map, Vec2::new(lake.x, lake.z), &signs);
-    let look = look_from_page(&built.sites);
+    let look = look_from_page(&built.sites, &built.facades);
     commands.insert_resource(hq::Sites(built.sites));
     commands.insert_resource(built.facades);
     commands.insert_resource(crowd::Promenade::new(built.promenade));

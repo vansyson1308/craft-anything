@@ -361,6 +361,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
     let mut own: Own = HashMap::new();
     let near = |p: Vec2| p.distance(center) < DRAW_RADIUS;
     let chunk_of = |p: Vec2| ((p.x / CHUNK).floor() as i32, (p.y / CHUNK).floor() as i32);
+    let carriageways = Carriageways::new(c);
     let mut chunks: Chunks = HashMap::new();
     // Kinds: 0 wall up, 1 wall ground, 2 roof, 3 roof tiles, 4 asphalt, 5 grass, 6 water, 7 red bridge, 8 steel, 9 rail bed.
     let mut tanks: Vec<Vec3> = Vec::new();
@@ -582,12 +583,17 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
             };
             let front = !slots.is_empty();
             if front {
-                let open = |p: Vec2| {
+                // Pavement: walkable, and clear of every carriageway and its kerb by `r`.
+                let open = |p: Vec2, r: f32| {
                     matches!(map.tile_at(V2 { x: p.x / map.tile_m, y: p.y / map.tile_m }), Tile::Street | Tile::Alley | Tile::Crowd | Tile::Plaza | Tile::Park)
+                        && carriageways.clearance(p) >= r
                 };
                 let block = blocks.entry((cx, cz)).or_insert_with(|| facade::Block::new(Vec3::new((cx as f32 + 0.5) * CHUNK, 0.0, (cz as f32 + 0.5) * CHUNK)));
                 for s in &slots {
                     block.props.extend(crate::dressing::for_bay(s, &open));
+                    if let Some(g) = crate::night::Glow::shop(s) {
+                        glows.push(g);
+                    }
                 }
                 block.slots.extend(slots);
             }
@@ -937,6 +943,55 @@ fn street_furniture(
                 put(p, facade::PropSlot::new("street/hang_rao_ho.glb", at, 160.0));
             }
         }
+    }
+}
+
+/// Where vehicles drive, for keeping things off it: every road that isn't a footpath, as segments
+/// with their half width (plus the kerb, where kerbs stand), in a 20 m grid for quick lookups.
+pub struct Carriageways {
+    cells: HashMap<(i32, i32), Vec<Lane>>,
+}
+
+/// A stretch of carriageway: from, to, and half its width (with the kerb).
+type Lane = (Vec2, Vec2, f32);
+
+impl Carriageways {
+    const CELL: f32 = 20.0;
+    /// How far around a point to look: wider than any road's half width plus a piece's size.
+    const REACH: f32 = 20.0;
+
+    pub fn new(c: &City) -> Carriageways {
+        let mut cells: HashMap<(i32, i32), Vec<Lane>> = HashMap::new();
+        for r in &c.roads {
+            if r.bridge || matches!(r.kind.as_str(), "footway" | "path" | "steps" | "cycleway" | "pedestrian") {
+                continue;
+            }
+            // Kerbs (0.32 m deep) stand along roads 5 m wide and more (see `street_furniture`).
+            let half = r.w as f32 / 20.0 + if r.w >= 50 { 0.32 } else { 0.0 };
+            let pts: Vec<Vec2> = r.pts.iter().map(|p| to_world(c, p)).collect();
+            for s in pts.windows(2) {
+                let (a, b) = (s[0], s[1]);
+                let (lo, hi) = (a.min(b) - Vec2::splat(half), a.max(b) + Vec2::splat(half));
+                for cy in (lo.y / Self::CELL).floor() as i32..=(hi.y / Self::CELL).floor() as i32 {
+                    for cx in (lo.x / Self::CELL).floor() as i32..=(hi.x / Self::CELL).floor() as i32 {
+                        cells.entry((cx, cy)).or_default().push((a, b, half));
+                    }
+                }
+            }
+        }
+        Carriageways { cells }
+    }
+
+    /// How far `p` is from the nearest carriageway's edge (negative inside one), up to `REACH`.
+    pub fn clearance(&self, p: Vec2) -> f32 {
+        let (cx, cy) = ((p.x / Self::CELL).floor() as i32, (p.y / Self::CELL).floor() as i32);
+        let mut best = Self::REACH;
+        if let Some(segs) = self.cells.get(&(cx, cy)) {
+            for (a, b, half) in segs {
+                best = best.min(seg_dist(p, *a, *b) - half);
+            }
+        }
+        best
     }
 }
 
