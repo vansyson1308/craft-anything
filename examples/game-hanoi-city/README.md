@@ -18,6 +18,9 @@ Thiết kế lối chơi (vòng lặp, cảm xúc, dẫn đường, độ khó):
 Game làm như cách bản GTA V từng được đưa lên web: người làm hình làm hình, game lo phần đưa hình
 lên web.
 
+- **Gửi họa sĩ một file duy nhất:** [HOA_SI.md](HOA_SI.md) gồm việc cần làm bây giờ, kỹ thuật chuẩn và toàn
+  bộ đặc tả. File này ghép tự động từ các file nguồn bằng `python3 -I tools/make_hoa_si.py`: sửa ở file nguồn
+  rồi chạy lại, không sửa thẳng HOA_SI.md.
 - **Phần hình:** do người hoặc agent chuyên làm tài nguyên 3D làm theo [ASSETS.md](ASSETS.md), rồi
   thả vào `assets/hq/` (lời nhắn mẫu cho agent: [AGENT_PROMPT.md](AGENT_PROMPT.md)). Mục 11 của
   ASSETS.md liệt kê những thứ hiện còn là hàng tạm.
