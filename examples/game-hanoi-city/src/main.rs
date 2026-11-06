@@ -22,6 +22,7 @@ use std::f32::consts::{FRAC_PI_2, PI, TAU};
 use bevy::asset::AssetMetaCheck;
 use bevy::input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll};
 use bevy::prelude::*;
+use bevy::render::render_asset::RenderAssetBytesPerFrame;
 use bevy::text::FontSize;
 use bevy::ui_widgets::{Activate, Button};
 use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
@@ -40,6 +41,9 @@ use actors::{AnimLib, Dog, Move, Person, Props};
 const CITY_JSON: &str = include_str!("../assets/hoankiem.json");
 const SIGNS_JSON: &str = include_str!("../assets/signs.json");
 const TILE_M: f32 = 2.0;
+
+/// How much may go to the GPU in one frame: one 1024 px texture with all its smaller levels.
+const UPLOAD_BYTES_PER_FRAME: usize = 6 * 1024 * 1024;
 /// The chapters the story sets after dark ("Đêm mất Bơ"): played at night.
 const NIGHT_CHAPTERS: &[usize] = &[0];
 /// The controls, shown along the bottom during a raid.
@@ -58,6 +62,10 @@ fn main() {
             ..default()
         }))
         .add_plugins(hq::HqPlugin)
+        // Textures and meshes go to the GPU a few megabytes a frame, not all at once: a profile showed
+        // one 10 s frame (in a software renderer) spent uploading every texture of a street that had
+        // just loaded. That is the stutter of walking into a new street.
+        .insert_resource(RenderAssetBytesPerFrame::new(UPLOAD_BYTES_PER_FRAME))
         .init_resource::<Clicked>()
         .init_resource::<audio::Sounds>()
         .init_resource::<audio::Cue>()

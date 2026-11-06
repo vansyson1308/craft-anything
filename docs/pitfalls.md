@@ -402,6 +402,13 @@ PIE program and shared library. Whenever an address crosses between engines, mov
 image bases (`ghidra::Rebase`, from the base the bridge reports) and say in the evidence which
 space each address is in.
 
+**Every texture of a street sent to the GPU in one frame.** Walking into a new street loaded its
+facades' textures together, and Bevy uploaded them all in the frame they were ready: a profile of
+the Hanoi game showed one 10.7 s frame (in a software renderer) that was 94% `texSubImage2D`.
+Capping uploads with `RenderAssetBytesPerFrame` (one 1024 px texture with its mips a frame) brought
+the run's busy time from 11.3 s to 0.5 s and its longest frame to 68 ms. Profile before guessing
+at stutter, and spread uploads over frames.
+
 ## Agent tooling
 
 **Shell quoting breaks generated edits.** Heredocs carrying Python with quotes, `'''` or `\n` were
