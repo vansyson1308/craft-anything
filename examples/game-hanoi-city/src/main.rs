@@ -180,7 +180,8 @@ struct Game {
 /// bridge from above the water), `?look=lineup` (Minh, a thief and the dog standing at the bridge's
 /// shore end), `?look=tree` (the nearest street tree), `?look=streetlife` (the nearest table and
 /// stools on a pavement, or else the nearest pavement piece) or `?look=cage` (the dog cage close up,
-/// 1.5 m away at eye height, on the lakeside path; `&door=open` swings its door open).
+/// 1.5 m away at eye height, on the lakeside path; `&door=open` swings its door open) or
+/// `?look=hangma` (along Hàng Mã under its lanterns, at eye height).
 #[derive(Clone, Copy)]
 struct Look {
     eye: Vec3,
@@ -250,6 +251,27 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> O
             spawned: true,
         }),
         // From the lakeside path just north of the bridge's shore end, looking along it to the island.
+        "hangma" => {
+            let ls: Vec<&hq::Site> = sites.iter().filter(|s| s.kind == "lantern").collect();
+            let n = ls.len().max(1) as f32;
+            let mid = ls.iter().fold(Vec3::ZERO, |a, s| a + s.at) / n;
+            let a = ls.iter().min_by(|x, y| x.at.distance(mid).total_cmp(&y.at.distance(mid)))?;
+            // The next lantern on the same string (1.6 m on), and the one across the street.
+            let along = ls
+                .iter()
+                .map(|s| s.at - a.at)
+                .filter(|d| (1.0..2.5).contains(&d.length()))
+                .min_by(|x, y| x.length().total_cmp(&y.length()))?
+                .with_y(0.0)
+                .normalize_or_zero();
+            let across = ls
+                .iter()
+                .map(|s| s.at - a.at)
+                .filter(|d| (3.0..16.0).contains(&d.length()) && d.normalize_or_zero().dot(along).abs() < 0.3)
+                .min_by(|x, y| x.length().total_cmp(&y.length()))?;
+            let eye = (a.at + across * 0.5).with_y(1.6) - along * 6.0;
+            Some(Look { eye, target: eye + along * 14.0 + Vec3::Y * 2.6, lineup: None, cage: None, spawned: true })
+        }
         // The cage on the lakeside path by the bridge's shore end, seen from in front and a little to
         // the side, 1.5 m away at eye height (how a player sees it when they reach it).
         "cage" => {

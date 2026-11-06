@@ -427,6 +427,8 @@ pub fn lod_distances(kind: &str, levels: usize) -> Vec<f32> {
         "tree" => &[35.0, 140.0],
         "landmark" => &[150.0, 450.0, 2500.0],
         "prop" => &[30.0, 90.0],
+        // Hàng Mã's lanterns are what the street is seen by, from its far end too.
+        "lantern" => &[40.0, 160.0],
         _ => &[60.0, 200.0, 600.0],
     };
     (0..levels).map(|i| table.get(i).copied().unwrap_or(2500.0)).collect()
@@ -507,6 +509,15 @@ pub const TREES: [&str; 4] = ["trees/xa_cu.glb", "trees/sau.glb", "trees/bang.gl
 /// The site name every street tree shares: it takes any delivered tree.
 pub const TREE_SITE: &str = "trees/*";
 
+/// The site names of the Hàng Mã lanterns: red ones and yellow ones, each taking any delivered
+/// lantern of its colour.
+pub const LANTERN_RED_SITE: &str = "street/den_long/red";
+pub const LANTERN_YELLOW_SITE: &str = "street/den_long/yellow";
+
+/// Sites that take any one of a set of delivered models, mixed by position.
+const SITE_SETS: [(&str, &[&str]); 3] =
+    [(TREE_SITE, &TREES), (LANTERN_RED_SITE, &["street/den_long_01.glb", "street/den_long_03.glb"]), (LANTERN_YELLOW_SITE, &["street/den_long_02.glb"])];
+
 /// Once the manifest is read: landmarks and trees replace their stand-ins.
 #[allow(clippy::too_many_arguments)]
 fn place_models(
@@ -525,21 +536,23 @@ fn place_models(
     let Some(sites) = sites else { return };
     let mut hidden: HashSet<&'static str> = HashSet::new();
     let mut billboards: HashMap<&'static str, (Handle<Mesh>, Handle<StandardMaterial>)> = HashMap::new();
-    let trees: Vec<&'static str> = TREES.iter().copied().filter(|t| hq.get(t).is_some()).collect();
+    let sets: Vec<(&str, Vec<&'static str>)> =
+        SITE_SETS.iter().map(|(name, set)| (*name, set.iter().copied().filter(|f| hq.get(f).is_some()).collect())).collect();
     let mut levels_cache: HashMap<&'static str, Vec<String>> = HashMap::new();
     for s in &sites.0 {
         if applied.placed.contains(s.file) {
             continue;
         }
-        // Trees take whichever kinds were delivered, mixed by position.
-        let file = if s.file == TREE_SITE {
-            let k = (s.at.x.abs() as usize).wrapping_mul(31).wrapping_add(s.at.z.abs() as usize);
-            match trees.get(k % trees.len().max(1)) {
-                Some(t) => *t,
-                None => continue,
+        // Trees and lanterns take whichever kinds were delivered, mixed by position.
+        let file = match sets.iter().find(|(name, _)| *name == s.file) {
+            Some((_, there)) => {
+                let k = (s.at.x.abs() as usize).wrapping_mul(31).wrapping_add(s.at.z.abs() as usize);
+                match there.get(k % there.len().max(1)) {
+                    Some(f) => *f,
+                    None => continue,
+                }
             }
-        } else {
-            s.file
+            None => s.file,
         };
         let Some(entry) = hq.get(file) else { continue };
         let levels = levels_cache.entry(file).or_insert_with(|| levels_of(entry)).clone();
