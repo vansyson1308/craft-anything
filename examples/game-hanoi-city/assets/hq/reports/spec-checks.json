@@ -107,12 +107,16 @@
         [
           1024,
           1024
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "ae76f265c32fbbfdbc9fcb727529a13553b391e6b9677544310a776a85f87d3c",
+      "sha256": "5786fc8bbd45eac6f9ef2f1c43a4fdb2d67c0312508aca6e2ee42a9233be20b4",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -149,12 +153,16 @@
         [
           512,
           512
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "18f47db934a942b073a05437a515343b0a18c5884764fd924ce5576db94030cc",
+      "sha256": "f432c72955066a4cd72f3acd494d80b6952b852b8ba33783ab2dd922c5878c46",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -191,12 +199,16 @@
         [
           1024,
           1024
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "fdf02c122138fef49496d06183795791bfcccf0ddd51ddace1a7b3290e3a1013",
+      "sha256": "52326a27acd3f5cd936b9e94c045ae6d02b7ce973d9939323c41bb0e61e47991",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -233,12 +245,16 @@
         [
           512,
           512
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "1a92fa1e42f11f4f478ae7e353f2cfdbdae788e2e922c3fbfdbad9276747fa9f",
+      "sha256": "9dd0b5df963df0597e8567369922509364402b96f05cec4c795992323050a366",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -275,12 +291,16 @@
         [
           1024,
           1024
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "04554b6f316c31854e1a3aee76984994cb2919c6781e69a4f46e8f4f21a23673",
+      "sha256": "9bb36aa7c82756ddeaf61cb23e95229d873f30c54c973cad0e443d655407be6e",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -317,12 +337,16 @@
         [
           512,
           512
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "b3cb6e73d1cb966a98fb14be6b22f4acbd9421433fb4e74f2ef8fe729f373f63",
+      "sha256": "6e95e6c9ac094bc0a483ae41d200752411931737895e25f44d1f14c69b597669",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -359,12 +383,16 @@
         [
           1024,
           1024
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "663b1c78c701aaa2ab1cb2b730b9feb376e65612a08759fc818d07c5640b0a97",
+      "sha256": "44ace15fb4fdb664513bb243da30ac6a874e491343a1d3635a9b5caab330488e",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
@@ -401,12 +429,16 @@
         [
           512,
           512
+        ],
+        [
+          256,
+          128
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "050df526e1a0ce1a1103e3f53a0eff2b7104cf97ce7ef0e5acabf8cb3763e68b",
+      "sha256": "322c7f995198ee2ac5a1c645871134d6c1111f95836614d68e11484c322aff1d",
       "errors": [],
       "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
