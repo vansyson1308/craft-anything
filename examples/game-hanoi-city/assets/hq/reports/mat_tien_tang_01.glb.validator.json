@@ -2,19 +2,13 @@
   "uri": "buildings/mat_tien_tang_01.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-06T07:29:12.989Z",
+  "validatedAt": "2026-11-06T09:52:21.454Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
-    "numInfos": 3,
+    "numInfos": 2,
     "numHints": 0,
     "messages": [
-      {
-        "code": "UNUSED_OBJECT",
-        "message": "This object may be unused.",
-        "severity": 2,
-        "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
-      },
       {
         "code": "UNUSED_OBJECT",
         "message": "This object may be unused.",
@@ -38,7 +32,7 @@
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 6680676
+        "byteLength": 6681076
       },
       {
         "pointer": "/images/0",
@@ -126,6 +120,19 @@
           "transfer": "srgb",
           "bits": 8
         }
+      },
+      {
+        "pointer": "/images/7",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 256,
+          "height": 128,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
       }
     ],
     "animationCount": 0,
@@ -135,7 +142,7 @@
     "hasTextures": true,
     "hasDefaultScene": true,
     "drawCallCount": 3,
-    "totalVertexCount": 8221,
+    "totalVertexCount": 8219,
     "totalTriangleCount": 3930,
     "maxUVs": 2,
     "maxInfluences": 0,
