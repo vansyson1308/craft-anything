@@ -20,6 +20,7 @@ Poly Haven assets are CC0: https://polyhaven.com/license . Each texture set was 
 - [roof_tiles_14](https://polyhaven.com/a/roof_tiles_14): diffuse, OpenGL normal, ARM and displacement.
 
 - [old_linoleum_flooring_01](https://polyhaven.com/a/old_linoleum_flooring_01): CC0 diffuse scan, high-pass processed to make shared worn-plastic colour, normal and roughness detail for the draft stools and table. The original linoleum tile pattern is not intended as the plastic surface. AO is not yet baked.
+- [rusty_metal_02](https://polyhaven.com/a/rusty_metal_02), by Rob Tuytel, CC0: diffuse, OpenGL normal and ARM scans, resampled for the draft cage. The cage normal map combines scan detail with a selected-to-active high-poly bake; AO is baked into its atlas. The revised flashlight uses original procedural textures rather than this scan.
 
 ## Characters and source rig
 
@@ -39,3 +40,71 @@ Poly Haven assets are CC0: https://polyhaven.com/license . Each texture set was 
 ## Tools
 
 Blender 4.5.3 LTS: metre-scale A-pose Cloth settling, fitted garment thickness, Multires detail meshes, Cycles selected-to-active cage baking and static AO baking; NumPy/Pillow for packed image data and LOD resampling; Khronos glTF Validator; the actual Bevy WebGL game for review captures.
+
+## Original interface audio
+
+- `audio/ui_bam.ogg` and `audio/ui_meo.ogg`: original synthesized tones and seeded noise, authored by Codex for this project without recorded samples, released under CC0-1.0. The reproducible generator is `../../art-src/audio/ui_sounds.py`; FFmpeg converts and normalizes the output to Ogg Vorbis. Listening and in-game reviews remain pending.
+
+## CC0 sound recordings
+
+- `audio/cho_sua_01.ogg`, `audio/cho_sua_02.ogg`, `audio/cho_sua_03.ogg`, and `audio/cho_rit.ogg`: converted respectively from `Dog Bark 1.wav`, `Dog Bark 2.wav`, `Dog Bark 3.wav`, and `Sad Dog 1.wav` in [Dog sounds by pauliuw](https://opengameart.org/content/dog-sounds), CC0. The source pack notes that some sounds were recorded through an MP3 player. Barks use transient compression; all have short edge fades and loudness normalization.
+- `audio/long_mo.ogg`: converted from [Iron Door by themightyglider](https://opengameart.org/content/iron-door), CC0, itself derived from [open the iron door.wav by forseti1121](https://freesound.org/people/forseti1121/sounds/319324/), also CC0. Converted with edge fades and loudness normalization.
+- Reproduce conversions with `../../art-src/audio/cc0_foley.py` and the linked source files. These sounds have not yet had listening or in-game review.
+
+### QC bark experiments, not yet delivered to the game
+
+The five files under `../../review/05/audio/` are review candidates only;
+they do not replace the rejected production sounds. Candidates 01–03 are
+from [Old dog barking #1](https://bigsoundbank.com/old-dog-barking-1-s2352.html),
+and 04–05 from [Old dog barking #2](https://bigsoundbank.com/old-dog-barking-2-s2353.html),
+both by Joseph Sardin, CC0, recorded with a SoundDevices MixPre-3 and
+Sennheiser ME66, 48 kHz/24-bit WAV. The recordings are not Vietnamese dogs;
+similarity and expressive suitability need listening review. Reproduce with
+`../../art-src/audio/qc_bark_candidates.py`, naming the downloads
+`source_2352.wav` and `source_2353.wav` in the supplied source directory.
+
+| Candidate | FFmpeg astats noise floor (dBFS) | Highest FFT bin ≥ −90 dBFS (Hz) | Peak FFT bin in 8–12 kHz (dBFS) | Decoded true peak (dBTP) |
+|---|---:|---:|---:|---:|
+| cho_sua_01 | −53.3 | 13011 | −80.2 | −0.93 |
+| cho_sua_02 | −62.6 | 15166 | −75.8 | −0.81 |
+| cho_sua_03 | −64.5 | 12878 | −81.0 | −1.05 |
+| cho_sua_04 | −42.5 | 8918 | −74.8 | −0.91 |
+| cho_sua_05 | −59.4 | 12193 | −75.1 | −1.08 |
+
+FFT measurements are a windowed per-bin magnitude, not proof that all high
+frequencies contain useful bark rather than noise. Candidate 04 does not meet
+the requested noise-floor threshold. Short-event astats noise floors can depend heavily on
+the selected decay and are not a substitute for listening to isolated noise.
+True peak is an approximately 4× oversampled decoded measurement; several
+candidates still need closer normalization. The required long, distant,
+growling and happy variants, seamless whimper, cleaned cage opening, and
+listening/game review remain unfinished.
+
+`../../review/05/audio/cho_rit_candidate.ogg` is an unapproved tentative loop
+from [Dogs barking and crying #1](https://bigsoundbank.com/dogs-barking-and-crying-1-s1544.html),
+Joseph Sardin, CC0, MixPre-3/ME66, 48 kHz/24-bit WAV. A 200 ms overlap is
+applied and the loop is rotated to a zero crossing; the decoded end/start
+sample difference is about 0.00005. FFmpeg astats reports −50.5 dBFS noise
+floor and FFmpeg ebur128 reports approximately −1.2 dBTP. The highest FFT
+bin above −90 dBFS is 7.85 kHz, using the same measurement definition as the
+table. These numerical checks do not prove the loop is click-free or that the
+chosen region is a usable whimper; listening and game review are required.
+An independent YAMNet audio-event classifier ranked bird calls above dog
+whimper for this candidate; it is therefore rejected pending a better source.
+The optional diagnostic script is `../../art-src/audio/qc_audio_classifier.py`;
+the [YAMNet ONNX model](https://huggingface.co/audiomagic/yamnet-onnx) is an
+Apache-2.0 conversion of Google's AudioSet classifier. Its labels are uncertain
+model predictions and cannot replace a listening test.
+The experimental generator is `../../art-src/audio/qc_whimper_candidate.py`.
+
+`../../review/05/audio/long_mo_candidate.ogg` is an unapproved experiment
+from [Grinding metal gate](https://bigsoundbank.com/grinding-metal-gate-s0683.html),
+Joseph Sardin, CC0, 48 kHz/16-bit WAV. The script learns a profile from
+4.0–4.4 s of that recording, extracts 0.45–1.05 s, applies 12 dB reduction,
+and is `../../art-src/audio/qc_gate_candidate.py`. FFmpeg astats reports
+−24.2 dBFS noise floor, the decoded 4× estimate is −1.14 dBTP and the highest
+FFT bin above −90 dBFS is 18.1 kHz. The short continuous creak can affect
+the astats noise estimate, but this result does not meet the requested
+numerical noise criterion and needs listening and further work.
+YAMNet also ranked telephone/ringtone above gate sounds for this candidate;
+this is not conclusive, but reinforces that it should not be delivered yet.

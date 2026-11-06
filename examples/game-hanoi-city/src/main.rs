@@ -5,6 +5,7 @@
 //! that world in 3D with Bevy and turns touches, the mouse and the keyboard into its controls.
 
 mod actors;
+mod cage;
 mod crowd;
 mod dressing;
 mod facade;
@@ -72,6 +73,7 @@ fn main() {
                 (fill_guide, guide::draw, guide::hud).chain().after(hud),
                 night::wet,
                 night::torch_prop,
+                (cage::settle, cage::swing).chain().after(play),
             ),
         )
         .run();
@@ -176,14 +178,17 @@ struct Game {
 /// A fixed view for reviewing delivered art against the reference photo, from the page's address:
 /// `?look=thehuc` (from the lakeside by its shore end along the Thê Húc bridge), `?look=bridge` (the
 /// bridge from above the water), `?look=lineup` (Minh, a thief and the dog standing at the bridge's
-/// shore end), `?look=tree` (the nearest street tree) or `?look=streetlife` (the nearest table and
-/// stools on a pavement, or else the nearest pavement piece).
+/// shore end), `?look=tree` (the nearest street tree), `?look=streetlife` (the nearest table and
+/// stools on a pavement, or else the nearest pavement piece) or `?look=cage` (the dog cage close up,
+/// 1.5 m away at eye height, on the lakeside path; `&door=open` swings its door open).
 #[derive(Clone, Copy)]
 struct Look {
     eye: Vec3,
     target: Vec3,
     /// Where to stand the characters, facing the camera, for `lineup`.
     lineup: Option<(Vec3, Vec3)>,
+    /// Where to stand the cage, facing the camera, and whether its door opens, for `cage`.
+    cage: Option<(Vec3, bool)>,
     spawned: bool,
 }
 
@@ -198,10 +203,12 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> O
     let right = north.cross(Vec3::Y);
     let shore = bridge.at - north * 23.0 - north * 16.0;
     match which.as_str() {
-        "lineup" => Some(Look { eye: shore - north * 4.2 + Vec3::Y * 1.45, target: shore + Vec3::Y * 0.95, lineup: Some((shore, right)), spawned: false }),
+        "lineup" => {
+            Some(Look { eye: shore - north * 4.2 + Vec3::Y * 1.45, target: shore + Vec3::Y * 0.95, lineup: Some((shore, right)), cage: None, spawned: false })
+        }
         "tree" => {
             let tree = sites.iter().filter(|s| s.kind == "tree").min_by(|a, b| a.at.distance(shore).total_cmp(&b.at.distance(shore)))?;
-            Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, spawned: true })
+            Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, cage: None, spawned: true })
         }
         // The pavement life (tables and stools, else any piece) nearest the bridge's shore end, from
         // the street at eye level, up to 4 m out. In a narrow street 4 m out can be inside the
@@ -220,7 +227,7 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> O
                 let slot = ground.iter().min_by(|a, b| a.corner.distance(at).total_cmp(&b.corner.distance(at)))?;
                 let out = slot.transform().rotation * Vec3::Z;
                 let away = eye_distance(at, out, &open)?;
-                Some(Look { eye: at + out * away + Vec3::Y * 1.6, target: at + Vec3::Y * 0.35, lineup: None, spawned: true })
+                Some(Look { eye: at + out * away + Vec3::Y * 1.6, target: at + Vec3::Y * 0.35, lineup: None, cage: None, spawned: true })
             };
             let nearest = |files: &[&str]| {
                 let mut props: Vec<&facade::PropSlot> = facades
@@ -235,12 +242,26 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> O
             let all: Vec<&str> = [dressing::PARKED_BIKES, dressing::STOOLS, &[dressing::TABLE, dressing::PLANT, dressing::BIN]].concat();
             nearest(&[dressing::TABLE]).or_else(|| nearest(&all))
         }
-        "bridge" => Some(Look { eye: bridge.at + right * 38.0 - north * 6.0 + Vec3::Y * 11.0, target: bridge.at + Vec3::Y * 1.0, lineup: None, spawned: true }),
+        "bridge" => Some(Look {
+            eye: bridge.at + right * 38.0 - north * 6.0 + Vec3::Y * 11.0,
+            target: bridge.at + Vec3::Y * 1.0,
+            lineup: None,
+            cage: None,
+            spawned: true,
+        }),
         // From the lakeside path just north of the bridge's shore end, looking along it to the island.
+        // The cage on the lakeside path by the bridge's shore end, seen from in front and a little to
+        // the side, 1.5 m away at eye height (how a player sees it when they reach it).
+        "cage" => {
+            let open = render::page_query("door") == "open";
+            let eye = shore - north * 1.3 + right * 0.75 + Vec3::Y * 1.5;
+            Some(Look { eye, target: shore + Vec3::Y * 0.3, lineup: None, cage: Some((shore, open)), spawned: false })
+        }
         _ => Some(Look {
             eye: bridge.at - north * 21.0 + right * 15.0 + Vec3::Y * 1.7,
             target: bridge.at + north * 6.0 + Vec3::Y * 1.0,
             lineup: None,
+            cage: None,
             spawned: true,
         }),
     }
@@ -389,6 +410,7 @@ fn setup(
     commands.insert_resource(built.facades);
     commands.insert_resource(crowd::Promenade::new(built.promenade));
     commands.insert_resource(night::Glows(built.glows));
+    commands.insert_resource(built.carriageways);
     commands.insert_resource(night::Sky::default());
     commands.insert_resource(guide::Guide::default());
     let (_, cols, rows) = facade::street_atlas();
@@ -580,11 +602,17 @@ fn spawn_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &
         .iter()
         .map(|c| {
             const CAGE: [&str; 3] = ["people/long_cho.glb", "animals/long_cho.glb", "street/long_cho.glb"];
-            hq::prop(commands, hq, &CAGE, Transform::from_translation(world_pos(c.pos))).unwrap_or_else(|| {
-                commands
-                    .spawn((Mesh3d(props.cage.clone()), MeshMaterial3d(props.cage_mat.clone()), Transform::from_translation(world_pos(c.pos) + Vec3::Y * 0.35)))
-                    .id()
-            })
+            match hq::prop(commands, hq, &CAGE, Transform::from_translation(world_pos(c.pos))) {
+                Some(e) => commands.entity(e).insert(cage::CageDoor::new(true)).id(),
+                None => commands
+                    .spawn((
+                        Mesh3d(props.cage.clone()),
+                        MeshMaterial3d(props.cage_mat.clone()),
+                        Transform::from_translation(world_pos(c.pos) + Vec3::Y * 0.35),
+                        cage::CageDoor::new(false),
+                    ))
+                    .id(),
+            }
         })
         .collect();
     kids.extend(&g.cages);
@@ -689,7 +717,17 @@ fn end_raid(commands: &mut Commands, g: &mut Game) {
     g.exits.clear();
 }
 
-fn start_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &AnimLib, props: &Props, g: &mut Game, mission: Mission) {
+#[allow(clippy::too_many_arguments)]
+fn start_raid(
+    commands: &mut Commands,
+    assets: &AssetServer,
+    hq: &hq::Hq,
+    lib: &AnimLib,
+    props: &Props,
+    facades: &facade::Facades,
+    g: &mut Game,
+    mission: Mission,
+) {
     let _ = g.profile.next_seed();
     save_profile(&g.profile);
     let stats = g.profile.stats();
@@ -704,13 +742,40 @@ fn start_raid(commands: &mut Commands, assets: &AssetServer, hq: &hq::Hq, lib: &
             raid.player.pos = g.map.nearest_walkable(c + V2 { x: 4.0, y: 0.0 });
         }
     }
+    raid.player.pos = open_start(&g.map, facades, &raid);
     g.cam_target = world_pos(raid.player.pos);
-    g.cam_yaw = PI;
+    // Looking the way to go: towards the first goal (the guide's beam is in view from the start).
+    g.cam_yaw = raid.goal(&g.map).map(|(at, _)| at - raid.player.pos).filter(|d| d.x != 0.0 || d.y != 0.0).map_or(PI, |d| d.x.atan2(d.y));
     g.raid = Some(raid);
     g.mission = Some(mission);
     end_raid(commands, g);
     spawn_raid(commands, assets, hq, lib, props, g);
     g.screen = Screen::Playing;
+}
+
+/// Where the player starts: where the raid put them, unless that is against a shopfront (the
+/// camera then has no room behind them); then the nearest open spot within 8 m with 2 m of
+/// pavement in front of any shop, and still more than 12 m from every thief.
+fn open_start(map: &Map, facades: &facade::Facades, raid: &Raid) -> V2 {
+    let p0 = raid.player.pos;
+    let open = |q: V2| !facades.in_shopfront(world_pos(q) + Vec3::Y, 2.0);
+    if open(p0) {
+        return p0;
+    }
+    let mut best: Option<(i32, V2)> = None;
+    for dy in -4..=4 {
+        for dx in -4..=4 {
+            let q = V2 { x: p0.x + dx as f32, y: p0.y + dy as f32 };
+            let d = dx * dx + dy * dy;
+            if best.is_some_and(|(b, _)| b <= d) || !map.circle_free(q, 0.4) || !open(q) {
+                continue;
+            }
+            if raid.thieves.iter().all(|t| t.pos.dist(q) * TILE_M > 12.0) {
+                best = Some((d, q));
+            }
+        }
+    }
+    best.map_or(p0, |(_, q)| q)
 }
 
 /// Gameplay: input to controls, the raid's step, and keeping the 3D world in step with it.
@@ -730,7 +795,7 @@ fn play(
     mut dogs: Query<&mut Dog>,
     mut players: Query<(&mut AnimationPlayer, &mut AnimationTransitions)>,
     camera: Single<Entity, With<MainCamera>>,
-    (motion, scroll): (Res<AccumulatedMouseMotion>, Res<AccumulatedMouseScroll>),
+    (motion, scroll, mut doors, facades): (Res<AccumulatedMouseMotion>, Res<AccumulatedMouseScroll>, Query<&mut cage::CageDoor>, Res<facade::Facades>),
 ) {
     let dt = time.delta_secs().min(0.05);
     g.t += dt;
@@ -929,7 +994,13 @@ fn play(
     for (i, d) in raid.dogs.iter().enumerate() {
         let Some(&e) = g.dogs.get(i) else { continue };
         if let Ok(mut t) = tf.get_mut(e) {
-            let target = world_pos(d.pos);
+            // A caged dog stays inside its cage, which may have been moved off a kerb.
+            let shift = if d.state == DogState::Caged {
+                raid.cages.iter().position(|c| c.dog == i).and_then(|c| g.cages.get(c)).and_then(|&c| doors.get(c).ok()).map_or(Vec3::ZERO, |c| c.shift)
+            } else {
+                Vec3::ZERO
+            };
+            let target = world_pos(d.pos) + shift;
             let moved = t.translation.distance(target) > 0.02;
             t.translation = t.translation.lerp(target, (dt * 12.0).min(1.0));
             if d.state == DogState::Following {
@@ -941,11 +1012,20 @@ fn play(
             }
         }
     }
+    // A freed dog's cage: a delivered one swings its door open (see `cage::swing`), the stand-in
+    // box goes.
     for (i, cg) in raid.cages.iter().enumerate() {
-        if let (Some(&e), true) = (g.cages.get(i), cg.open)
-            && let Ok(mut v) = vis.get_mut(e)
-        {
-            *v = Visibility::Hidden;
+        let Some(&e) = g.cages.get(i) else { continue };
+        if !cg.open {
+            continue;
+        }
+        match doors.get_mut(e) {
+            Ok(mut d) if d.model => d.open = true,
+            _ => {
+                if let Ok(mut v) = vis.get_mut(e) {
+                    *v = Visibility::Hidden;
+                }
+            }
         }
     }
     for (i, k) in raid.pickups.iter().enumerate() {
@@ -1002,7 +1082,7 @@ fn play(
     if let Ok(mut t) = tf.get_mut(cam_e) {
         let pitch = g.cam_pitch;
         let back = Vec3::new(-yaw.sin() * pitch.cos(), pitch.sin(), -yaw.cos() * pitch.cos());
-        let dist = camera_room(&g.map, target, back, g.cam_dist);
+        let dist = camera_room(&g.map, &facades, target, back, g.cam_dist);
         let eye = target + back * dist;
         *t = Transform::from_translation(Vec3::new(eye.x, eye.y.max(0.4), eye.z) + shake).looking_at(target, Vec3::Y);
     }
@@ -1021,6 +1101,37 @@ fn play(
 
 /// The loading screen ends once the list of delivered art has been read and the moves are ready.
 fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>, time: Res<Time>, lib: Res<AnimLib>, hq: Res<hq::Hq>) {
+    if let Some(mut l) = g.look
+        && !l.spawned
+        && hq.resolved()
+        && let Some((at, open)) = l.cage
+    {
+        const CAGE: [&str; 1] = ["people/long_cho.glb"];
+        let facing = Quat::from_rotation_arc(Vec3::Z, (l.eye - at).with_y(0.0).normalize_or(Vec3::Z));
+        if let Some(e) = hq::prop(&mut commands, &hq, &CAGE, Transform::from_translation(at).with_rotation(facing)) {
+            let mut door = cage::CageDoor::new(true);
+            door.open = open;
+            commands.entity(e).insert(door);
+        }
+        // At night a player sees the cage in their torch's light: the same light, held where a
+        // player standing at the camera would hold it.
+        if night::from_page() == Some(true) {
+            commands.spawn((
+                SpotLight {
+                    intensity: 30_000.0,
+                    range: 28.0,
+                    color: Color::srgb(1.0, 0.96, 0.88),
+                    inner_angle: 0.22,
+                    outer_angle: 0.5,
+                    shadow_maps_enabled: render::HIGH,
+                    ..default()
+                },
+                Transform::from_translation(l.eye.with_y(1.15)).looking_at(at + Vec3::Y * 0.3, Vec3::Y),
+            ));
+        }
+        l.spawned = true;
+        g.look = Some(l);
+    }
     if let Some(mut l) = g.look
         && !l.spawned
         && hq.resolved()
@@ -1190,12 +1301,15 @@ fn choose_sky(
     }
 }
 
-fn camera_room(map: &Map, target: Vec3, back: Vec3, want: f32) -> f32 {
+/// How far behind the player the camera can sit (up to `want`): it stops short of buildings, and
+/// of shopfronts' counters, which reach out over the pavement the walking map counts as open.
+fn camera_room(map: &Map, facades: &facade::Facades, target: Vec3, back: Vec3, want: f32) -> f32 {
     let mut d = 0.0;
     while d < want {
         let q = target + back * (d + 0.6);
         let tile = map.tile_at(V2 { x: q.x / TILE_M, y: q.z / TILE_M });
-        if matches!(tile, Tile::Building | Tile::Market | Tile::Landmark) && q.y < 14.0 {
+        let walled = matches!(tile, Tile::Building | Tile::Market | Tile::Landmark) && q.y < 14.0;
+        if walled || facades.in_shopfront(q, facade::SHOPFRONT_DEPTH_M) {
             return d.max(1.2);
         }
         d += 0.25;
@@ -1426,7 +1540,7 @@ fn menus(
     font: Res<UiFont>,
     assets: Res<AssetServer>,
     props: Res<Props>,
-    (hq, lib): (Res<hq::Hq>, Res<AnimLib>),
+    (hq, lib, facades): (Res<hq::Hq>, Res<AnimLib>, Res<facade::Facades>),
     roots: Query<Entity, With<MenuRoot>>,
     mut clicked_res: ResMut<Clicked>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -1455,7 +1569,7 @@ fn menus(
             (MenuButton::Go, Screen::Brief(m)) => {
                 let need = matches!(m, Mission::Story(2)) && g.profile.stats().leash < 2;
                 if !need {
-                    start_raid(&mut commands, &assets, &hq, &lib, &props, &mut g, m);
+                    start_raid(&mut commands, &assets, &hq, &lib, &props, &facades, &mut g, m);
                 }
             }
             (MenuButton::Buy(i), _) => {

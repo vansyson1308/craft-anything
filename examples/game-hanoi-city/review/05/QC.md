@@ -114,3 +114,66 @@ Tổng dài khoảng 150 mm, giữ nguyên gốc ở giữa thân. Một atlas 5
 - Làm lại rồi nộp tiếp: đèn pin và các tiếng chó.
 - Sau đó tiếp tục phần còn lại của `HOA_SI.md`, Phần 1, mục A: Ô Quan Chưởng, đèn lồng, `lamp_glass` /
   `window_glow`, quầy hàng nông 0,6 m, tên trộm thứ hai, động tác của chó.
+
+---
+
+# Lần 2: bản sửa lồng chó và đèn pin (PR #16, commit `0cad9fe`)
+
+## Kết quả
+
+| Món | Đo được | Kết luận |
+|---|---|---|
+| Lồng chó `people/long_cho.glb` | 1 vật liệu, 1 atlas 1024 px (LOD1: 512 px); 1.664 / 424 tam giác; khớp `door_hinge` 0–110° quanh −Y; có ổ khoá đi theo cửa, khay báo cũ, vết gỉ | **Đạt, đã đưa vào game** |
+| Đèn pin `people/den_pin.glb` | đầu loe, chao phản quang kim loại bóng (roughness 0,08), kính phát sáng, vân nhám bằng normal, nút cao su, nắp đuôi; 1.136 / 400 tam giác, ảnh 512 px | **Đạt, đã đưa vào game** |
+| Tiếng chó, tiếng cửa | bạn đã tự đánh giá là chưa đạt | Chưa đưa vào game; vẫn nằm trên PR #16 |
+
+File GLB 3,8 MB là do ảnh PNG; bước đóng gói (`tools/pack_hq.py`) chuyển sang JPEG nên bản web của lồng chỉ còn 148 KB.
+
+## Phía game đã làm
+
+- **Cửa lồng mở thật theo khớp của bạn.** Game đọc `s3d_joint` trong extras của nút, giữ phần dưới nút đó trên một bản lề
+  riêng, và khi chó được thả thì cửa quay 0 → 110° trong 0,9 giây. Mọi món sau này có khớp `revolute` cũng chạy được theo
+  cách này, không cần sửa code.
+- **Lồng không còn đè lên bó vỉa.** Khi chỗ đặt lồng cắt ngang mép đường, game dời lồng lên vỉa hè (tối đa 1,2 m) và dời
+  luôn con chó bên trong. Bạn không cần nâng lồng 0,15 m nữa.
+- **Góc duyệt riêng cho lồng**, thay cho hai bản vá camera tạm (`qc-*-harness.patch`):
+  - `?gl&look=cage`: lồng trên đường ven hồ, nhìn từ 1,5 m ngang tầm mắt;
+  - thêm `&door=open`: cửa mở hết 110°;
+  - thêm `&time=night`: lồng được rọi bằng đúng ánh đèn pin của Minh, nên ảnh đêm không còn tối đen.
+
+## Còn nên làm ở lồng (không chặn việc đưa vào game)
+
+1. **Gỉ chảy thành vệt, không loang đều.** Hiện gỉ là các đốm cam rải đều khắp thanh, trông như hoa văn. Gỉ thật bắt đầu
+   ở mối hàn, chỗ giao nhau và mép dưới (nơi nước đọng), rồi chảy xuống thành vệt dài.
+   - Lấy mask từ AO (chỗ khuất, chỗ giao) nhân với curvature lõm.
+   - Kéo dài mask theo −Y: làm mờ có hướng (directional blur) xuống dưới 3–6 cm.
+   - Phủ thêm một lớp noise nhỏ để mép vệt không đều.
+   - Thanh trên cùng gần như sạch; thanh đáy và khay gỉ nhiều nhất.
+2. **Sợi dây buộc tạm** ở cửa (mục 1.2 lần trước) vẫn thiếu. Một sợi nilon hoặc dây dù quấn 2–3 vòng quanh thanh cửa và
+   khung là đủ, dùng chung atlas.
+
+## Đèn lồng (lô 06)
+
+Thư mục làm việc của bạn nằm trên máy Windows, phía game không mở được. Để QC được, cứ đẩy lên **một PR nháp** kèm ảnh
+duyệt, kể cả khi chưa đạt; ghi rõ chỗ nào chưa xong.
+
+Về mật độ UV (texel density) chưa đều:
+- **Mục tiêu:** đèn lồng được nhìn ở 2–6 m, nên đặt khoảng 512 px/m cho LOD0. Mọi đảo UV phải gần cùng mật độ đó (lệch
+  không quá ±15%).
+- **Cách đo:** với mỗi đảo, mật độ = cạnh atlas (px) × √(diện tích UV / diện tích 3D). Trong Blender có thể dùng add-on
+  Texel Density Checker, hoặc tự tính bằng `bmesh` trong script sand3d.
+- **Cách sửa:**
+  1. *UV → Average Islands Scale* để các đảo cùng tỉ lệ.
+  2. Đóng gói lại với khoảng đệm 8 px.
+  3. Nếu mật độ chung quá thấp: tăng atlas lên 1024 px, hoặc dùng một vải lụa/giấy dó lặp lại (tileable). Khi dùng texture
+     lặp, xếp UV cho thẳng theo nan tre, để hoa văn chạy dọc theo nan.
+- **Đường nối (seam)** đặt ở chỗ khuất: mặt sau, chỗ nan tre đè lên vải, đáy đèn.
+
+## Âm thanh: lấy nguồn khi không đăng nhập được
+
+- **Cách chắc nhất:** người giao việc đăng nhập Freesound hộ, lọc giấy phép **Creative Commons 0**, tải 5–8 file
+  WAV hoặc FLAC (44,1–48 kHz), rồi để vào một thư mục cho bạn. Bạn chỉ làm sạch và QC theo mục 3 ở trên.
+- **Wikimedia Commons** cho tải thẳng, không cần đăng nhập, nhưng tiếng chó CC0 rất ít. Phía game tìm được một file:
+  `File:Bark (avk).wav` (CC0, 0,9 s). Các file khác phần lớn là CC BY-SA, **không dùng** vì không hợp với giấy phép CC0 của
+  tài nguyên.
+- Đừng tổng hợp tiếng chó bằng máy: tiếng rên nhân tạo nghe ra ngay. Tiếng giao diện tổng hợp thì vẫn được, như bạn đã làm.
