@@ -15,7 +15,7 @@ use hanoi_rescue::geom::V2;
 use hanoi_rescue::map::{Map, Tile};
 
 use crate::facade;
-use crate::hq::{Site, TREE_SITE};
+use crate::hq::{LANTERN_RED_SITE, LANTERN_YELLOW_SITE, Site, TREE_SITE};
 
 /// Metres from the city's top-left corner: x east, z south.
 pub fn to_world(c: &City, p: &Dm) -> Vec2 {
@@ -729,11 +729,17 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                     if k % 4 == 0 {
                         glows.push(crate::night::Glow::lantern(Vec3::new(q.x, 4.4, q.y), red));
                     }
+                    let y = 4.6 + (k % 3) as f32 * 0.25;
+                    let site = if red { LANTERN_RED_SITE } else { LANTERN_YELLOW_SITE };
+                    // A delivered lantern hangs from its top (0.64 m tall): its middle where the
+                    // stand-in's is.
+                    sites.push(Site { file: site, kind: "lantern", at: Vec3::new(q.x, y + 0.32, q.y), yaw: (k as f32 * 1.7) % std::f32::consts::TAU });
                     commands.spawn((
                         Mesh3d(lantern.clone()),
                         MeshMaterial3d(mat),
-                        Transform::from_xyz(q.x, 4.6 + (k % 3) as f32 * 0.25, q.y),
+                        Transform::from_xyz(q.x, y, q.y),
                         Far { at: Vec3::new(q.x, 0.0, q.y), limit: 200.0 },
+                        StandIn(site),
                     ));
                 }
             }

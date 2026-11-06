@@ -21,6 +21,17 @@
 <div id="wrap"><canvas id="game"></canvas></div>
 <div id="boot">Đang tải Hanoi City…<small id="how"></small></div>
 <script type="module">
+  // Browsers keep sound off until the player touches the page: keep every audio context the game
+  // makes and wake it on a key, click or touch.
+  const audioContexts = [];
+  for (const name of ["AudioContext", "webkitAudioContext"]) {
+    const Base = window[name];
+    if (!Base) continue;
+    window[name] = class extends Base { constructor(...a) { super(...a); audioContexts.push(this); } };
+  }
+  const wake = () => audioContexts.forEach((c) => { if (c.state === "suspended") c.resume().catch(() => {}); });
+  for (const ev of ["pointerdown", "keydown", "touchend"]) addEventListener(ev, wake, { capture: true });
+
   // WebGPU gets the full renderer (sky, ambient occlusion, soft shadows); without it, WebGL2.
   // ?gl forces the WebGL2 build.
   const boot = document.getElementById("boot");

@@ -39,6 +39,8 @@ bevy = { version = "0.20", default-features = false, features = [
   "tonemapping_luts",
   "smaa_luts",
   "bluenoise_texture",
+  # Sound: Bevy's audio with Ogg Vorbis files (the art manifest's `audio/…`).
+  "audio",
 ] }
 hanoi-rescue = { path = "../game-hanoi-rescue", default-features = false }
 serde = { version = "1", features = ["derive"] }
