@@ -2,7 +2,8 @@
 
 Một file duy nhất: dán toàn bộ cho agent làm tài nguyên. Gồm bốn phần:
 
-1. **Việc cần làm bây giờ** (lô 05): những gì còn thiếu để game hoàn chỉnh, theo thứ tự người chơi gặp.
+1. **Việc cần làm bây giờ** (lô 06): những gì còn thiếu để game hoàn chỉnh, theo thứ tự người chơi gặp, và ngân sách
+   để game chạy mượt trên trình duyệt.
 2. **Kỹ thuật chuẩn**: cách làm để hình trông thật, không như đồ nhựa.
 3. **Ghi chú khi làm lại các món cũ** và **kỹ thuật cho đồ lặp nhiều lần**.
 4. **Đặc tả kỹ thuật đầy đủ**: tên file, kích thước, khung xương, cách nộp.
@@ -12,135 +13,164 @@ https://vansyson1308.github.io/craft-anything/
 
 <!-- Tệp này được ghép tự động bằng tools/make_hoa_si.py; sửa ở các file nguồn. -->
 
-# Phần 1. Việc cần làm bây giờ (lô 05)
+# Phần 1. Việc cần làm bây giờ (lô 06)
 
-## Cách hai bên làm việc
+## Đã xong, không làm lại
 
-Game chạy trên trình duyệt theo cách các đội lớn đưa game AAA lên web: **họa sĩ làm đủ bộ tài nguyên, kỹ sư
-lo cho nó chạy mượt trên web**. Phía game đã có:
-- chỗ đặt từng món theo bản đồ thật;
-- LOD theo khoảng cách;
-- đóng gói và gộp texture;
-- ánh sáng ngày và đêm;
-- cột sáng dẫn đường, tầm nhìn của trộm, lời mẹo.
+Đã có trong game và đang chạy trên trang:
+- lồng chó (gỉ thành vệt, khoá, khay báo, dây buộc, khớp `door_hinge`: cửa mở 110° khi thả chó);
+- đèn pin;
+- đèn lồng Hàng Mã 01–03;
+- kính đèn đường `lamp_glass`;
+- cửa sổ `window_glow` và dải đèn quầy `shop_light` (tự tắt ban ngày, bật ban đêm);
+- quầy hàng nhô ra không quá 0,6 m;
+- bàn ghế nhựa;
+- 4 tiếng sủa và tiếng rên của chó (phát 3D từ lồng);
+- tiếng bấm nút và tiếng chuông khi có lời mẹo.
 
-Còn thiếu là **hình và tiếng**. Hiện game có 44 file hình thật (kể cả texture nền); phần còn lại vẫn là khối hộp, quả cầu, hoặc trống
-không. Game **chưa có một âm thanh nào**.
+## Ngân sách để game chạy mượt trên trình duyệt
 
-## Dựng đồ cứng bằng sand3d
+Game tải mọi thứ qua mạng rồi đẩy lên GPU từng phần mỗi khung hình. Lúc bước vào một phố mới, hơn
+1,7 GB texture có thể cùng lúc xếp hàng chờ đẩy lên. Món càng nhẹ thì phố hiện ra càng nhanh, và máy yếu càng ít
+giật. Giữ đúng các mức này:
 
-[sand3d](https://github.com/Sandflow-ai/sand3d) (Apache-2.0) cho phép viết vật thể 3D thành chương trình Python
-ngắn trên Blender `bpy`:
-- mỗi phần có tên;
-- có khớp (joint) cho phần chuyển động;
-- xuất thẳng ra GLB;
-- cùng chương trình luôn cho ra đúng một mô hình.
+| Loại | Tam giác LOD0 / LOD1 / LOD2 | Texture LOD0 / LOD1 / LOD2 | Vật liệu |
+|---|---|---|---|
+| Đồ nhỏ (ghế, chậu, bát, xe máy) | ≤ 2.000 / 500 / — | 512 / 256 px | 1 atlas cho cả món |
+| Đồ vừa (xe đẩy, cột đèn, đèn lồng) | ≤ 4.000 / 1.200 / — | 1024 / 512 px | ≤ 2 |
+| Mặt tiền (một mô-đun 4 m) | ≤ 6.000 / 1.500 / — | 1024 / 512 px, dùng chung giữa các biến thể | ≤ 3 (tường, khung, kính) |
+| Công trình (Ô Quan Chưởng, chợ, nhà thờ) | ≤ 15.000 / 5.000 / 1.500 | 2048 / 1024 / 512 px | ≤ 4 |
+| Người, chó | ≤ 12.000 / 4.000 / 1.200 | 1024 / 512 / 256 px | ≤ 3 |
 
-Dùng nó cho **mọi vật có hình khối rõ ràng** (đánh dấu ⚙ trong bảng). Quy trình mỗi món:
+- **Mỗi cấp LOD có texture của riêng nó và nhỏ hơn cấp trên.** Đừng dùng lại texture 1K cho LOD xa.
+- **Xếp UV kín atlas, đạt ít nhất 70%.** Đèn lồng hiện mới dùng 15–19% atlas: phí ba phần tư bộ nhớ. Nếu không xếp kín
+  được ở mật độ đã chọn, hạ atlas xuống một nấc (1024 → 512).
+- **Tên vật liệu phát sáng phải đúng:**
+  - `lamp_glass`: bóng đèn, chao đèn, đèn lồng;
+  - `window_glow`: cửa sổ;
+  - `shop_light`: dải đèn quầy.
 
-1. Viết chương trình sand3d, mỗi món một file `art-src/sand3d/<ten>.py` trong `examples/game-hanoi-city/`.
-   Đặt ở đó, **không** đặt trong `assets/hq`. Kích thước tính bằng mét theo bảng dưới.
-2. Phần chuyển động dùng `s3d.joint` với đúng tên trong bảng. Ví dụ cửa lồng chó là `door_hinge`. Game sẽ đọc
-   khớp trong GLB để mở cửa khi người chơi giữ E.
-3. Biến thể (màu, kích thước, số chân) làm bằng tham số của cùng chương trình, xuất thành các file `_02`, `_03`.
-4. Trong cùng phiên Blender: UV, gán vật liệu từ ảnh quét CC0, bevel nhỏ rồi bake normal và AO (Phần 2), tạo LOD1 (khoảng 1/3 số tam giác).
-5. Xuất GLB vào `assets/hq/...`, cập nhật `manifest.json`, ghi `sand3d <phiên bản>` vào `made_with`, chạy glTF
-   Validator.
+  Game dựa vào tên này để tắt đèn ban ngày và bật ban đêm. Phần kim loại, gỗ, tường không bao giờ phát sáng.
 
-Không dùng sand3d cho người, chó, cây, vải: những thứ đó vẫn sculpt, retopo và bake.
-
-## A. Chương 1 phải hoàn hảo trước (người chơi nào cũng gặp)
+## A. Chương 1 phải hoàn hảo (ưu tiên số 1)
 
 | # | File | Cần gì | |
 |---|---|---|---|
-| A1 | `landmarks/o_quan_chuong.glb` | Cửa ô gạch cổ, mái cong, vọng lâu, lối đi xuyên qua; đây là lối thoát của Chương 1. Mặt bằng khoảng 11,5 × 17,8 m. Gạch quét CC0, rêu, vết ố. ⚙ cho khối chính, sculpt cho ngói và chi tiết. | [tự vào game] |
-| A2 | `people/long_cho.glb` (làm lại) | Lồng sắt 0,9 × 0,7 × 0,7 m, song sắt sơn tróc gỉ, khoá. Phần `door` gắn khớp `door_hinge` ở cạnh trái, mở 0–110°. ⚙ | [game nối sau: mở cửa] |
-| A3 | `street/den_long_01…03.glb` | Đèn lồng Hàng Mã (đỏ, vàng, hình quả trám), khung tre, vải lụa, tua rua, vật liệu `lamp_glass` bên trong. ⚙ khung + vải mỏng. | [game nối sau] |
-| A4 | `street/den_duong_01.glb`, `buildings/mat_tien_*` (sửa) | Chao đèn dùng `lamp_glass`, cửa sổ và cửa hàng dùng `window_glow`. Trên bản đang chạy, cả phần kim loại tự phát sáng. PR #11 (bản nháp) tắt nó đi nhưng chưa có vật liệu thay thế, nên ban đêm sẽ tối hẳn: cần cả hai việc cùng lúc. **Quầy hàng của mặt tiền tầng trệt nhô ra không quá 0,6 m**: hiện quầy nhô khoảng 1 m, nhân vật và camera lấn vào. | [tự vào game] |
-| A5 | `street/den_ven_ho.glb` | Cột đèn gang ven Hồ Gươm, cao khoảng 3,8 m. ⚙ | [tự vào game] |
-| A6 | `people/den_pin.glb` | Đèn pin cầm tay, gắn xương `hand_r`. ⚙ | [tự vào game] |
-| A7 | `people/trom_02.glb` | Tên trộm thứ hai (to con), cùng khung 65 xương. Chương 1 có 2 tên. | [tự vào game] |
-| A8 | `animals/cho_co.glb` (làm lại) | Lông có hướng, không gãy góc. Thêm động tác `Wag` (vẫy đuôi) và `Jump` (nhảy chồm lên chân Minh khi được cứu): đây là khoảnh khắc cảm xúc chính của game. | [game nối sau: Jump] |
+| A1 | `landmarks/o_quan_chuong.glb` | Xem mục A1 bên dưới. | [tự vào game] |
+| A2 | `street/den_ven_ho.glb` | Hoàn thiện bản nghiên cứu ở PR #27: cột gang cao 3,8 m, bóng ở độ cao 3,5 m, gốc ở chân cột. Bóng đèn dùng vật liệu `lamp_glass`. Bake AO riêng cho món này, LOD1. Game đã có sẵn vị trí đèn quanh hồ. | [tự vào game] |
+| A3 | `people/trom_02.glb` | Tên trộm thứ hai, to con hơn `trom_01`. Áo khoác khác màu, mũ lưỡi trai, cùng khung 65 xương. Chương 1 có hai tên. | [tự vào game] |
+| A4 | `animals/cho_co.glb` (làm lại) | Chó cỏ Việt 12–18 kg, lông vàng. Lông chải theo hướng mọc, không gãy góc ở khớp. Thêm động tác `Wag` (vẫy đuôi, lặp) và `Jump` (chồm lên, hai chân trước chạm khoảng 1 m, tức tới đùi Minh). Đây là khoảnh khắc cảm xúc chính của game. Bản nghiên cứu ở PR #33 là điểm khởi đầu tốt. | [game nối sau: `Jump` khi được thả] |
+| A5 | `landmarks/cau_the_huc.glb` (bổ sung) | Ban đêm cầu đang tối đen. Thêm các bóng đèn dọc lan can theo ảnh tham khảo, vật liệu `lamp_glass`. Đặt mỗi bóng một node rỗng tên `glow_01`, `glow_02`, … tại tâm bóng; game sẽ thắp đèn thật ở đó. | [game nối sau] |
+| A6 | `buildings/mat_tien_tang_01…04.glb` (sửa) | Mỗi biến thể một kiểu cửa sổ sáng khác nhau. Hiện cả bốn biến thể cùng kiểu "trái sáng có rèm, phải tối", nên cả dãy phố lặp lại. Hãy trộn: ô tối, ô vàng ấm, ô trắng lạnh, ô có ánh tivi xanh, rèm đủ màu. Khoảng 40% ô sáng. | [tự vào game] |
 
-## B. Kể chuyện bằng đồ vật (không cần chữ)
+### A1. Ô Quan Chưởng: cách làm
 
-Đặt quanh lồng chó và dọc đường dẫn tới đó, để người chơi tự đoán chuyện gì đã xảy ra (kể chuyện bằng môi trường).
+Bản phác ở PR #24 có đúng bố cục (vòm giữa, hai vòm bên, vọng lâu), nhưng còn ba chỗ chưa đạt.
+
+1. **Màu sai.**
+   - Cổng thật trát vữa vôi màu sáng, đã ngả xám và vàng theo năm tháng; gạch chỉ lộ ra ở chỗ vữa bong.
+   - Làm vữa là lớp chính. Đặt mask gạch lộ theo AO và theo cạnh: mép vòm, chân tường, góc.
+   - Thêm rêu xanh sẫm ở chân tường và mặt trên gờ, và vệt ố chảy dọc từ gờ mái xuống.
+2. **Nặng.**
+   - Mỗi LOD hiện khoảng 9 MB vì dùng lại ảnh quét 1K ở mọi cấp. Theo ngân sách ở trên: LOD0 2048, LOD1 1024, LOD2 512.
+   - Gộp còn tối đa 4 vật liệu: vữa và gạch chung một vật liệu, ngói, gỗ, kim loại.
+3. **Chi tiết.**
+   - Mái ngói cong ở các góc (đầu đao), không phải mái chóp phẳng.
+   - Bờ nóc có gờ.
+   - Cửa gỗ hai cánh ở vòm giữa, mở hẳn vào trong.
+   - Biển đá phía trên vòm để trống, không khắc chữ.
+
+Lối đi giữa rộng khoảng 3 m, cao 3 m. Phía game sẽ mở đúng khoảng đó trên bản đồ đi bộ khi mô hình đạt, nên hai
+vòm bên và tường vẫn chặn người chơi.
+
+Kiểm tra: `?gl&look=lineup` và `?gl&time=night`, đi từ phố Ô Quan Chưởng xuyên qua cổng.
+
+## B. Kể chuyện bằng đồ vật (đặt quanh lồng chó, không cần chữ)
 
 | # | File | Cần gì | |
 |---|---|---|---|
 | B1 | `street/thong_long_roi.glb` | Cây thòng lọng bắt chó vứt dưới đất, dây thừng rối. ⚙ gậy, sculpt dây | [game nối sau] |
-| B2 | `street/bat_nuoc_do.glb`, `street/vong_co.glb` | Bát inox lật úp; vòng cổ chó có thẻ tên trống (game in tên chó lên thẻ). ⚙ | [game nối sau] |
-| B3 | `street/to_roi_tim_cho.glb` | Tờ "Tìm chó lạc" dán trên cột điện, giấy nhàu, góc bong. Chữ để trống, game in lên. | [game nối sau] |
-| B4 | `decals/vet_banh_xe.png`, `decals/vet_ban_chan.png` | Vết bánh xe máy, dấu chân chó trên đất ẩm; PNG có kênh alpha, 1024 px, lặp được theo chiều dài. | [game nối sau] |
+| B2 | `street/bat_nuoc_do.glb`, `street/vong_co.glb` | Bát inox lật úp; vòng cổ chó có thẻ tên để trống (game in tên chó lên). ⚙ | [game nối sau] |
+| B3 | `street/to_roi_tim_cho.glb` | Tờ "Tìm chó lạc" dán trên cột điện, giấy nhàu, góc bong. Chữ để trống. | [game nối sau] |
+| B4 | `decals/vet_banh_xe.png`, `decals/vet_ban_chan.png` | Vết bánh xe máy, dấu chân chó trên đất ẩm. PNG có kênh alpha, 1024 px, lặp được theo chiều dài. | [game nối sau] |
 
-## C. Phố đông như ngoài đời (lô 04, làm tiếp)
+## C. Phố đông như ngoài đời
 
-| # | File | |
-|---|---|---|
-| C1 | `street/xe_may_01…04_dau.glb`: xe dựng, đầu hướng +Z, không logo. ⚙ khung, bánh, gương | [tự vào game] |
-| C2 | Bàn ghế nhựa (đã có bản nháp): đạt UV 70%, bake AO | [tự vào game] |
-| C3 | `street/chau_cay.glb`, `street/thung_rac.glb` (⚙ thùng) | [tự vào game] |
-| C4 | `street/day_dien_ngang.glb`, `street/cot_dien_day.glb`, `street/co_do.glb`, `street/dieu_hoa_cuc_nong.glb`, `buildings/mai_bon_nuoc.glb` (⚙ trừ dây) | [game nối sau] |
-| C5 | `street/xe_banh_mi.glb` (xe đẩy của cô Hằng, tủ kính), `street/ganh_hang_rong.glb`, `street/xe_dap_tho.glb` (⚙) | [game nối sau] |
-| C6 | `materials/via_he_gach_do/`: gạch đỏ vỉa hè phố cổ | [game nối sau] |
-| C7 | Mặt tiền `mat_tien_tret_05…08`, `mat_tien_tang_05…10`, kiểu Pháp `mat_tien_phap_*`: tường nhiều màu, mái hiên, cửa cuốn có biển hiệu trống, `window_glow` | [tự vào game] |
+| # | File | Cần gì | |
+|---|---|---|---|
+| C1 | `street/xe_may_01_dau.glb` … `xe_may_04_dau.glb` | **Món đổi cảm giác phố nhiều nhất.** Game đã có sẵn chỗ dựng xe trước một nửa số cửa hàng, nhưng chưa có xe nào. Xe số, xe ga, xe cub, xe điện. Không logo, biển số trống. Gốc ở giữa hai bánh, đầu xe hướng +Z, chân chống ra. | [tự vào game] |
+| C2 | `street/chau_cay.glb`, `street/thung_rac.glb` | Chậu sứ hoặc chậu nhựa có cây thật (lá dùng alpha mask), thùng rác nhựa xanh có nắp. | [tự vào game] |
+| C3 | `street/day_dien_ngang.glb`, `street/cot_dien_day.glb`, `street/co_do.glb`, `street/dieu_hoa_cuc_nong.glb`, `buildings/mai_bon_nuoc.glb` | Dây điện võng ngang ngõ, cột điện, cờ đỏ sao vàng, cục nóng điều hoà, bồn nước inox trên mái. | [game nối sau] |
+| C4 | `street/xe_banh_mi.glb`, `street/ganh_hang_rong.glb`, `street/xe_dap_tho.glb` | Xe bánh mì có tủ kính (của cô Hằng), gánh hàng rong, xe đạp chở hàng. | [game nối sau] |
+| C5 | `materials/via_he_gach_do/` | Gạch đỏ 30 × 30 cm lát vỉa hè phố cổ: viên vỡ, viên lệch màu, vết dầu, rêu mép. | [game nối sau] |
+| C6 | `buildings/mat_tien_tret_05…08.glb`, `mat_tien_tang_05…10.glb`, `mat_tien_phap_tret_01…03.glb`, `mat_tien_phap_tang_01…03.glb` | Thêm biến thể mặt tiền để phố bớt lặp. Tường nhiều màu (vàng, hồng, xanh ngọc, kem) có vết ố mưa; mái hiên bạt; cửa cuốn có biển hiệu để trống. Mặt tiền kiểu Pháp có cửa chớp xanh và ban công sắt. Dùng `window_glow` và `shop_light`, quầy nhô ra ≤ 0,6 m. | [tự vào game] |
+| C7 | `street/den_long_01…03.glb` (sửa) | Xếp lại UV cho kín atlas (≥ 70%) hoặc hạ xuống 512 px. Thân đèn ở LOD0 dùng 24 cạnh quanh trục thay cho 12, để hết gãy góc. Dây treo dày hơn một chút (8 mm) cho dễ thấy. | [tự vào game] |
 
 ## D. Nhân vật và công trình cho các chương sau
 
-- **[tự vào game]**
+- **[tự vào game]**:
   - người: `people/tu_long.glb`, `people/bay_thong_long.glb`, `people/co_hang.glb`;
-  - công trình: `landmarks/cho_dong_xuan.glb`, `landmarks/nha_tho_lon.glb`, `landmarks/nha_hat_lon.glb`.
-- **[game nối sau]**
+  - công trình: `landmarks/cho_dong_xuan.glb`, `landmarks/nha_tho_lon.glb`, `landmarks/nha_hat_lon.glb`;
+  - cây: `trees/sau.glb`, `trees/bang.glb`, `trees/lieu_ru.glb`, mỗi cây kèm một ảnh billboard như cây xà cừ đã có.
+- **[game nối sau]**:
   - người và chó: `people/nguoi_di_duong_04…06.glb`, `animals/cho_phu_quoc.glb`, `animals/cho_bac_ha.glb`;
   - Long Biên và tàu: `landmarks/ga_long_bien.glb`, `landmarks/cau_long_bien_nhip.glb` (⚙ dàn thép),
     `street/toa_tau.glb`, `street/dau_may.glb` (⚙).
-- **[tự vào game]** cây `trees/sau.glb`, `trees/bang.glb`, `trees/lieu_ru.glb` (sculpt, có billboard).
 
-## E. Âm thanh (game đang câm hoàn toàn)
+## E. Âm thanh còn thiếu
 
-Âm thanh làm nên một nửa cảm giác "thật". Thư mục `assets/hq/audio/`:
-- định dạng OGG Vorbis, 44,1 kHz;
-- tiếng ngắn là mono, nhạc và tiếng nền là stereo;
-- chuẩn hoá về khoảng −16 LUFS;
-- file lặp phải nối liền không có tiếng tách.
+Âm thanh làm nên một nửa cảm giác "thật". Quy cách:
+- OGG Vorbis, 44,1 hoặc 48 kHz;
+- tiếng ngắn mono, tiếng nền và nhạc stereo;
+- tiếng ngắn đo theo đỉnh: −1 dBTP;
+- tiếng nền và nhạc khoảng −16 LUFS;
+- nền nhiễu dưới −50 dB;
+- không độn im lặng vào cuối file;
+- file lặp phải nối liền: cắt ở điểm qua 0, crossfade 200 ms.
 
-Chỉ dùng nguồn **CC0** hoặc tự làm, và ghi từng file vào `SOURCES.md` (nguồn, tác giả, giấy phép).
+Chỉ dùng nguồn **CC0** hoặc tự làm, và ghi từng file vào `SOURCES.md`. Nếu cần tải từ trang có đăng nhập, nhờ
+người giao việc tải hộ bản WAV hoặc FLAC.
 
 | Nhóm | File |
 |---|---|
 | Tiếng nền | `pho_dem_loop.ogg` (phố đêm: xe xa, côn trùng, tivi nhà ai), `pho_ngay_loop.ogg` (còi, rao hàng, xe máy), `ho_guom_loop.ogg` (gió, nước, chim) |
 | Nhân vật | `buoc_chan_gach_01…04.ogg`, `buoc_chan_nhua_01…04.ogg` (nhựa đường), `lan.ogg`, `dam_trung.ogg`, `nem_dep.ogg`, `dep_trung.ogg` |
-| Chó | `cho_sua_01…03.ogg`, `cho_rit.ogg` (rên trong lồng, để người chơi nghe mà tìm), `cho_mung.ogg` |
-| Trộm | `trom_nghi.ogg` ("Ai đấy?"), `trom_phat_hien.ogg` ("Đứng lại!"), `trom_mat_dau.ogg` ("Chạy đâu rồi?"); giọng nam, tiếng Việt, tự thu hoặc người đọc đồng ý cho dùng |
-| Vật | `long_mo.ogg` (sắt kẽo kẹt), `trom_bi_troi.ogg`, `xe_may_chay_loop.ogg`, `coi_xe.ogg`, `tau_coi.ogg`, `tau_chay_loop.ogg` |
+| Chó | `cho_mung.ogg` (rên mừng, sủa vui khi được thả), và một tiếng sủa sạch thay cho `cho_sua_02.ogg` (nền nhiễu −49 dB, hơi cao) |
+| Trộm | `trom_nghi.ogg` ("Ai đấy?"), `trom_phat_hien.ogg` ("Đứng lại!"), `trom_mat_dau.ogg` ("Chạy đâu rồi?"). Giọng nam, tiếng Việt, tự thu hoặc do người đọc đồng ý cho dùng. |
+| Vật | `long_mo.ogg` (cửa sắt kẽo kẹt rồi lách cách), `trom_bi_troi.ogg`, `xe_may_chay_loop.ogg`, `coi_xe.ogg`, `tau_coi.ogg`, `tau_chay_loop.ogg` |
 | Nhạc | `nhac_lan.ogg` (lén lút, nhẹ, lặp), `nhac_duoi.ogg` (bị đuổi, dồn dập), `nhac_thoat.ogg` (thoát được, ngắn) |
-| Giao diện | `ui_bam.ogg`, `ui_meo.ogg` (lúc hiện lời mẹo) |
 
-Game sẽ nối toàn bộ phần âm thanh: âm thanh 3D theo vị trí, nhạc chuyển theo trạng thái lén hay bị đuổi.
+Game sẽ nối toàn bộ: âm thanh 3D theo vị trí, nhạc chuyển theo trạng thái lén hay bị đuổi, tiếng bước chân theo
+mặt đường.
 
 ## F. Hình 2D
 
-- `2d/man_hinh_cho_ngang.jpg` (1920 × 1080): tranh màn hình chờ. Minh và Bơ trên phố Hàng Mã ban đêm, đèn
-  lồng đỏ, ánh sáng điện ảnh. Không dùng ảnh người thật.
+- `2d/man_hinh_cho_ngang.jpg` (1920 × 1080): tranh màn hình chờ. Minh và Bơ trên phố Hàng Mã ban đêm, đèn lồng
+  đỏ, ánh sáng điện ảnh. Không dùng ảnh người thật.
 - `2d/icon_cho.png`, `2d/icon_dep.png`, `2d/icon_balo.png`, `2d/icon_tim.png` (128 px, nền trong): biểu tượng
   cho thanh trạng thái.
 - `2d/logo.png`: chữ "GIẢI CỨU CÚN" kiểu biển hiệu phố cổ.
 
-## Thứ tự nộp (mỗi đợt một PR)
+## Thứ tự nộp (mỗi đợt một PR nhỏ)
 
-1. Mục A (Chương 1 hoàn hảo) và E (âm thanh). Hai thứ này đổi cảm giác game nhiều nhất.
-2. Mục B và C.
-3. Mục D và F.
+1. **A1, C1, A3.** Cổng thoát của Chương 1, xe máy dựng kín phố, tên trộm thứ hai.
+2. **A2, A5, A6, C2, C7** và âm thanh nhóm Tiếng nền, Nhân vật, Vật.
+3. **A4** (chó và động tác), **B**, **C3–C6**.
+4. **D**, nhạc, **F**.
 
 ## Kiểm tra trước khi nộp
 
 - glTF Validator: 0 lỗi, 0 cảnh báo.
-- Emissive kiểm trong Blender với World strength = 0.
-- Chụp trong game, nộp vào `review/05/`:
-  - `?gl&look=streetlife` (đồ vỉa hè);
-  - `?gl&look=lineup` (nhân vật);
-  - `?gl&look=cage`, thêm `&door=open` và `&time=night` (lồng chó; không cần bản vá camera riêng);
-  - Chương 1 cả ngày (`&time=day`) lẫn đêm.
+- Đúng ngân sách tam giác và texture ở trên.
+- Emissive kiểm trong Blender với World strength = 0: chỉ các vật liệu `lamp_glass`, `window_glow`, `shop_light`
+  được sáng.
+- Chụp trong game (build như Phần 2, ý 7), nộp vào `review/<số lô>/`, cả ban ngày (`&time=day`) lẫn ban đêm
+  (`&time=night`):
+  - `?gl&look=hangma`: phố Hàng Mã, đèn lồng, mặt tiền;
+  - `?gl&look=streetlife`: đồ vỉa hè, xe máy;
+  - `?gl&look=lineup`: nhân vật;
+  - `?gl&look=cage`, thêm `&door=open`: lồng chó;
+  - Chương 1 từ đầu tới cổng Ô Quan Chưởng.
 - Không logo hãng, không chữ thương hiệu thật, không mặt người thật, không lấy hình hay tiếng của game khác.
 
 # Phần 2. Kỹ thuật chuẩn (áp dụng cho mọi món)
@@ -334,7 +364,7 @@ Game sẽ nối toàn bộ phần âm thanh: âm thanh 3D theo vị trí, nhạc
 - **Kiểm tra trong game:** build như Phần 2, ý 7, rồi mở `?gl&look=streetlife` (bộ bàn
   ghế gần nhất, ngang tầm mắt; thêm `&time=night` để xem ban đêm), hoặc chơi Chương 1. Đi dọc vài con phố, chụp lại và nộp kèm trong `review/04/`.
 - Không logo hãng xe thật, không chữ của thương hiệu có thật, không lấy hình từ game khác.
-- Mỗi đợt nộp nhỏ một PR. Với đồ phố, đợt đầu nên là xe máy dựng và bàn ghế (Phần 1, mục C1–C2): chỉ riêng chúng đã đổi hẳn cảm giác của phố.
+- Mỗi đợt nộp nhỏ một PR. Với đồ phố, đợt đầu nên là xe máy dựng (Phần 1, mục C1): chỉ riêng chúng đã đổi hẳn cảm giác của phố.
 
 # Phần 4. Đặc tả kỹ thuật đầy đủ
 
