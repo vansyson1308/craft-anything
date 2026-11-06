@@ -56,8 +56,10 @@ python art-src/character/atlas_stocky_study.py <userdir>/stocky_transferred.glb 
 python art-src/character/make_stocky_lod.py <userdir>/stocky_atlas.glb <userdir>/stocky_lod1.glb
 python art-src/character/make_stocky_lod.py <userdir>/stocky_atlas.glb <userdir>/stocky_lod2.glb --lod2
 python art-src/character/check_stocky_study.py assets/hq/people/trom_01.glb <userdir>/stocky_atlas.glb
+python art-src/character/check_stocky_study.py assets/hq/people/trom_01.glb <userdir>/stocky_lod1.glb --max-triangles 8000 --max-texture-size 512
+python art-src/character/check_stocky_study.py assets/hq/people/trom_01.glb <userdir>/stocky_lod2.glb --max-triangles 2000 --max-texture-size 256
 python art-src/character/render_stocky_actions.py <userdir> assets/anim.glb
 ```
 
-Run the checker on each LOD and validate each GLB separately. Regenerated
+Validate each GLB separately. Regenerated
 binary hashes need not match because Blender's export is not byte-stable.
