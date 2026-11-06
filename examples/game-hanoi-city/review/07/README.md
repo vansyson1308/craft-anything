@@ -17,8 +17,10 @@ samples in the full source have absolute amplitude at least 0.999. FFmpeg
 `adeclip` attempts reconstruction before denoising, but cannot restore lost
 information reliably. The three Ogg excerpts and their frequency plots are
 provided so a reviewer can judge the result; **a clean alternate recording is
-still needed if clipping remains audible**. Four excerpts do not satisfy the
-requirement for five distinct barking, growling and happy-dog variations.
+still needed if clipping remains audible**. The user has approved continuing
+with the available sounds instead of acquiring the originally requested five
+different barking, growling and happy-dog variations. This does not by itself
+establish that the clipped recordings meet the quality threshold.
 
 `cho_sua_04_candidate.ogg` comes from the Sadiquecat recording. Only one source
 sample exceeds 0.999 full scale, without a sustained flat-top clipping run.
