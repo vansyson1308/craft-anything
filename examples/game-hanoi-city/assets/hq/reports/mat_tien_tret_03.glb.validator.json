@@ -2,24 +2,43 @@
   "uri": "buildings/mat_tien_tret_03.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-03T08:42:04.929Z",
+  "validatedAt": "2026-11-06T07:35:41.912Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
-    "numInfos": 0,
+    "numInfos": 3,
     "numHints": 0,
-    "messages": [],
+    "messages": [
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_1"
+      },
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/accessors/16"
+      }
+    ],
     "truncated": false
   },
   "info": {
     "version": "2.0",
-    "generator": "Blender 4.5.3 + Codex asset pipeline",
+    "generator": "Khronos glTF Blender I/O v4.5.51",
     "resources": [
       {
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 6579724
+        "byteLength": 6578876
       },
       {
         "pointer": "/images/0",
@@ -86,19 +105,6 @@
       },
       {
         "pointer": "/images/5",
-        "mimeType": "image/png",
-        "storage": "buffer-view",
-        "image": {
-          "width": 1024,
-          "height": 1024,
-          "format": "rgb",
-          "primaries": "srgb",
-          "transfer": "srgb",
-          "bits": 8
-        }
-      },
-      {
-        "pointer": "/images/6",
         "mimeType": "image/jpeg",
         "storage": "buffer-view",
         "image": {
@@ -109,7 +115,7 @@
         }
       },
       {
-        "pointer": "/images/7",
+        "pointer": "/images/6",
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
@@ -123,13 +129,13 @@
       }
     ],
     "animationCount": 0,
-    "materialCount": 2,
+    "materialCount": 3,
     "hasMorphTargets": false,
     "hasSkins": false,
     "hasTextures": true,
     "hasDefaultScene": true,
-    "drawCallCount": 2,
-    "totalVertexCount": 7688,
+    "drawCallCount": 3,
+    "totalVertexCount": 7739,
     "totalTriangleCount": 3930,
     "maxUVs": 2,
     "maxInfluences": 0,

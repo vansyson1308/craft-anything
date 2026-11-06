@@ -78,7 +78,7 @@
       "file": "buildings/mat_tien_tang_01.glb",
       "triangles": 3930,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -107,23 +107,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "4a5070618afbed38ebbfa3f2186a359819447167f4e95d521ccd52ba1d00fc95",
-      "errors": []
+      "sha256": "ae76f265c32fbbfdbc9fcb727529a13553b391e6b9677544310a776a85f87d3c",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_01_lod1.glb",
       "triangles": 739,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -152,23 +149,20 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "88059cf57d85734869d38fcd1dfb3c8cc73c449dc4027596ca19f46f21916532",
-      "errors": []
+      "sha256": "18f47db934a942b073a05437a515343b0a18c5884764fd924ce5576db94030cc",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_02.glb",
       "triangles": 3096,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -197,23 +191,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "7f92be16763463d32b985fc3467164750bea9cdf041801937d0a194f92b01448",
-      "errors": []
+      "sha256": "fdf02c122138fef49496d06183795791bfcccf0ddd51ddace1a7b3290e3a1013",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_02_lod1.glb",
       "triangles": 776,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -242,23 +233,20 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "f11183f090ca89fbe567bba9b006b204b5de413072cbd35d7121c4615317d1bc",
-      "errors": []
+      "sha256": "1a92fa1e42f11f4f478ae7e353f2cfdbdae788e2e922c3fbfdbad9276747fa9f",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_03.glb",
       "triangles": 3930,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -287,23 +275,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "a965290b0e1869acc6b0ef234784c492d63591d8269570b19dfff7bf482a4987",
-      "errors": []
+      "sha256": "04554b6f316c31854e1a3aee76984994cb2919c6781e69a4f46e8f4f21a23673",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_03_lod1.glb",
       "triangles": 747,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -332,23 +317,20 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "7d568871e65f0faedd4afaafeb101568d902acd80cbf51e3cc426640e3d20a02",
-      "errors": []
+      "sha256": "b3cb6e73d1cb966a98fb14be6b22f4acbd9421433fb4e74f2ef8fe729f373f63",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_04.glb",
       "triangles": 3930,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -377,23 +359,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "5c8fcfb2235def08721c9bd1301c4f3000f696511dcefd7a2247d81c0826e840",
-      "errors": []
+      "sha256": "663b1c78c701aaa2ab1cb2b730b9feb376e65612a08759fc818d07c5640b0a97",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tang_04_lod1.glb",
       "triangles": 735,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -422,23 +401,20 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "b34ef8d19a23baf71b54f6b13aecb18e4bacf8cfc67df5c126e75642cf3b53ef",
-      "errors": []
+      "sha256": "050df526e1a0ce1a1103e3f53a0eff2b7104cf97ce7ef0e5acabf8cb3763e68b",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_01.glb",
       "triangles": 3836,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -467,23 +443,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "2d164557cc766b1af27dd64e1675cf913b251de16c53c4982676933c6ac6cde6",
-      "errors": []
+      "sha256": "62805a6ac1c74e7a01815224b4b6c49f1b1c94eaa3f3d860b5ba0c1eb8085e2a",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_01_lod1.glb",
       "triangles": 776,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -512,17 +485,14 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "ee21e329d63bef10082e59c4301725639de22a104567d9268f2d4c4274d82ce5",
-      "errors": []
+      "sha256": "d29e96c0306b941c88fa0c1e5ae1ee7babbf65de2dfdf74ecf9176a5f1baedad",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_02.glb",
@@ -566,8 +536,9 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "1a97a3469236df66fa5e846d83ecf9c861768172987077536684918e00c0a2e2",
-      "errors": []
+      "sha256": "ff8049a5efb18e92c9b15d5bfbce88e47ad1af1cf946e8f5335cc41356949b04",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_02_lod1.glb",
@@ -611,14 +582,15 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "dd908436ab717bd366d8f3b78a872c2f5f3af71a1f258a741b6e66fa71108ef0",
-      "errors": []
+      "sha256": "035683d14218366c7a704061b2a9e9ca4b5d22f01885709d56e8afc7e6c1b43d",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_03.glb",
       "triangles": 3930,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -647,23 +619,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "5f1af3bff0b05c2a865a6dd2b3e6050644d811bd4a712aa91fff0a79e72c3ec9",
-      "errors": []
+      "sha256": "64c6882083c95bd8ae58ac26326a35c2c48e6ce29438c2e8e4b10a3c0d922c48",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_03_lod1.glb",
       "triangles": 765,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -692,23 +661,20 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "b1af8e0b572490ad52b62ecf3d7a1fe0693de7013269f9825aaad50de5a5072a",
-      "errors": []
+      "sha256": "13100602d5c88bc0291f203a8a35ebb1bad7e01c160d7d8682715e5aa88b9344",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_04.glb",
       "triangles": 3930,
       "triangle_limit": 4000,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           1024,
@@ -737,23 +703,20 @@
         [
           1024,
           1024
-        ],
-        [
-          1024,
-          1024
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "d95877c08fe2faa4be2e511f1f2ce7d69f071ed97cac94b9d347f6e2945a8502",
-      "errors": []
+      "sha256": "12c182ac9e9b7af8658d3266b53b7c5a799503eab05459bb50ebc95602a8847f",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "buildings/mat_tien_tret_04_lod1.glb",
       "triangles": 767,
       "triangle_limit": 800,
-      "materials": 2,
+      "materials": 3,
       "image_sizes": [
         [
           512,
@@ -782,17 +745,14 @@
         [
           512,
           512
-        ],
-        [
-          512,
-          512
         ]
       ],
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "a51095657e9772a7118ec26c03f80b9c19d0b6404a21aa5beeb1c54836d091b6",
-      "errors": []
+      "sha256": "f59e2947a8b099039fb41780b03d3643c4fb613ded464088f1a530ccca0d0216",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "landmarks/cau_the_huc.glb",
@@ -2397,12 +2357,8 @@
       "file": "street/den_duong_01.glb",
       "triangles": 960,
       "triangle_limit": 2000,
-      "materials": 1,
+      "materials": 2,
       "image_sizes": [
-        [
-          512,
-          512
-        ],
         [
           512,
           512
@@ -2419,19 +2375,16 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "4b32af6370b24be982e8c460f87ac22ede4cb1dba0f6afd2205fc10dd805f51f",
-      "errors": []
+      "sha256": "009dc27959ad7ed9d7d2ec4958503e9debd4115d4e7b5fdc0932dbb93ac3ee7d",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "street/den_duong_01_lod1.glb",
       "triangles": 476,
       "triangle_limit": 500,
-      "materials": 1,
+      "materials": 2,
       "image_sizes": [
-        [
-          256,
-          256
-        ],
         [
           256,
           256
@@ -2448,8 +2401,9 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "e95fada947cf4a5d3217242580c825f5f897257867e0df66160934d084fa7f17",
-      "errors": []
+      "sha256": "4de3ec0fc0f23dceaf3222bab701baa46d27178fb7a39df130b33b29d9659944",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "street/dep_to_ong.glb",
