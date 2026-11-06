@@ -4,25 +4,27 @@ This is an early review candidate, not a game-ready replacement. Nothing in
 this folder is registered in the game's asset manifest. The clothed stocky
 character uses a transferred version of the existing thief rig, an unbranded
 cap and a simple face covering. The close and medium LODs preserve more jacket
-detail; the automatically reduced distant LOD has visible gaps in the jacket
-and needs manual repair. The cap, mask, anatomy, silhouette and clothing also
-need an artist's refinement.
+detail; the distant LOD was adjusted to preserve more of the jacket. In sampled
+animated poses the clothing and body still intersect (notably Roll and Death),
+so it needs manual geometry and skin-weight repair. The cap, mask, anatomy,
+silhouette and clothing also need an artist's refinement.
 
 | Study | Triangles | Materials | Embedded images | glTF Validator |
 | --- | ---: | ---: | --- | --- |
 | `stocky_atlas.glb` | 24,383 | 4 | 4 × 1024² | 0 errors, 0 warnings |
 | `stocky_lod1.glb` | 7,843 | 4 | 4 × 512² | 0 errors, 0 warnings |
-| `stocky_lod2.glb` | 1,846 | 4 | 4 × 256² | 0 errors, 0 warnings |
+| `stocky_lod2.glb` | 1,921 | 4 | 4 × 256² | 0 errors, 0 warnings |
 
 The files have the same 65 joint names and order as `assets/hq/people/trom_01.glb`,
 at most four influences per vertex, normalized weights and maximum inverse-bind
 matrix differences below 0.000005. This is a compatibility check, not proof
 that the rig deforms correctly throughout all animations. `action_sheet.png`
 shows one sampled frame each from the existing Idle, Sprint, Crouch, Punch,
-Roll and Death actions; it is not a full animation or collision test. The
+Roll and Death actions; it is not a full animation or collision test.
+`action_sheet_lod2.png` shows the same sampled poses on the distant LOD. The
 `stocky_tpose.png` and `stocky_lod*.png` images show the bind-pose studies.
 
-Outstanding before game use: repair the distant LOD's openings and inspect
+Outstanding before game use: repair the distant LOD's animation intersections and inspect
 all LOD transitions; improve the character design, mask, cap and hair; clean
 skin weights and inspect every animation for penetration and foot contact;
 measure UV utilization, seams and texel density; produce and inspect the

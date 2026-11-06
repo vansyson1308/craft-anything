@@ -12,12 +12,12 @@ meshes=[o for o in bpy.context.scene.objects if o.type=='MESH' and o.vertex_grou
 for obj in meshes:
     world=obj.matrix_world.copy();obj.parent=None;obj.matrix_world=world
     name=obj.name
-    if name=='study_Human':ratio=.055 if args.lod2 else .30
-    elif 'male_casualsuit05' in name:ratio=.060 if args.lod2 else .35
-    elif 'shoes01' in name:ratio=.060 if args.lod2 else .26
-    elif 'short01' in name:ratio=.08 if args.lod2 else .30
+    if name=='study_Human':ratio=.05 if args.lod2 else .30
+    elif 'male_casualsuit05' in name:ratio=.105 if args.lod2 else .35
+    elif 'shoes01' in name:ratio=.05 if args.lod2 else .26
+    elif 'short01' in name:ratio=.075 if args.lod2 else .30
     elif name in ('cap_crown','cap_brim','face_covering'):ratio=1.0 if args.lod2 else .75
-    else:ratio=.5 if args.lod2 else 1.0
+    else:ratio=.25 if args.lod2 else 1.0
     if ratio<1:
         bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
         mod=obj.modifiers.new('lod','DECIMATE');mod.ratio=ratio
@@ -47,3 +47,6 @@ encoded=json.dumps(doc,separators=(',',':'),ensure_ascii=False).encode()
 encoded+=b' '*((-len(encoded))%4)
 chunks=struct.pack('<I4s',len(encoded),b'JSON')+encoded+tail
 args.output.write_bytes(struct.pack('<4sII',b'glTF',2,12+len(chunks))+chunks)
+
+
+
