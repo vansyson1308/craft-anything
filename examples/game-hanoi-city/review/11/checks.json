@@ -1,0 +1,21 @@
+{
+  "scope": "Triangle budgets and glTF validation only; this study is not game-ready",
+  "files": [
+    {
+      "file": "den_ven_ho.glb",
+      "triangles": 1718,
+      "materials": 2,
+      "errors": 0,
+      "warnings": 0,
+      "sha256": "7ef2bba309d824faf35e8d47030c9ce216dfefd7b8285eb0a16b79f36ac13e72"
+    },
+    {
+      "file": "den_ven_ho_lod1.glb",
+      "triangles": 446,
+      "materials": 2,
+      "errors": 0,
+      "warnings": 0,
+      "sha256": "27dd3def271b82404679f910a1af6c609f255bf3ef52d171a1f13015818a6763"
+    }
+  ]
+}
