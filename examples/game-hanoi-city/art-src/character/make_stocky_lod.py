@@ -47,6 +47,3 @@ encoded=json.dumps(doc,separators=(',',':'),ensure_ascii=False).encode()
 encoded+=b' '*((-len(encoded))%4)
 chunks=struct.pack('<I4s',len(encoded),b'JSON')+encoded+tail
 args.output.write_bytes(struct.pack('<4sII',b'glTF',2,12+len(chunks))+chunks)
-
-
-
