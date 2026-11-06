@@ -24,8 +24,13 @@ game now places these props along Hàng Mã. `hangma_game_day.png` and
 `hangma_game_night.png` show `?gl&look=hangma` in a fresh WebGL build of
 main at PR #25 (commit `5353087`, before PR #26), using its packaged HQ assets.
 All three model variants and their LOD1 files loaded successfully during the
-review; that alone does not verify transition quality. The suspension lines
-are difficult to see at this distance and some silhouettes look faceted.
+review; that alone does not verify transition quality. `hangma_wire_day.png`
+and `hangma_wire_night.png` show a follow-up build with two overhead support
+wires and individual drops to the lanterns. `hangma_wire_fallback.png` uses a
+temporary manifest without lantern assets to check the sphere stand-ins. The
+wires share one mesh (3,728 triangles for the current Hàng Mã map), and the
+unit test checks their face orientation. Their endpoints do not yet have
+modelled building attachments. Some silhouettes still look faceted.
 The revised
 LOD0 uses 1024 px atlases, 8 px island borders and 512 px/m density; all measured
 body islands fall within the requested ±15% tolerance. LOD1 uses 512 px atlases
@@ -33,6 +38,6 @@ and 256 px/m. Summed UV island areas cover only about 19.2%, 18.2% and 14.9%
 of the LOD0 atlases: the earlier 70% utilization goal remains unmet. See
 `assets/hq/reports/lantern-uv-density.json` for the measurements.
 
-LOD transitions, close seam inspection, the visibility of the suspension lines,
-and final artistic approval remain outstanding. Audio was not assessed during
+LOD transitions, close seam inspection, support attachments, final artistic
+approval and profiling on target devices remain outstanding. Audio was not assessed during
 these screenshots.

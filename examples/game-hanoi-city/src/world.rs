@@ -73,6 +73,21 @@ impl Builder {
             self.idx.extend_from_slice(&[base + t[0] as u32, base + t[2] as u32, base + t[1] as u32]);
         }
     }
+    /// Four-sided cable, built into the shared street mesh to avoid one draw per dropper.
+    fn cable(&mut self, start: Vec3, end: Vec3, radius: f32) {
+        let axis = (end - start).normalize_or_zero();
+        if axis == Vec3::ZERO || radius <= 0.0 {
+            return;
+        }
+        let reference = if axis.dot(Vec3::Y).abs() > 0.95 { Vec3::X } else { Vec3::Y };
+        let u = axis.cross(reference).normalize() * radius;
+        let v = axis.cross(u).normalize() * radius;
+        let corners = [u + v, -u + v, -u - v, u - v];
+        for i in 0..4 {
+            let (a, b) = (corners[i], corners[(i + 1) % 4]);
+            self.quad([start + a, start + b, end + b, end + a], [Vec2::ZERO, Vec2::Y, Vec2::ONE, Vec2::X]);
+        }
+    }
     fn mesh(self) -> Option<Mesh> {
         if self.idx.is_empty() {
             return None;
@@ -714,12 +729,18 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
 
     // Lanterns over Hàng Mã.
     let lantern = meshes.add(Sphere::new(0.22).mesh().uv(8, 6));
+    let mut lantern_wire = Builder::default();
+    let wire_height = 5.7;
     for r in c.roads.iter().filter(|r| r.name.as_deref() == Some("Phố Hàng Mã")) {
         let pts: Vec<Vec2> = r.pts.iter().map(|p| to_world(c, p)).collect();
         for seg in pts.windows(2) {
             let (a, b) = (seg[0], seg[1]);
             let d = (b - a).normalize_or_zero();
             let n = Vec2::new(-d.y, d.x) * (r.w as f32 / 20.0 + 0.6);
+            for side in [-1.0, 1.0] {
+                let (start, end) = (a + n * side, b + n * side);
+                lantern_wire.cable(Vec3::new(start.x, wire_height, start.y), Vec3::new(end.x, wire_height, end.y), 0.009);
+            }
             let steps = (a.distance(b) / 1.6).ceil() as i32;
             for k in 0..steps {
                 let p = a.lerp(b, k as f32 / steps.max(1) as f32);
@@ -730,6 +751,9 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                         glows.push(crate::night::Glow::lantern(Vec3::new(q.x, 4.4, q.y), red));
                     }
                     let y = 4.6 + (k % 3) as f32 * 0.25;
+                    // Extend to the top of the temporary sphere too; with the
+                    // delivered model the last 0.1 m is hidden inside its hook.
+                    lantern_wire.cable(Vec3::new(q.x, y + 0.22, q.y), Vec3::new(q.x, wire_height, q.y), 0.006);
                     let site = if red { LANTERN_RED_SITE } else { LANTERN_YELLOW_SITE };
                     // A delivered lantern hangs from its top (0.64 m tall): its middle where the
                     // stand-in's is.
@@ -744,6 +768,9 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                 }
             }
         }
+    }
+    if let Some(mesh) = lantern_wire.mesh() {
+        commands.spawn((Mesh3d(meshes.add(mesh)), MeshMaterial3d(m.steel.clone())));
     }
 
     // Shop signs: each board on the face of the nearest building, above the shopfront.
@@ -1047,6 +1074,30 @@ fn seg_dist(p: Vec2, a: Vec2, b: Vec2) -> f32 {
     let ab = b - a;
     let t = if ab.length_squared() > 1e-6 { ((p - a).dot(ab) / ab.length_squared()).clamp(0.0, 1.0) } else { 0.0 };
     p.distance(a + ab * t)
+}
+
+#[cfg(test)]
+mod cable_tests {
+    use super::*;
+
+    #[test]
+    fn cable_faces_point_outwards_for_horizontal_and_vertical_spans() {
+        for end in [Vec3::X, Vec3::Y, Vec3::new(2.0, 1.0, 3.0)] {
+            let mut b = Builder::default();
+            b.cable(Vec3::ZERO, end, 0.01);
+            assert_eq!(b.idx.len(), 24);
+            for i in 0..4 {
+                let p = Vec3::from_array(b.pos[i * 4]);
+                let normal = Vec3::from_array(b.nrm[i * 4]);
+                let axis = end.normalize();
+                let radial = p - axis * p.dot(axis);
+                assert!(normal.dot(radial) > 0.0, "face {i} faces inward: {normal:?}");
+            }
+        }
+        let mut empty = Builder::default();
+        empty.cable(Vec3::ZERO, Vec3::ZERO, 0.01);
+        assert!(empty.idx.is_empty());
+    }
 }
 
 #[cfg(test)]
