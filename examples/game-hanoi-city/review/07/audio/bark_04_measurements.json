@@ -1,0 +1,9 @@
+{
+  "source_duration_s": 0.5452083333333333,
+  "source_samples_above_0_999": 1,
+  "trim_start_s": 0.0,
+  "trim_end_s": 0.4,
+  "notes": "Original uploader describes a trimmed and normalized recording; no separate room-tone sample was available.",
+  "decoded_duration_s": 0.3973333333333333,
+  "true_peak_4x_dbfs": -1.032
+}
