@@ -1,0 +1,37 @@
+diff --git a/examples/game-hanoi-city/src/main.rs b/examples/game-hanoi-city/src/main.rs
+index a47d5e5..7e53d03 100644
+--- a/examples/game-hanoi-city/src/main.rs
++++ b/examples/game-hanoi-city/src/main.rs
+@@ -203,6 +203,18 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> O
+     let right = north.cross(Vec3::Y);
+     let shore = bridge.at - north * 23.0 - north * 16.0;
+     match which.as_str() {
++        "material_review" => {
++            let asset = render::page_query("asset");
++            // Raise the temporary inspection prop and camera clear of city
++            // buildings so the actual LOD/material pipeline is unobstructed.
++            let at = shore + right * 4.0 + Vec3::Y * 100.0;
++            let target = if asset.starts_with("street/den_duong") {
++                at - north * 1.0 + Vec3::Y * 4.45
++            } else {
++                at + right * 2.0 + Vec3::Y * 1.7
++            };
++            Some(Look { eye: target - north * 6.0 + Vec3::Y * 0.5, target, lineup: Some((at, right)), cage: None, spawned: false })
++        }
+         "lineup" => {
+             Some(Look { eye: shore - north * 4.2 + Vec3::Y * 1.45, target: shore + Vec3::Y * 0.95, lineup: Some((shore, right)), cage: None, spawned: false })
+         }
+@@ -1140,6 +1152,13 @@ fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>
+         && let Some((at, right)) = l.lineup
+     {
+         let facing = Quat::from_rotation_arc(Vec3::Z, (l.eye - at).with_y(0.0).normalize_or(Vec3::Z));
++        let review_asset = render::page_query("asset");
++        if render::page_query("look") == "material_review" && !review_asset.is_empty() {
++            hq::prop(&mut commands, &hq, &[review_asset.as_str()], Transform::from_translation(at).with_rotation(facing));
++            l.spawned = true;
++            g.look = Some(l);
++            return;
++        }
+         let spots = [at - right * 0.9, at + right * 0.9, at + (l.eye - at).with_y(0.0).normalize_or(Vec3::Z) * 1.4];
+         let minh = actors::spawn_person(&mut commands, &assets, &hq, "minh", "Hair_SimpleParted", spots[0]);
+         let thief = actors::spawn_person(&mut commands, &assets, &hq, "trom", "Hair_Buzzed", spots[1]);
