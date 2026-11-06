@@ -16,8 +16,17 @@ There is no separate rope-release animation: it changes from a closed loop
 around both rails to a loop remaining on the opened door. Decide whether the
 rescue needs an explicit untie or cut interaction before accepting the revision.
 
+The `game_day.png`, `game_night.png` and `game_open.png` screenshots use a
+WebGL build based on the cage branch before PR #25 and the game's `look=cage` camera. The
+revised raw cage GLBs were served in place of the packaged cage; other game
+assets and the manifest came from an existing local web build. The cage GLB
+loaded successfully, and the game visibly rotates the door in the open view.
+The camera backs away for the open pose so the full door stays in frame. The
+night flashlight overexposes portions of the bars. These captures do not establish LOD
+transitions, packaging behavior or final artistic approval.
+
 Both models retain a single material and the named `door_hinge` revolute joint
 with its 0–110° range. The measured LOD0/LOD1 triangle counts are 1,780/474,
 within the 2,000/500 budgets. glTF Validator reports no errors or warnings.
-The joint pose was inspected in the Cycles render. Game day/night captures,
-seam and LOD-transition checks, and final visual approval remain outstanding.
+The joint pose was also inspected in the Cycles render. Seam and LOD-transition
+checks and final visual approval remain outstanding.
