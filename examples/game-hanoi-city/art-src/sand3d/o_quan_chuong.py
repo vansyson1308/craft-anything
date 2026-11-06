@@ -49,7 +49,7 @@ def hip_roof(name, width, depth, eave, rise, segments):
                 u = col/segments
                 x = ((1-u)*a[0] + u*b[0]) * (1-t)
                 y = ((1-u)*a[1] + u*b[1]) * (1-t)
-                z = eave + rise*t + .14*(abs(2*u-1)**3)*(1-t)
+                z = eave + rise*(t**1.6) + .20*(abs(2*u-1)**3)*(1-t)
                 vertices.append((x,y,z))
         for row in range(segments):
             for col in range(segments):
@@ -143,6 +143,10 @@ def main():
         obj=s3d.at(s3d.box(name,w,d,h),x=x,y=y,z=z)
         collection.append(obj)
         return obj
+    def bar(name,start,end,diameter,collection):
+        obj=s3d.sweep(name,s3d.polygon(4,diameter),[start,end])
+        collection.append(obj)
+        return obj
     box('central_upper_wall',5.65,depth,1.6,0,0,3.8,plaster)
     box('central_cornice',6.0,depth,.18,0,0,5.4,plaster)
     box('central_parapet_floor',5.7,4.8,.24,0,0,5.58,plaster)
@@ -154,24 +158,41 @@ def main():
             box('side_parapet_rail',3.8,.18,.13,x,y,4.22,plaster)
             box('side_parapet_base',3.8,.18,.12,x,y,3.8,plaster)
             if not a.lod2:
-                n=4 if a.lod else 8
+                n=4 if a.lod else 7
                 for j in range(n):
-                    obj=box('side_parapet_spoke',.08,.10,.38,x-1.65+j*3.3/max(1,n-1),y,3.9,plaster)
+                    left=x-1.75+j*3.5/n;right=x-1.75+(j+1)*3.5/n
+                    bar('side_lattice_diagonal',(left,y,3.91),(right,y,4.22),.045,plaster)
+                    bar('side_lattice_cross',(left,y,4.22),(right,y,3.91),.045,plaster)
     for x in (-2.45,2.45):
         for y in (-1.95,1.95):box('pavilion_column',.30,.30,1.65,x,y,5.82,plaster)
     for y in (-2.0,2.0):box('pavilion_lintel',5.2,.24,.20,0,y,7.36,plaster)
     for x in (-2.55,2.55):box('pavilion_lintel_side',.24,4.2,.20,x,0,7.36,plaster)
+    for y in (-2.0,2.0):
+        box('pavilion_balustrade',4.6,.12,.10,0,y,6.22,plaster)
+        if not a.lod2:
+            n=4 if a.lod else 8
+            for j in range(n):
+                left=-2.25+j*4.5/n;right=-2.25+(j+1)*4.5/n
+                bar('pavilion_lattice',(left,y,5.91),(right,y,6.22),.04,plaster)
+                bar('pavilion_lattice_cross',(left,y,6.22),(right,y,5.91),.04,plaster)
     roof=hip_roof('four_sided_tile_roof',6.2,5.25,7.54,1.1,2 if a.lod2 else 4 if a.lod else 7)
     tile.append(roof)
+    for x in (-3.1,3.1):
+        for y in (-2.625,2.625):
+            bar('raised_roof_corner',(x,y,7.74),(x*1.08,y*1.08,8.08),.11,tile)
     # Decorative slab over the central opening; lettering is deliberately blank.
     box('blank_gate_plaque',1.4,.08,.5,0,-depth/2-.05,4.15,plaster)
     brick_mat=scanned_material('old_red_brick',a.scans,'medieval_red_brick')
     roof_mat=scanned_material('aged_roof_tile',a.scans,'roof_tiles')
-    plaster_mat=bpy.data.materials.new('aged_plaster_blockout');plaster_mat.diffuse_color=(.40,.36,.30,1);plaster_mat.use_nodes=True
-    sh=plaster_mat.node_tree.nodes.get('Principled BSDF');sh.inputs['Base Color'].default_value=(.40,.36,.30,1);sh.inputs['Roughness'].default_value=.85
+    plaster_mat=scanned_material('aged_mossy_plaster',a.scans,'worn_mossy_plasterwall')
+    # Normal-mapped faces need triangles before projection and tangent export.
+    for obj in plaster + tile:
+        bm=bmesh.new();bm.from_mesh(obj.data)
+        bmesh.ops.triangulate(bm,faces=list(bm.faces))
+        bm.to_mesh(obj.data);bm.free()
     assign_and_project(brick,brick_mat,2.0)
     assign_and_project(tile,roof_mat,2.0)
-    for o in plaster:o.data.materials.clear();o.data.materials.append(plaster_mat)
+    assign_and_project(plaster,plaster_mat,2.0)
     # Combine only objects sharing a material to keep draws bounded.
     assembled=[]
     for name,objects in [('brickwork',brick),('plaster',plaster),('roof',tile)]:

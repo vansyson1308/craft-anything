@@ -13,7 +13,7 @@ measured axis-aligned world bounds are about 11.26 × 17.96 m, with a height of
 8.64 m; this is an interpretation of the map footprint, not a site survey.
 
 `gate_front.png` and `gate_diagonal.png` are Cycles views. All three LOD GLBs
-pass glTF Validator with no errors or warnings, at 1,400 / 800 / 440 triangles.
+pass glTF Validator with no errors or warnings, at 2,144 / 1,256 / 512 triangles.
 Eight geometry ray checks per LOD verify that the openings are clear at sample
 heights and that a wall sample is solid. This does not prove the installed game
 scene, player navigation, appearance or landmarks are correct.
@@ -26,9 +26,10 @@ real-city tests pass. The 2 m raster is an approximation; the game still needs
 an actual playthrough of the final installed model.
 
 **Outstanding:** the silhouette and proportions need verification against
-the actual monument; the roof is only a simple hipped shape, not sculpted
-curved tiles; plaster, brick variation, moss, stains, parapet motifs, the
-inscription and other details are missing. The 1K scans are reused on every
+the actual monument; the curved roof and lifted corners are approximations,
+not sculpted historical tiles; the crossed railings are simplified and the
+surface weathering is a repeated scan rather than locally authored stains.
+Brick variation, the inscription and other details remain missing. The 1K scans are reused on every
 LOD rather than reduced for distance. The UVs use projection, no high-to-low
 normal or model-specific AO has been baked, and seams, texel density, texture
 budgets, game placement and visual approval are unverified. The blank plaque
@@ -37,8 +38,9 @@ must not be mistaken for a finished inscription.
 Shape references: [Vietnam Tourism](https://www.vietnamtourism.com/en/places/hanoi/o-quan-chuong-gate)
 and [Hoàn Kiếm heritage portal](https://hoankiem360.tourism.vn/chi_tiet_di_tich_lich_su/cong-o-quan-chuong.html).
 Scanned textures: [Medieval Red Brick](https://polyhaven.com/a/medieval_red_brick)
-by Rob Tuytel and [Roof Tiles](https://polyhaven.com/a/roof_tiles) by Stephan
-Seeliger, both CC0. The source PNG data maps are converted to ordinary 8-bit
+by Rob Tuytel, [Roof Tiles](https://polyhaven.com/a/roof_tiles) by Stephan
+Seeliger, and [Worn Mossy Plasterwall](https://polyhaven.com/a/worn_mossy_plasterwall)
+by Amal Kumar, all CC0. The source PNG data maps are converted to ordinary 8-bit
 RGB without embedded ICC profiles for glTF compatibility.
 
 To reproduce, download each scan's 1K Diffuse JPG, OpenGL normal PNG and ARM
