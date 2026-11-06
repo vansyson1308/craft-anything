@@ -14,6 +14,7 @@ measured axis-aligned world bounds are about 11.26 × 17.96 m, with a height of
 
 `gate_front.png` and `gate_diagonal.png` are Cycles views. All three LOD GLBs
 pass glTF Validator with no errors or warnings, at 2,144 / 1,256 / 512 triangles.
+Their nine embedded maps are 1,024 / 512 / 256 pixels per side respectively.
 Eight geometry ray checks per LOD verify that the openings are clear at sample
 heights and that a wall sample is solid. This does not prove the installed game
 scene, player navigation, appearance or landmarks are correct.
@@ -29,8 +30,7 @@ an actual playthrough of the final installed model.
 the actual monument; the curved roof and lifted corners are approximations,
 not sculpted historical tiles; the crossed railings are simplified and the
 surface weathering is a repeated scan rather than locally authored stains.
-Brick variation, the inscription and other details remain missing. The 1K scans are reused on every
-LOD rather than reduced for distance. The UVs use projection, no high-to-low
+Brick variation, the inscription and other details remain missing. The UVs use projection, no high-to-low
 normal or model-specific AO has been baked, and seams, texel density, texture
 budgets, game placement and visual approval are unverified. The blank plaque
 must not be mistaken for a finished inscription.

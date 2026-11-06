@@ -63,7 +63,7 @@ def hip_roof(name, width, depth, eave, rise, segments):
     return obj
 
 
-def scanned_material(name, root, asset):
+def scanned_material(name, root, asset, max_size):
     material=bpy.data.materials.new(name)
     material.use_nodes=True
     nodes=material.node_tree.nodes
@@ -72,13 +72,14 @@ def scanned_material(name, root, asset):
     def tex(suffix, ext, noncolor=False):
         node=nodes.new('ShaderNodeTexImage')
         path=root/(asset+'_'+suffix+'.'+ext)
-        if ext == 'png':
-            # Some source PNGs contain 16-bit colour metadata unsupported by
-            # glTF. A plain 8-bit RGB copy is sufficient for these maps.
-            path=Path(tempfile.gettempdir())/('oquanchuong_'+asset+'_'+suffix+'.png')
+        if ext == 'png' or max_size < 1024:
+            # Normalize PNG metadata for glTF, and use smaller source maps
+            # for distant LODs. Unique paths prevent Blender image reuse.
+            path=Path(tempfile.gettempdir())/('oquanchuong_'+asset+'_'+suffix+'_'+str(max_size)+'.'+ext)
             image=Image.open(root/(asset+'_'+suffix+'.'+ext)).convert('RGB')
+            image.thumbnail((max_size,max_size),Image.Resampling.LANCZOS)
             image.info.clear()
-            image.save(path)
+            image.save(path,quality=92 if ext == 'jpg' else None)
         node.image=bpy.data.images.load(str(path.resolve()),check_existing=True)
         if noncolor:node.image.colorspace_settings.name='Non-Color'
         return node
@@ -182,9 +183,10 @@ def main():
             bar('raised_roof_corner',(x,y,7.74),(x*1.08,y*1.08,8.08),.11,tile)
     # Decorative slab over the central opening; lettering is deliberately blank.
     box('blank_gate_plaque',1.4,.08,.5,0,-depth/2-.05,4.15,plaster)
-    brick_mat=scanned_material('old_red_brick',a.scans,'medieval_red_brick')
-    roof_mat=scanned_material('aged_roof_tile',a.scans,'roof_tiles')
-    plaster_mat=scanned_material('aged_mossy_plaster',a.scans,'worn_mossy_plasterwall')
+    max_size=256 if a.lod2 else 512 if a.lod else 1024
+    brick_mat=scanned_material('old_red_brick',a.scans,'medieval_red_brick',max_size)
+    roof_mat=scanned_material('aged_roof_tile',a.scans,'roof_tiles',max_size)
+    plaster_mat=scanned_material('aged_mossy_plaster',a.scans,'worn_mossy_plasterwall',max_size)
     # Normal-mapped faces need triangles before projection and tangent export.
     for obj in plaster + tile:
         bm=bmesh.new();bm.from_mesh(obj.data)

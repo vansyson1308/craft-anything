@@ -7,7 +7,7 @@
       "materials": 3,
       "errors": 0,
       "warnings": 0,
-      "sha256": "7961ec1a9cf35205b17338d7a069ba14f7901bc13469609f0a49bab34f345fd0"
+      "sha256": "deddfe7c2bfc5227d017fbddc21612f58c024eef41377b91e882aa1603a71d03"
     },
     {
       "file": "o_quan_chuong_lod1.glb",
@@ -15,7 +15,7 @@
       "materials": 3,
       "errors": 0,
       "warnings": 0,
-      "sha256": "8481ed4b808529ee2219427d314ebc7ddeae2a747c96c82e22ce887534f455d9"
+      "sha256": "735864dc98527e553b8522309567c83e121eef3a158f12576f2f03e96d37177e"
     },
     {
       "file": "o_quan_chuong_lod2.glb",
@@ -23,7 +23,7 @@
       "materials": 3,
       "errors": 0,
       "warnings": 0,
-      "sha256": "65b73842bd7bd4a0933c46a0532d65b718153260b3c04ff37bd3d771ce64ec4a"
+      "sha256": "c59b5438b4ea547bcf886d949467532f5e12b594cc33149fe87baee1fcd0e95f"
     }
   ]
 }
