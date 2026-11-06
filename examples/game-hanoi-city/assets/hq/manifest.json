@@ -397,8 +397,8 @@
         0.733
       ],
       "triangles": [
-        1664,
-        424
+        1780,
+        474
       ],
       "textures": 3,
       "skeleton": "",
@@ -406,9 +406,9 @@
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
       "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
-        "Draft revision: named door_hinge holds a 0-110 degree revolute joint in glTF extras; game-side interaction is not yet implemented.",
+        "Draft weathering revision: door_hinge retains a 0–110 degree revolute joint in glTF extras; game currently opens the door.",
         "LOD0 uses one 1024px atlas set; LOD1 uses one 512px set. The movable door and fixed body share one material and remain separate draw calls.",
-        "Four Cycles views and game day/night close-ups are supplied. One test placement is raised 0.15 m to clear the curb, and the lit night view is beneath an existing street lamp. Opening-sound listening, UV seams, LOD transitions and artistic acceptance remain outstanding."
+        "Rust drips start at rail intersections, with darker corrosion near the lower frame and tray. A fixed two-turn temporary tie wraps the door and upright. Game does not yet animate or remove the tie when the door opens; in-game close-up and artistic review remain pending."
       ]
     },
     {

@@ -14,11 +14,11 @@ from unwrap_cage import unwrap
 
 
 def masks(objects, size):
-    result = {kind: Image.new("L", (size, size), 0) for kind in ("paper", "rope", "tray", "vertical")}
+    result = {kind: Image.new("L", (size, size), 0) for kind in ("paper", "rope", "tray", "vertical", "bottom")}
     for obj in objects:
         name = obj.name
         kind = ("paper" if name.startswith("paper_") else "rope" if name.startswith("rope_") else
-                "tray" if name.startswith("tray_") else "vertical" if
+                "tray" if name.startswith("tray_") else "bottom" if name.startswith(("bottom_", "floor_")) else "vertical" if
                 ("vertical_" in name or name.startswith(("post_", "doorway_", "door_left", "door_right"))) else None)
         if kind is None:
             continue
@@ -91,11 +91,12 @@ def rust_flow(objects, size):
             wy = a * verts[0].y + b * verts[1].y + c * verts[2].y
             wz = a * verts[0].z + b * verts[1].z + c * verts[2].z
             theta = np.arctan2(wy - cy, wx - cx)
-            filament = np.clip((np.cos(theta * 7 + phase) - .72) / .28, 0, 1)
+            filament = np.clip((np.cos(theta * 2 + phase) - .2) / .8, 0, 1)
+            filament *= np.clip(.82 + .18 * np.sin(wz * 260 + theta * 11 + phase), 0, 1)
             drop = np.zeros_like(wz)
             for joint_z in (.673, .341, .009):
                 distance = joint_z - wz
-                drop = np.maximum(drop, np.where((distance >= 0) & (distance < .14), np.exp(-distance / .055), 0))
+                drop = np.maximum(drop, np.where((distance >= 0) & (distance < .06), np.exp(-distance / .025), 0))
             region = result[ymin:ymax + 1, xmin:xmax + 1]
             np.maximum(region, np.where(inside, filament * drop, 0), out=region)
     return result
@@ -183,6 +184,10 @@ def main():
     size = args.texture_size
     dims = (size, size)
     base = np.asarray(Image.open(args.scans / "rusty_metal_02_diff_1k.jpg").convert("RGB").resize(dims, Image.Resampling.LANCZOS), dtype=np.float32).copy()
+    # Preserve the scan's surface variation while suppressing its uniformly
+    # orange colour; localized rust is applied below near joins and the tray.
+    luminance = base.mean(axis=2)
+    base = luminance[..., None] * np.array([.65, .66, .62]) + np.array([12, 13, 12])
     arm = np.asarray(Image.open(args.scans / "rusty_metal_02_arm_1k.png").convert("RGB").resize(dims, Image.Resampling.LANCZOS)).copy()
     detail = np.asarray(Image.open(args.scans / "rusty_metal_02_nor_gl_1k.png").convert("RGB").resize(dims, Image.Resampling.LANCZOS), dtype=np.float32) / 127.5 - 1
     geometry = np.asarray(Image.open(baked_path).convert("RGB"), dtype=np.float32) / 127.5 - 1
@@ -190,6 +195,7 @@ def main():
     paper_mask = np.asarray(shape_masks["paper"]) > 0
     rope_mask = np.asarray(shape_masks["rope"]) > 0
     tray_mask = np.asarray(shape_masks["tray"]) > 0
+    bottom_mask = np.asarray(shape_masks["bottom"]) > 0
     base[paper_mask] = paper_texture(size)[paper_mask]
     base[rope_mask] = np.array([128, 105, 69])
     base[tray_mask] *= .68
@@ -202,9 +208,10 @@ def main():
     wear = np.clip((1 - ao_values) * .8 + curvature * .3, 0, 1)
     wear_img = Image.fromarray(np.uint8(wear * 255)).filter(ImageFilter.GaussianBlur(max(1, size / 512)))
     wear = np.asarray(wear_img, dtype=np.float32) / 255
-    streak = rust_flow(meshes, size) * np.clip(.3 + wear, 0, 1)
-    rust = np.array([125, 66, 34], dtype=np.float32)
-    base = base * (1 - streak[..., None] * .45) + rust * streak[..., None] * .45
+    streak = rust_flow(meshes, size) * np.clip(.6 + wear, 0, 1)
+    rust_strength = np.clip(streak + bottom_mask * (.06 + .24 * wear) + tray_mask * (.12 + .25 * wear), 0, .85)
+    rust = np.array([155, 76, 36], dtype=np.float32)
+    base = base * (1 - rust_strength[..., None]) + rust * rust_strength[..., None]
     base_path = args.output / "basecolor.png"
     Image.fromarray(np.uint8(np.clip(base, 0, 255))).save(base_path)
     detail[..., :2] *= .6

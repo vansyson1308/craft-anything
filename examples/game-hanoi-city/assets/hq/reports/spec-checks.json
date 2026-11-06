@@ -1312,7 +1312,7 @@
     },
     {
       "file": "people/long_cho.glb",
-      "triangles": 1664,
+      "triangles": 1780,
       "triangle_limit": 2000,
       "materials": 1,
       "image_sizes": [
@@ -1332,13 +1332,13 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "573b471647f460107c6a782acf28d165eec3bf8dcddf110571a2c63025f51cc9",
+      "sha256": "29f0a0274811449756bcb3fd665b62daec9cb0e053abb6369688712437817873",
       "errors": [],
-      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other previous aggregate checks and in-game review have not been rerun for this revision."
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "people/long_cho_lod1.glb",
-      "triangles": 424,
+      "triangles": 474,
       "triangle_limit": 500,
       "materials": 1,
       "image_sizes": [
@@ -1358,9 +1358,9 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "920c1f7c5a1446165df0d8bed231102a5f981648c7877b1f2458d65153ce6af4",
+      "sha256": "b286e1ee709a2ef41c741b86ab8e60fa4c547d10fbb7071c3c120eeac1f5e1ce",
       "errors": [],
-      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other previous aggregate checks and in-game review have not been rerun for this revision."
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "people/minh.glb",

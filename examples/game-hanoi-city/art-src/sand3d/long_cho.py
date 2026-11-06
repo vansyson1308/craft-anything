@@ -94,13 +94,19 @@ def build_cage(lod=False, high_poly=False):
     for obj in (tray, paper, scrap):
         s3d.material(obj, "painted_metal", color="#4b4a40", roughness=.78, metallic=.75)
         fixed.append(obj)
-    # Twine temporarily knots the right front corner, with a loose hanging end.
-    fixed.extend([
-        bar("rope_front", (422, -357, 480), (449, -357, 480), 3),
-        bar("rope_side", (449, -357, 480), (449, -325, 480), 3),
-        bar("rope_back", (449, -325, 480), (422, -325, 480), 3),
-        bar("rope_end", (449, -357, 480), (449, -357, 390), 3),
-    ])
+    # Temporary twine wraps the right door rail and the nearby fixed doorway
+    # upright twice. The loose tail and wrap remain on the fixed frame; the
+    # game currently has no separate rope-release animation.
+    count = 12 if lod else 20
+    points = []
+    for i in range(count + 1):
+        angle = math.tau * 2 * i / count
+        points.append((.3575 + .020 * math.cos(angle),
+                       -.3455 + .020 * math.sin(angle), .455 + .030 * i / count))
+    rope = s3d.sweep("rope_wrap", s3d.polygon(3 if lod else 4, .003), points)
+    s3d.material(rope, "painted_metal", color="#807044", roughness=.8)
+    fixed.append(rope)
+    fixed.append(bar("rope_end", (378, -346, 494), (378, -346, 420), 3))
 
     # Front doorway: outer frame is fixed; door rotates around its left edge.
     for x, side in ((-360, "left"), (360, "right")):

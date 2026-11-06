@@ -1,0 +1,24 @@
+# Cage weathering and tie — draft review
+
+These images show an optional revision of the cage already in the game. The
+four `cage_qc_*.png` images are Cycles views of the delivered LOD0 GLB; the
+door is rotated to 110° in `cage_qc_open_110.png`. `cage_rope_detail.png` is
+a close view of the two-turn wrap around the right door rail and frame.
+
+The original uniformly orange scan is converted to muted metal while retaining
+its surface variation. Procedural 3–6 cm downward streaks are placed below
+rail intersections, with additional staining on the lower rails and tray.
+AO and a normal-gradient approximation modulate the mask; this is not a full
+concave-curvature bake. The appearance needs artistic review in the game.
+
+The tie is part of the fixed cage. When the door opens it stays on the fixed
+frame; there is no rope-release animation. This makes the still pose useful for
+review but can look physically incorrect during the rescue. The current game
+does not yet remove or animate this tie. Decide whether to add that interaction
+before accepting the revision.
+
+Both models retain a single material and the named `door_hinge` revolute joint
+with its 0–110° range. The measured LOD0/LOD1 triangle counts are 1,780/474,
+within the 2,000/500 budgets. glTF Validator reports no errors or warnings.
+The joint pose was inspected in the Cycles render. Game day/night captures,
+seam and LOD-transition checks, and final visual approval remain outstanding.
