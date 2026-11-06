@@ -120,6 +120,32 @@ pub struct Facades {
     pub blocks: Vec<Block>,
 }
 
+/// How far a shopfront's ground floor reaches out from its wall (counters, steps, awnings' posts).
+pub const SHOPFRONT_DEPTH_M: f32 = 1.1;
+
+impl Facades {
+    /// Whether `p` is inside a shopfront's ground floor, or less than `depth` in front of its wall:
+    /// where a camera would look out from inside a counter. Only blocks near `p` are looked at.
+    pub fn in_shopfront(&self, p: Vec3, depth: f32) -> bool {
+        if p.y >= GROUND_H {
+            return false;
+        }
+        // A block holds what is within its 160 m cell, so nothing in it is farther than this from
+        // its middle.
+        const BLOCK_REACH: f32 = 120.0;
+        self.blocks.iter().filter(|b| b.center.with_y(0.0).distance(p.with_y(0.0)) < BLOCK_REACH).flat_map(|b| b.slots.iter()).any(|s| {
+            if !matches!(s.storey, Storey::Ground | Storey::FrenchGround) {
+                return false;
+            }
+            let d = Vec2::new(p.x - s.corner.x, p.z - s.corner.z);
+            let along = d.dot(s.right);
+            // Out to the street: the module's +Z.
+            let out = d.dot(Vec2::new(-s.right.y, s.right.x));
+            (0.0..=BAY_W * s.stretch).contains(&along) && (-1.0..depth).contains(&out)
+        })
+    }
+}
+
 /// The street-name faces: the atlas drawn by `tools/make_street_names.py`, and a quad per street
 /// mapped to its cell, made the first time a sign for that street goes up.
 #[derive(Resource)]
@@ -273,6 +299,23 @@ pub fn stream(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_camera_in_a_shop_counter_is_found() {
+        // One 8 m face along x, seen from the street to the south (+z): two ground bays.
+        let (slots, _) = slots_for(Vec2::new(8.0, 0.0), Vec2::new(0.0, 0.0), 10.0, false, 1);
+        let mut b = Block::new(Vec3::new(4.0, 0.0, 0.0));
+        b.slots = slots;
+        let f = Facades { blocks: vec![b] };
+        let out = Vec2::new(-f.blocks[0].slots[0].right.y, f.blocks[0].slots[0].right.x);
+        let at = |along: f32, away: f32, y: f32| Vec3::new(along, y, 0.0) + Vec3::new(out.x, 0.0, out.y) * away;
+        // Inside the counter, half a metre out from the wall at eye height.
+        assert!(f.in_shopfront(at(3.0, 0.5, 1.5), SHOPFRONT_DEPTH_M));
+        // Out on the pavement, past the counters; above the ground floor; beside the face.
+        assert!(!f.in_shopfront(at(3.0, 1.6, 1.5), SHOPFRONT_DEPTH_M));
+        assert!(!f.in_shopfront(at(3.0, 0.5, 5.0), SHOPFRONT_DEPTH_M));
+        assert!(!f.in_shopfront(at(9.5, 0.5, 1.5), SHOPFRONT_DEPTH_M));
+    }
 
     #[test]
     fn a_tube_house_front() {

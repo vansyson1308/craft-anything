@@ -2,6 +2,12 @@
 
 This replaces the five batch 01 models and adds the requested batch 02 inventory: 28 base models, 66 GLBs including LODs, five ground material sets (13 PNG maps), and one tree billboard. **This is a draft art submission, not an accepted photorealistic asset pack.**
 
+The audio folder now also contains seven preliminary UI, dog and cage-opening cues. Their sources and measured format are recorded in SOURCES.md and the manifest. The game does not yet play them, and listening and in-game review are still required.
+
+The cage was subsequently replaced with a sand3d draft with a named hinged door, two 512px atlases and a 256px LOD. Its earlier preview, in-game capture and other batch review reports are historical and do not describe this revision; new day/night game captures and seam and LOD review remain pending. The glTF Validator reports and measured cage rows in `spec-checks.json` are updated; other aggregate checks were not rerun for this revision.
+
+The new flashlight is also a draft: its lens is the only emissive material in a world-strength-zero render. Its grip alignment on `hand_r` and appearance in the game remain to be checked.
+
 The manifest contains measured bounds, triangle counts, LOD paths, skeleton/animation metadata, tools, licence and limitations. Existing asset names are preserved. Human files use the exact original 65-joint rig and the game's external 43-animation library. Dog files contain Idle, Walk, Run, Sit and Bark. Source materials and editable Blender files are retained outside the repository.
 
 ## Review and integration

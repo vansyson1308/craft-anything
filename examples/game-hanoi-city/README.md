@@ -83,8 +83,10 @@ Thêm vào cuối địa chỉ trang:
     nhanh lên 250 lần (`ffmpeg -i in.webm -vf setpts=0.004*PTS out.mp4`).
 - `?time=night` hoặc `?time=day`: luôn là đêm hoặc ngày, kể cả với `?look=…`. Mặc định Chương 1 là đêm, còn lại là
   chiều muộn.
-- `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`, `?look=streetlife`: camera duyệt hình cố định, không có menu. Dùng để
+- `?look=lineup`, `?look=thehuc`, `?look=bridge`, `?look=tree`, `?look=streetlife`, `?look=cage`: camera duyệt hình cố định, không có menu. Dùng để
   chụp tài nguyên trong game và đặt cạnh ảnh tham chiếu. `lineup` cho Minh, tên trộm và chó đứng ở đầu cầu Thê Húc; `streetlife` nhìn bộ bàn ghế (hoặc món đồ vỉa hè) gần nhất từ lòng đường, ngang tầm mắt.
+  `cage` đặt lồng chó trên đường ven hồ, nhìn từ 1,5 m ngang tầm mắt; thêm `&door=open` để cửa mở theo khớp `door_hinge`, và
+  với `&time=night` lồng được rọi bằng đúng ánh đèn pin của Minh.
 
 Nếu WebGPU mất GPU (lỗi driver hoặc trình duyệt), trang tự chuyển sang WebGL2 và nhớ lựa chọn đó
 trong phiên.

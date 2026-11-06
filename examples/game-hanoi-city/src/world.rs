@@ -338,6 +338,8 @@ pub struct Built {
     pub promenade: Vec<Vec2>,
     /// What gives light at night: street lamps and the Hàng Mã lanterns.
     pub glows: Vec<crate::night::Glow>,
+    /// Where vehicles drive, for keeping things placed later (cages) off the kerbs.
+    pub carriageways: Carriageways,
 }
 
 /// Mesh kinds at or above this are the street-facing part of a wall kind (kind + FRONT).
@@ -795,7 +797,7 @@ pub fn spawn_city(commands: &mut Commands, meshes: &mut Assets<Mesh>, m: &Mats, 
                 .collect()
         })
         .unwrap_or_default();
-    Built { sites, facades, promenade, glows }
+    Built { sites, facades, promenade, glows, carriageways }
 }
 
 type Chunks = HashMap<(i32, i32, u8, u8), Builder>;
@@ -948,6 +950,7 @@ fn street_furniture(
 
 /// Where vehicles drive, for keeping things off it: every road that isn't a footpath, as segments
 /// with their half width (plus the kerb, where kerbs stand), in a 20 m grid for quick lookups.
+#[derive(Resource)]
 pub struct Carriageways {
     cells: HashMap<(i32, i32), Vec<Lane>>,
 }
@@ -959,27 +962,53 @@ impl Carriageways {
     const CELL: f32 = 20.0;
     /// How far around a point to look: wider than any road's half width plus a piece's size.
     const REACH: f32 = 20.0;
+    /// How deep a kerb is (see `street_furniture`).
+    pub const KERB_M: f32 = 0.32;
 
     pub fn new(c: &City) -> Carriageways {
-        let mut cells: HashMap<(i32, i32), Vec<Lane>> = HashMap::new();
+        let mut ways = Carriageways { cells: HashMap::new() };
         for r in &c.roads {
             if r.bridge || matches!(r.kind.as_str(), "footway" | "path" | "steps" | "cycleway" | "pedestrian") {
                 continue;
             }
-            // Kerbs (0.32 m deep) stand along roads 5 m wide and more (see `street_furniture`).
-            let half = r.w as f32 / 20.0 + if r.w >= 50 { 0.32 } else { 0.0 };
+            // Kerbs stand along roads 5 m wide and more (see `street_furniture`).
+            let half = r.w as f32 / 20.0 + if r.w >= 50 { Self::KERB_M } else { 0.0 };
             let pts: Vec<Vec2> = r.pts.iter().map(|p| to_world(c, p)).collect();
             for s in pts.windows(2) {
-                let (a, b) = (s[0], s[1]);
-                let (lo, hi) = (a.min(b) - Vec2::splat(half), a.max(b) + Vec2::splat(half));
-                for cy in (lo.y / Self::CELL).floor() as i32..=(hi.y / Self::CELL).floor() as i32 {
-                    for cx in (lo.x / Self::CELL).floor() as i32..=(hi.x / Self::CELL).floor() as i32 {
-                        cells.entry((cx, cy)).or_default().push((a, b, half));
-                    }
-                }
+                ways.add((s[0], s[1], half));
             }
         }
-        Carriageways { cells }
+        ways
+    }
+
+    fn add(&mut self, (a, b, half): Lane) {
+        let (lo, hi) = (a.min(b) - Vec2::splat(half), a.max(b) + Vec2::splat(half));
+        for cy in (lo.y / Self::CELL).floor() as i32..=(hi.y / Self::CELL).floor() as i32 {
+            for cx in (lo.x / Self::CELL).floor() as i32..=(hi.x / Self::CELL).floor() as i32 {
+                self.cells.entry((cx, cy)).or_default().push((a, b, half));
+            }
+        }
+    }
+
+    /// Where to stand a piece `radius` across, meant for `p`, so that it isn't on a kerb: `p` when
+    /// it's clear (on the pavement, or out in the road), else `p` moved straight out onto the
+    /// pavement, when that's no farther than `max`.
+    pub fn off_kerb(&self, p: Vec2, radius: f32, max: f32) -> Vec2 {
+        let c = self.clearance(p);
+        if c >= radius || c <= -(radius + Self::KERB_M) {
+            return p;
+        }
+        // Away from the road: the way clearance grows.
+        let e = 0.05;
+        let grad =
+            Vec2::new(self.clearance(p + Vec2::X * e) - self.clearance(p - Vec2::X * e), self.clearance(p + Vec2::Y * e) - self.clearance(p - Vec2::Y * e));
+        let Some(out) = grad.try_normalize() else { return p };
+        let d = radius - c + 0.02;
+        if d > max {
+            return p;
+        }
+        let to = p + out * d;
+        if self.clearance(to) >= radius - 0.05 { to } else { p }
     }
 
     /// How far `p` is from the nearest carriageway's edge (negative inside one), up to `REACH`.
@@ -1012,6 +1041,27 @@ fn seg_dist(p: Vec2, a: Vec2, b: Vec2) -> f32 {
     let ab = b - a;
     let t = if ab.length_squared() > 1e-6 { ((p - a).dot(ab) / ab.length_squared()).clamp(0.0, 1.0) } else { 0.0 };
     p.distance(a + ab * t)
+}
+
+#[cfg(test)]
+mod kerb_tests {
+    use super::*;
+
+    #[test]
+    fn a_piece_across_a_kerb_moves_onto_the_pavement() {
+        // A road along x, 6 m wide with its kerb: the kerb's pavement edge is at z = 3.
+        let mut ways = Carriageways { cells: HashMap::new() };
+        ways.add((Vec2::new(0.0, 0.0), Vec2::new(40.0, 0.0), 3.0));
+        // On the kerb line: moved out to stand 0.5 m clear of it.
+        let to = ways.off_kerb(Vec2::new(10.0, 3.1), 0.5, 1.2);
+        assert!((to.x - 10.0).abs() < 1e-3 && (to.y - 3.52).abs() < 0.01, "{to:?}");
+        assert!(ways.clearance(to) >= 0.5);
+        // Already on the pavement, or out in the road: left where it is.
+        assert_eq!(ways.off_kerb(Vec2::new(10.0, 4.0), 0.5, 1.2), Vec2::new(10.0, 4.0));
+        assert_eq!(ways.off_kerb(Vec2::new(10.0, 0.5), 0.5, 1.2), Vec2::new(10.0, 0.5));
+        // Too far to move: left where it is.
+        assert_eq!(ways.off_kerb(Vec2::new(10.0, 2.4), 0.5, 1.0), Vec2::new(10.0, 2.4));
+    }
 }
 
 #[cfg(test)]

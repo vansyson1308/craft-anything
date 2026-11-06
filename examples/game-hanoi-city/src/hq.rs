@@ -172,12 +172,15 @@ fn resolve(mut hq: ResMut<Hq>, assets: Res<AssetServer>, docs: Res<Assets<JsonDo
 // ---------------------------------------------------------------------------------------------
 // Models as flat lists of parts, so a level of detail can be swapped by swapping a few entities.
 
-/// One drawable piece of a model: its mesh, its material and where it sits in the model.
+/// One drawable piece of a model: its mesh, its material and where it sits in the model. A piece
+/// under a jointed node (a door) sits on its hinge instead: `at` is then where it is on the hinge,
+/// and the hinge is where it is in the model.
 #[derive(Clone)]
 pub struct Part {
     pub mesh: Handle<Mesh>,
     pub material: Handle<StandardMaterial>,
     pub at: Transform,
+    pub hinge: Option<(Transform, Joint)>,
 }
 
 /// Models already broken into parts, by glTF file; and every model file asked for so far.
@@ -188,7 +191,40 @@ pub struct Flat {
     materials: HashMap<AssetId<GltfMaterial>, Handle<StandardMaterial>>,
 }
 
-/// Breaks a loaded glTF into parts (static models only: no skins, no animation).
+/// A hinge an artist built into a model: a node whose glTF extras hold an `s3d_joint` of type
+/// `revolute`. It turns about `axis` (in its own space) between `lower` and `upper` radians from
+/// where it rests; something in the game (a cage's door) decides how far.
+#[derive(Component, Clone, Copy, Debug, PartialEq)]
+pub struct Joint {
+    pub rest: Quat,
+    pub axis: Vec3,
+    pub lower: f32,
+    pub upper: f32,
+}
+
+impl Joint {
+    /// The joint in a node's glTF extras, resting at `rest`.
+    pub fn from_extras(extras: &str, rest: Quat) -> Option<Joint> {
+        let v: serde_json::Value = serde_json::from_str(extras).ok()?;
+        let j = v.get("s3d_joint")?;
+        if j.get("type")?.as_str()? != "revolute" {
+            return None;
+        }
+        let a = j.get("axis")?.as_array()?;
+        let f = |i: usize| a.get(i).and_then(|x| x.as_f64()).map(|x| x as f32);
+        let axis = Vec3::new(f(0)?, f(1)?, f(2)?).try_normalize()?;
+        let lower = j.get("lower")?.as_f64()? as f32;
+        let upper = j.get("upper")?.as_f64()? as f32;
+        (lower.is_finite() && upper.is_finite()).then_some(Joint { rest, axis, lower, upper })
+    }
+
+    /// The hinge's turn when it's `k` of the way (0 to 1) from its lower limit to its upper one.
+    pub fn at(&self, k: f32) -> Quat {
+        self.rest * Quat::from_axis_angle(self.axis, self.lower + (self.upper - self.lower) * k.clamp(0.0, 1.0))
+    }
+}
+
+/// Breaks a loaded glTF into parts (static models only: no skins, no animation; hinges are kept).
 fn flatten(
     gltf: &Gltf,
     nodes: &Assets<GltfNode>,
@@ -198,12 +234,23 @@ fn flatten(
     cache: &mut HashMap<AssetId<GltfMaterial>, Handle<StandardMaterial>>,
 ) -> Vec<Part> {
     let children: HashSet<AssetId<GltfNode>> = gltf.nodes.iter().filter_map(|n| nodes.get(n)).flat_map(|n| n.children.iter().map(|c| c.id())).collect();
-    let mut stack: Vec<(Handle<GltfNode>, Transform, u32)> =
-        gltf.nodes.iter().filter(|n| !children.contains(&n.id())).map(|n| (n.clone(), Transform::IDENTITY, 0)).collect();
+    // Each node with where it is: in the model, or on the hinge above it (then with the hinge).
+    type Hinge = Option<(Transform, Joint)>;
+    let mut stack: Vec<(Handle<GltfNode>, Transform, Hinge, u32)> =
+        gltf.nodes.iter().filter(|n| !children.contains(&n.id())).map(|n| (n.clone(), Transform::IDENTITY, None, 0)).collect();
     let mut parts = Vec::new();
-    while let Some((h, parent, depth)) = stack.pop() {
+    while let Some((h, parent, hinge, depth)) = stack.pop() {
         let Some(node) = nodes.get(&h) else { continue };
-        let at = parent.mul_transform(node.transform);
+        let mut at = parent.mul_transform(node.transform);
+        let mut hinge = hinge;
+        // A jointed node becomes the hinge for everything under it (the first one met: hinges on
+        // hinges turn as one).
+        if hinge.is_none()
+            && let Some(j) = node.extras.as_ref().and_then(|x| Joint::from_extras(&x.value, at.rotation))
+        {
+            hinge = Some((at, j));
+            at = Transform::IDENTITY;
+        }
         if let Some(mesh) = node.mesh.as_ref().and_then(|m| meshes.get(m)) {
             for p in &mesh.primitives {
                 let material = match &p.material {
@@ -213,11 +260,11 @@ fn flatten(
                         .clone(),
                     None => cache.entry(AssetId::default()).or_insert_with(|| mats.add(StandardMaterial::default())).clone(),
                 };
-                parts.push(Part { mesh: p.mesh.clone(), material, at });
+                parts.push(Part { mesh: p.mesh.clone(), material, at, hinge });
             }
         }
         if depth < 64 {
-            stack.extend(node.children.iter().map(|c| (c.clone(), at, depth + 1)));
+            stack.extend(node.children.iter().map(|c| (c.clone(), at, hinge, depth + 1)));
         }
     }
     parts
@@ -327,7 +374,7 @@ fn lod_switch(
         for (k, i) in order.iter().enumerate() {
             if *i >= n {
                 // The billboard needs no download.
-                let card = lod.billboard.iter().map(|(m, mat)| Part { mesh: m.clone(), material: mat.clone(), at: Transform::IDENTITY }).collect();
+                let card = lod.billboard.iter().map(|(m, mat)| Part { mesh: m.clone(), material: mat.clone(), at: Transform::IDENTITY, hinge: None }).collect();
                 chosen = Some((Some(*i), card));
                 break;
             }
@@ -357,8 +404,18 @@ fn lod_switch(
             }
         }
         for p in parts {
-            let child = commands.spawn((LodPart, Mesh3d(p.mesh), MeshMaterial3d(p.material), p.at)).id();
-            commands.entity(e).add_child(child);
+            let piece = commands.spawn((Mesh3d(p.mesh), MeshMaterial3d(p.material), p.at)).id();
+            match p.hinge {
+                // A hinge of its own (it holds the piece), which the game can turn.
+                Some((at, joint)) => {
+                    let hinge = commands.spawn((LodPart, at, Visibility::default(), joint)).add_child(piece).id();
+                    commands.entity(e).add_child(hinge);
+                }
+                None => {
+                    commands.entity(piece).insert(LodPart);
+                    commands.entity(e).add_child(piece);
+                }
+            }
         }
         lod.shown = showing;
     }
@@ -697,5 +754,32 @@ mod tests {
         assert_eq!(metres(Some(&doc(r#"{"size_m": [1.5, 1.5]}"#))), 1.5);
         assert_eq!(metres(Some(&doc(r#"{"metres": -1}"#))), 2.0);
         assert_eq!(metres(None), 2.0);
+    }
+}
+
+#[cfg(test)]
+mod joint_tests {
+    use super::*;
+
+    #[test]
+    fn reads_the_artists_joint() {
+        // As the cage delivered in batch 05 carries it.
+        let x =
+            r#"{"s3d_joint": {"name": "door_hinge", "type": "revolute", "value": 0.0, "axis": [0.0, -1.0, 0.0], "lower": 0.0, "upper": 1.9198621771937625}}"#;
+        let j = Joint::from_extras(x, Quat::IDENTITY).expect("a joint");
+        assert_eq!(j.axis, Vec3::NEG_Y);
+        assert_eq!(j.lower, 0.0);
+        assert!((j.upper.to_degrees() - 110.0).abs() < 0.01);
+        // Fully open, the door's +X edge (its free side, as the hinge is at its −X end) has swung
+        // 110° about −Y: from +X round towards +Z, the cage's front.
+        let edge = j.at(1.0) * Vec3::X;
+        assert!((edge.angle_between(Vec3::X).to_degrees() - 110.0).abs() < 0.01);
+        assert!(edge.z > 0.9, "{edge:?}");
+        assert_eq!(j.at(0.0), Quat::IDENTITY);
+        // Anything else is not a hinge.
+        assert!(Joint::from_extras(r#"{"s3d_joint": {"type": "prismatic", "axis": [0, 1, 0], "lower": 0, "upper": 1}}"#, Quat::IDENTITY).is_none());
+        assert!(Joint::from_extras(r#"{"s3d_joint": {"type": "revolute", "axis": [0, 0, 0], "lower": 0, "upper": 1}}"#, Quat::IDENTITY).is_none());
+        assert!(Joint::from_extras(r#"{"note": 1}"#, Quat::IDENTITY).is_none());
+        assert!(Joint::from_extras("not json", Quat::IDENTITY).is_none());
     }
 }

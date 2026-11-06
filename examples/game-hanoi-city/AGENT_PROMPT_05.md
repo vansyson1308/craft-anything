@@ -132,5 +132,6 @@ Game sẽ nối toàn bộ phần âm thanh: âm thanh 3D theo vị trí, nhạc
 - Chụp trong game, nộp vào `review/05/`:
   - `?gl&look=streetlife` (đồ vỉa hè);
   - `?gl&look=lineup` (nhân vật);
+  - `?gl&look=cage`, thêm `&door=open` và `&time=night` (lồng chó; không cần bản vá camera riêng);
   - Chương 1 cả ngày (`&time=day`) lẫn đêm.
 - Không logo hãng, không chữ thương hiệu thật, không mặt người thật, không lấy hình hay tiếng của game khác.

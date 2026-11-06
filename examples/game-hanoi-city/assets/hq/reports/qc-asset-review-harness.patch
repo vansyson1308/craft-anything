@@ -1,0 +1,26 @@
+diff --git a/examples/game-hanoi-city/src/main.rs b/examples/game-hanoi-city/src/main.rs
+index ed646dd..8926c5a 100644
+--- a/examples/game-hanoi-city/src/main.rs
++++ b/examples/game-hanoi-city/src/main.rs
+@@ -199,6 +199,7 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades) -> Option<Look>
+     let shore = bridge.at - north * 23.0 - north * 16.0;
+     match which.as_str() {
+         "lineup" => Some(Look { eye: shore - north * 4.2 + Vec3::Y * 1.45, target: shore + Vec3::Y * 0.95, lineup: Some((shore, right)), spawned: false }),
++        "asset" => Some(Look { eye: shore - north * 1.5 + Vec3::Y * 1.5, target: shore + Vec3::Y * 0.35, lineup: Some((shore, right)), spawned: false }),
+         "tree" => {
+             let tree = sites.iter().filter(|s| s.kind == "tree").min_by(|a, b| a.at.distance(shore).total_cmp(&b.at.distance(shore)))?;
+             Some(Look { eye: tree.at - north * 13.0 + right * 4.0 + Vec3::Y * 3.0, target: tree.at + Vec3::Y * 6.0, lineup: None, spawned: true })
+@@ -995,6 +996,13 @@ fn loading(mut commands: Commands, assets: Res<AssetServer>, mut g: ResMut<Game>
+         && let Some((at, right)) = l.lineup
+     {
+         let facing = Quat::from_rotation_arc(Vec3::Z, (l.eye - at).with_y(0.0).normalize_or(Vec3::Z));
++        let review_asset = render::page_query("asset");
++        if !review_asset.is_empty() {
++            commands.spawn((Transform::from_translation(at).with_rotation(facing), Visibility::default(), bevy::world_serialization::WorldAssetRoot(assets.load(bevy::gltf::GltfAssetLabel::Scene(0).from_asset(format!("hq/{review_asset}"))))));
++            l.spawned = true;
++            g.look = Some(l);
++            return;
++        }
+         let spots = [at - right * 0.9, at + right * 0.9, at + (l.eye - at).with_y(0.0).normalize_or(Vec3::Z) * 1.4];
+         let minh = actors::spawn_person(&mut commands, &assets, &hq, "minh", "Hair_SimpleParted", spots[0]);
+         let thief = actors::spawn_person(&mut commands, &assets, &hq, "trom", "Hair_Buzzed", spots[1]);
