@@ -38,7 +38,7 @@ passes, including tests for day/night changes and a late-loaded LOD.
 
 The six `webgl_*_final.png` screenshots exercise the revised models through
 the game's LOD and day/night material path in a fresh WebGL build. They use the
-temporary `material-review-harness.patch`: it places one model and the camera
+temporary `material-review-harness.patch` on a build from before PR #25: it places one model and the camera
 100 m above the city to avoid obstructions. There is no local point light on the
 test prop, so its non-emissive surfaces are very dark at night. Raw GLBs were
 served for these captures; separate packing checks passed. This tests selected
