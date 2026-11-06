@@ -2,7 +2,7 @@
 person hands over a single file. Edit the sources, then run this again; never edit HOA_SI.md.
 
 Sources (in this folder's parent):
-- AGENT_PROMPT_05.md: what to make now;
+- AGENT_PROMPT_06.md: what to make now;
 - AGENT_PROMPT_02.md: section A (standard technique) and section B (notes for remaking old pieces);
 - AGENT_PROMPT_04.md: technique for pieces used many times;
 - ASSETS.md: the full specification.
@@ -51,11 +51,9 @@ def must_replace(text, old, new):
 
 
 def main():
-    brief = read("AGENT_PROMPT_05.md")
+    brief = read("AGENT_PROMPT_06.md")
     # The brief's body starts after its "---" line.
     body = brief.split("\n---\n", 1)[1].strip("\n")
-    body = must_replace(body, "(mục A của\n   AGENT_PROMPT_02)", "(Phần 2)")
-    body = must_replace(body, "(DESIGN.md, giai đoạn 3)", "(kể chuyện bằng môi trường)")
 
     p02 = read("AGENT_PROMPT_02.md")
     technique = section(p02, "## A.", "## B.")
@@ -66,7 +64,7 @@ def main():
     repeat = section(read("AGENT_PROMPT_04.md"), "## Kỹ thuật cho đồ lặp nhiều lần")
     repeat = must_replace(repeat, "như mục A của AGENT_PROMPT_02", "như Phần 2")
     repeat = must_replace(repeat, "build như mục A.7 của AGENT_PROMPT_02", "build như Phần 2, ý 7")
-    repeat = must_replace(repeat, "Đợt đầu nên là mục 1 và 2: chỉ riêng chúng đã đổi hẳn cảm giác của phố.", "Với đồ phố, đợt đầu nên là xe máy dựng và bàn ghế (Phần 1, mục C1–C2): chỉ riêng chúng đã đổi hẳn cảm giác của phố.")
+    repeat = must_replace(repeat, "Đợt đầu nên là mục 1 và 2: chỉ riêng chúng đã đổi hẳn cảm giác của phố.", "Với đồ phố, đợt đầu nên là xe máy dựng (Phần 1, mục C1): chỉ riêng chúng đã đổi hẳn cảm giác của phố.")
 
     spec = read("ASSETS.md")
     # Drop the spec's own title line.
@@ -76,7 +74,8 @@ def main():
 
 Một file duy nhất: dán toàn bộ cho agent làm tài nguyên. Gồm bốn phần:
 
-1. **Việc cần làm bây giờ** (lô 05): những gì còn thiếu để game hoàn chỉnh, theo thứ tự người chơi gặp.
+1. **Việc cần làm bây giờ** (lô 06): những gì còn thiếu để game hoàn chỉnh, theo thứ tự người chơi gặp, và ngân sách
+   để game chạy mượt trên trình duyệt.
 2. **Kỹ thuật chuẩn**: cách làm để hình trông thật, không như đồ nhựa.
 3. **Ghi chú khi làm lại các món cũ** và **kỹ thuật cho đồ lặp nhiều lần**.
 4. **Đặc tả kỹ thuật đầy đủ**: tên file, kích thước, khung xương, cách nộp.
@@ -86,7 +85,7 @@ https://vansyson1308.github.io/craft-anything/
 
 <!-- Tệp này được ghép tự động bằng tools/make_hoa_si.py; sửa ở các file nguồn. -->
 
-# Phần 1. Việc cần làm bây giờ (lô 05)
+# Phần 1. Việc cần làm bây giờ (lô 06)
 
 {demote(body)}
 
