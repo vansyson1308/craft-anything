@@ -17,7 +17,7 @@ around both rails to a loop remaining on the opened door. Decide whether the
 rescue needs an explicit untie or cut interaction before accepting the revision.
 
 The `game_day.png`, `game_night.png` and `game_open.png` screenshots use a
-fresh WebGL build of this branch and the game's `look=cage` camera. The
+WebGL build based on the cage branch before PR #25 and the game's `look=cage` camera. The
 revised raw cage GLBs were served in place of the packaged cage; other game
 assets and the manifest came from an existing local web build. The cage GLB
 loaded successfully, and the game visibly rotates the door in the open view.
