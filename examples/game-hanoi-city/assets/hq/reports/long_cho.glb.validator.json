@@ -2,7 +2,7 @@
   "uri": "people/long_cho.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-05T23:01:09.809Z",
+  "validatedAt": "2026-11-06T07:14:15.163Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
@@ -19,7 +19,7 @@
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 3853384
+        "byteLength": 3408656
       },
       {
         "pointer": "/images/0",
@@ -68,8 +68,8 @@
     "hasTextures": true,
     "hasDefaultScene": true,
     "drawCallCount": 2,
-    "totalVertexCount": 2824,
-    "totalTriangleCount": 1664,
+    "totalVertexCount": 2946,
+    "totalTriangleCount": 1780,
     "maxUVs": 1,
     "maxInfluences": 0,
     "maxAttributes": 4
