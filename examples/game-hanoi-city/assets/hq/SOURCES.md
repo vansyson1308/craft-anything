@@ -6,6 +6,8 @@ The delivered assets and original modifications are released under CC0-1.0 for p
 
 Poly Haven assets are CC0: https://polyhaven.com/license . Each texture set was downloaded at 2K; maps are resampled for individual LOD budgets.
 
+- [crepe_satin](https://polyhaven.com/a/crepe_satin), Rico Cilliers / colormass, CC0: 1K diffuse, OpenGL normal and ARM scans recoloured and combined with original UV detail for the three draft Hàng Mã lanterns. For reproducibility, the local downloaded files are named `crepe_satin_diff.jpg`, `crepe_satin_nor_gl.png`, and `crepe_satin_arm.png`. Their SHA-256 values, respectively: `403b5af633cb194117bcd63b3158497507290ee3fd7b7092fb5638d05426bb86`, `89f25b39bbf985828b874115c2612d5ed328a6af799f6123bcab5525c4e06a02`, and `6b46e4c6fdb731ca527f3a92bbee7ed319cb9511c85aaf3aad5d54d180d20985`.
+
 - [granite_tile](https://polyhaven.com/a/granite_tile): diffuse, OpenGL normal and ARM; sidewalk uses the full scan, curb uses a cropped stone interior.
 - [denim_fabric](https://polyhaven.com/a/denim_fabric): diffuse, OpenGL normal, ARM and displacement.
 - [cotton_jersey](https://polyhaven.com/a/cotton_jersey): diffuse, OpenGL normal, ARM and displacement.
