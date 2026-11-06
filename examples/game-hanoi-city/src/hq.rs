@@ -10,6 +10,7 @@ use std::collections::{HashMap, HashSet};
 
 use bevy::asset::io::Reader;
 use bevy::asset::{AssetLoader, LoadContext, LoadState};
+use bevy::color::LinearRgba;
 use bevy::gltf::{Gltf, GltfMaterial, GltfMesh, GltfNode};
 use bevy::image::{ImageAddressMode, ImageLoaderSettings, ImageSampler, ImageSamplerDescriptor};
 use bevy::math::Affine2;
@@ -142,7 +143,8 @@ impl Plugin for HqPlugin {
                     waited: 0.0,
                 });
             })
-            .add_systems(Update, (resolve, place_models, apply_materials, lod_switch).chain());
+            .add_systems(Update, (resolve, place_models, apply_materials, lod_switch).chain())
+            .add_systems(Update, timed_emission.after(lod_switch).after(crate::choose_sky));
     }
 }
 
@@ -273,6 +275,43 @@ fn flatten(
 impl Flat {
     fn parts(&self, id: AssetId<Gltf>) -> Option<&Vec<Part>> {
         self.models.get(&id)
+    }
+}
+
+/// Only the newly authored street and facade lights follow the day/night sky.
+/// Other `lamp_glass` materials, such as the player's torch, are independent.
+fn timed_emission_value(path: &str, name: &str, source: LinearRgba, night: bool) -> Option<LinearRgba> {
+    let path = path.strip_prefix("hq/").unwrap_or(path);
+    let street = matches!(path, "street/den_duong_01.glb" | "street/den_duong_01_lod1.glb");
+    let upper = path.starts_with("buildings/mat_tien_tang_");
+    let ground = path.starts_with("buildings/mat_tien_tret_");
+    if (street && name == "lamp_glass") || (upper && name == "window_glow") || (ground && name == "shop_light") {
+        Some(if night { source } else { LinearRgba::BLACK })
+    } else {
+        None
+    }
+}
+
+/// Update loaded LOD materials as well as materials loaded after the last sky
+/// change. Original emissive values come from the immutable glTF material.
+fn timed_emission(
+    sky: Res<crate::night::Sky>,
+    flat: Res<Flat>,
+    gltfs: Res<Assets<Gltf>>,
+    gmats: Res<Assets<GltfMaterial>>,
+    mut mats: ResMut<Assets<StandardMaterial>>,
+) {
+    for (path, handle) in &flat.files {
+        let Some(gltf) = gltfs.get(handle) else { continue };
+        for (name, source_handle) in &gltf.named_materials {
+            let (Some(source), Some(material_handle)) = (gmats.get(source_handle), flat.materials.get(&source_handle.id())) else { continue };
+            let Some(want) = timed_emission_value(path, name, source.emissive, sky.night) else { continue };
+            if mats.get(material_handle).is_some_and(|m| m.emissive != want)
+                && let Some(mut material) = mats.get_mut(material_handle)
+            {
+                material.emissive = want;
+            }
+        }
     }
 }
 
@@ -716,6 +755,61 @@ fn apply_materials(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn timed_lights_follow_sky_and_leave_other_materials_alone() {
+        let glow = LinearRgba::new(1.0, 0.5, 0.2, 1.0);
+        for (path, name) in [
+            ("hq/street/den_duong_01.glb", "lamp_glass"),
+            ("hq/street/den_duong_01_lod1.glb", "lamp_glass"),
+            ("hq/buildings/mat_tien_tang_01.glb", "window_glow"),
+            ("hq/buildings/mat_tien_tang_04_lod1.glb", "window_glow"),
+            ("hq/buildings/mat_tien_tret_01.glb", "shop_light"),
+            ("hq/buildings/mat_tien_tret_03_lod1.glb", "shop_light"),
+        ] {
+            assert_eq!(timed_emission_value(path, name, glow, true), Some(glow));
+            assert_eq!(timed_emission_value(path, name, glow, false), Some(LinearRgba::BLACK));
+        }
+        assert_eq!(timed_emission_value("hq/people/den_pin.glb", "lamp_glass", glow, false), None);
+        assert_eq!(timed_emission_value("hq/buildings/mat_tien_tang_01.glb", "other", glow, false), None);
+        assert_eq!(timed_emission_value("hq/street/den_long_01.glb", "lamp_glass", glow, false), None);
+    }
+
+    #[test]
+    fn timed_light_updates_when_sky_changes_and_when_lod_arrives_late() {
+        let glow = LinearRgba::new(1.0, 0.5, 0.2, 1.0);
+        let mut app = App::new();
+        app.init_resource::<Assets<Gltf>>()
+            .init_resource::<Assets<GltfMaterial>>()
+            .init_resource::<Assets<StandardMaterial>>()
+            .init_resource::<Flat>()
+            .init_resource::<crate::night::Sky>()
+            .add_systems(Update, timed_emission);
+        let source = app.world_mut().resource_mut::<Assets<GltfMaterial>>().add(GltfMaterial { emissive: glow, ..default() });
+        let display = app.world_mut().resource_mut::<Assets<StandardMaterial>>().add(StandardMaterial { emissive: glow, ..default() });
+        let gltf = Gltf {
+            scenes: vec![], named_scenes: default(), meshes: vec![], named_meshes: default(),
+            materials: vec![source.clone()], named_materials: [("window_glow".into(), source.clone())].into_iter().collect(),
+            nodes: vec![], named_nodes: default(), skins: vec![], named_skins: default(),
+            default_scene: None, animations: vec![], named_animations: default(), source: None,
+        };
+        let asset = app.world_mut().resource_mut::<Assets<Gltf>>().add(gltf);
+        // Material and model can arrive after the first update in daytime.
+        app.update();
+        {
+            let mut flat = app.world_mut().resource_mut::<Flat>();
+            flat.files.insert("hq/buildings/mat_tien_tang_01_lod1.glb".into(), asset);
+            flat.materials.insert(source.id(), display.clone());
+        }
+        app.update();
+        assert_eq!(app.world().resource::<Assets<StandardMaterial>>().get(&display).unwrap().emissive, LinearRgba::BLACK);
+        app.world_mut().resource_mut::<crate::night::Sky>().night = true;
+        app.update();
+        assert_eq!(app.world().resource::<Assets<StandardMaterial>>().get(&display).unwrap().emissive, glow);
+        app.world_mut().resource_mut::<crate::night::Sky>().night = false;
+        app.update();
+        assert_eq!(app.world().resource::<Assets<StandardMaterial>>().get(&display).unwrap().emissive, LinearRgba::BLACK);
+    }
 
     #[test]
     fn manifest_reads_the_documented_shape() {
