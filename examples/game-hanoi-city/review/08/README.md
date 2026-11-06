@@ -11,11 +11,10 @@ rail intersections, with additional staining on the lower rails and tray.
 AO and a normal-gradient approximation modulate the mask; this is not a full
 concave-curvature bake. The appearance needs artistic review in the game.
 
-The tie is part of the fixed cage. When the door opens it stays on the fixed
-frame; there is no rope-release animation. This makes the still pose useful for
-review but can look physically incorrect during the rescue. The current game
-does not yet remove or animate this tie. Decide whether to add that interaction
-before accepting the revision.
+The tie is attached to the moving door and follows it when the door opens.
+There is no separate rope-release animation: it changes from a closed loop
+around both rails to a loop remaining on the opened door. Decide whether the
+rescue needs an explicit untie or cut interaction before accepting the revision.
 
 Both models retain a single material and the named `door_hinge` revolute joint
 with its 0–110° range. The measured LOD0/LOD1 triangle counts are 1,780/474,

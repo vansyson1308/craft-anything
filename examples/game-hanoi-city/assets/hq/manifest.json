@@ -408,7 +408,7 @@
       "notes": [
         "Draft weathering revision: door_hinge retains a 0–110 degree revolute joint in glTF extras; game currently opens the door.",
         "LOD0 uses one 1024px atlas set; LOD1 uses one 512px set. The movable door and fixed body share one material and remain separate draw calls.",
-        "Rust drips start at rail intersections, with darker corrosion near the lower frame and tray. A fixed two-turn temporary tie wraps the door and upright. Game does not yet animate or remove the tie when the door opens; in-game close-up and artistic review remain pending."
+        "Rust drips start at rail intersections, with darker corrosion near the lower frame and tray. A two-turn temporary tie wraps the closed door and upright and moves with the door after opening. A separate rope-release animation, in-game close-up and artistic review remain pending."
       ]
     },
     {
