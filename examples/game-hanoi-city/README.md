@@ -67,6 +67,9 @@ cargo install wasm-bindgen-cli --version 0.2.130 --locked
 python3 -m http.server 8000 --directory dist  # mở http://localhost:8000
 ```
 
+Chạy test trên máy (`cargo test`) trên Linux cần thư viện âm thanh ALSA, như mọi game Bevy có tiếng:
+`sudo apt-get install libasound2-dev pkg-config`. Bản cho trình duyệt thì không cần.
+
 Biến môi trường khi build:
 - `ONLY=gpu` hoặc `ONLY=gl`: chỉ build một bản.
 - `SKIP_OPT=1`: bỏ bước wasm-opt, build nhanh hơn.
