@@ -1,7 +1,8 @@
 # Dog audio review candidates
 
-These files are **drafts for listening and QC**, not approved game assets. They
-do not replace the existing game sounds. The original recordings are CC0:
+These recordings still need listening and artistic QC. PR #25 wired the four
+bark files and the whimper into the game; their installed files match the
+corresponding candidate Oggs in this review byte for byte. The original recordings are CC0:
 
 - [Dog Bark by aunrea](https://freesound.org/people/aunrea/sounds/495658/),
   48 kHz / 24-bit mono WAV, a medium-sized dog recorded with a Tascam
@@ -16,9 +17,8 @@ The bark WAV contains three distinct barks, all clipped at full scale: 1,053
 samples in the full source have absolute amplitude at least 0.999. FFmpeg
 `adeclip` attempts reconstruction before denoising, but cannot restore lost
 information reliably. The three Ogg excerpts and their frequency plots are
-provided so a reviewer can judge the result; **a clean alternate recording is
-still needed if clipping remains audible**. The user has approved continuing
-with the available sounds instead of acquiring the originally requested five
+provided so a reviewer can judge the result. The user has chosen to continue
+with the available sounds instead of acquiring more recordings or the originally requested five
 different barking, growling and happy-dog variations. This does not by itself
 establish that the clipped recordings meet the quality threshold.
 
@@ -50,7 +50,14 @@ For very short clips the `astats` noise-floor estimate is sensitive to the
 window and may include the decay of the sound; do not interpret it as a
 separate silence recording. True peak is close to but not exactly -1 dBTP.
 Short-term loudness, listener review, actual game playback and acceptance are
-still pending. The cage-door sound is not addressed in this batch.
+still pending. In a WebGL build at commit `5353087`, all four barks, the
+whimper and the two UI sounds were requested successfully (HTTP 200) after a
+browser click, with no page or console errors observed. This confirms loading,
+not audible playback or quality. In a separate instrumented run of the closed
+cage review scene, the browser AudioContext was running and an analyser saw a
+nonzero output signal (peak about 0.51) over eight seconds. The measurement
+does not identify the sound by ear or prove that every gameplay cue is audible.
+The cage-door sound is not addressed in this batch.
 
 To reproduce, supply the original downloaded WAVs locally and run:
 
@@ -60,5 +67,5 @@ python art-src/audio/sadiquecat_bark_candidate.py <sadiquecat-dog-bark-2.wav> re
 python art-src/audio/qc_whimper_candidate.py <dog-whimper-1.wav> <temporary-output-directory> --start 2.85 --duration 2.5 --noise-start 5.5
 ```
 
-Both scripts require FFmpeg, NumPy, SciPy and matplotlib. The original source
+The scripts require FFmpeg, NumPy, SciPy and matplotlib. The original source
 recordings are not included in this draft.
