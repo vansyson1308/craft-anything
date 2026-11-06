@@ -8,7 +8,8 @@ high-poly work. The game has not yet been wired to play these clips.
 `Wag` is a one-second, 30-fps loop driven by five tail bones. `Jump` is a
 one-second, 30-fps tentative rear-up with the front legs reaching forward;
 its root returns to its initial transform. The contact sheet shows selected
-poses, not continuous playback. No player is present, so the paws' contact
+poses. `wag.gif` and `jump.gif` show a low-sample preview at 15 fps; the clips
+themselves have keys at 30 fps. No player is present, so the paws' contact
 with Minh's legs, timing, collision and emotional effect are not verified.
 
 The GLB retains the original mesh, skin, node and material definitions and
@@ -34,8 +35,10 @@ python art-src/animation/study_dog_motion.py assets/hq/animals/cho_co.glb <uncor
 python art-src/animation/ground_dog_motion.py <uncorrected.glb> <dog_motion_study.glb>
 python art-src/animation/check_dog_motion.py assets/hq/animals/cho_co.glb <dog_motion_study.glb>
 python art-src/animation/render_dog_motion.py <dog_motion_study.glb> <poses-directory>
+python art-src/animation/render_dog_motion.py <dog_motion_study.glb> <sequence-directory> --sequence
+python art-src/animation/export_motion_gifs.py <sequence-directory>
 ```
 
-Run glTF Validator separately after regeneration. Floor correction is based
+The GIF helper requires Pillow. Run glTF Validator separately after regeneration. Floor correction is based
 on the lowest point of the evaluated mesh and does not solve a foot-placement
 or player-contact constraint.
