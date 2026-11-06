@@ -1,0 +1,26 @@
+{
+  "source_near_full_scale_samples": 1053,
+  "candidates": [
+    {
+      "file": "cho_sua_01_candidate.ogg",
+      "source_start_s": 0.16,
+      "source_end_s": 0.66,
+      "decoded_duration_s": 0.49733333333333335,
+      "true_peak_4x_dbfs": -2.05
+    },
+    {
+      "file": "cho_sua_02_candidate.ogg",
+      "source_start_s": 1.45,
+      "source_end_s": 1.96,
+      "decoded_duration_s": 0.5293333333333333,
+      "true_peak_4x_dbfs": -1.75
+    },
+    {
+      "file": "cho_sua_03_candidate.ogg",
+      "source_start_s": 3.45,
+      "source_end_s": 3.94,
+      "decoded_duration_s": 0.48733333333333334,
+      "true_peak_4x_dbfs": -1.73
+    }
+  ]
+}

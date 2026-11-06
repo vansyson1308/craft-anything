@@ -31,8 +31,17 @@ and their mesh bounds extend no farther than 0.59 m in the outward +Z direction.
 The game now has a draft system intended to switch the streetlight lens, upper
 windows and shop strips off during the day and restore their source emission at
 night, including when a new LOD loads. It scopes this behavior to these asset
-paths so the player's flashlight is unaffected. The Rust test code compiles,
-but the behavior still needs end-to-end day/night verification in a fresh game
-build. The closed shutter retains an unused original emissive image in its GLB,
-but no material references it. LOD transitions and artistic approval remain
-pending.
+paths so the player's flashlight is unaffected. The complete 32-test Rust suite
+passes, including tests for day/night changes and a late-loaded LOD.
+
+The six `webgl_*_final.png` screenshots exercise the revised models through
+the game's LOD and day/night material path in a fresh WebGL build. They use the
+temporary `material-review-harness.patch`: it places one model and the camera
+100 m above the city to avoid obstructions. There is no local point light on the
+test prop, so its non-emissive surfaces are very dark at night. Raw GLBs were
+served for these captures; separate packing checks passed. This tests selected
+models and is not a review of the final streetscape or every LOD transition.
+
+The closed shutter retains an unused original emissive image in its GLB, but
+no material references it. Final streetscape day/night review, LOD transitions
+and artistic approval remain pending.
