@@ -2,7 +2,7 @@
   "uri": "buildings/mat_tien_tang_03_lod1.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-06T09:22:24.680Z",
+  "validatedAt": "2026-11-06T09:52:21.645Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
@@ -32,7 +32,7 @@
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 1626684
+        "byteLength": 1626620
       },
       {
         "pointer": "/images/0",

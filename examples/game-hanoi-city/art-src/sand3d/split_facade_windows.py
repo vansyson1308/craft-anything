@@ -73,8 +73,8 @@ shader.inputs['Emission Strength'].default_value = .5
 img = Image.new('RGB', (256, 128), (0, 0, 0))
 draw = ImageDraw.Draw(img)
 draw.rectangle((0, 0, 127, 127), fill=(255, 158, 72))
-draw.polygon([(0, 0), (42, 0), (28, 127), (0, 127)], fill=(52, 30, 14))
-draw.polygon([(104, 0), (127, 0), (127, 127), (118, 127)], fill=(82, 45, 20))
+draw.polygon([(0, 0), (23, 0), (17, 127), (0, 127)], fill=(52, 30, 14))
+draw.polygon([(121, 0), (127, 0), (127, 127), (124, 127)], fill=(82, 45, 20))
 texture_path = Path(tempfile.gettempdir()) / 'hanoi_window_emission.png'
 img.save(texture_path)
 tex = window.node_tree.nodes.new('ShaderNodeTexImage')

@@ -19,8 +19,10 @@ The four `upper_0*.png` images show the upper-storey facade variants with
 their window panels separated as `window_glow` and their masonry and joinery
 non-emissive. `upper_01_world_zero.png` demonstrates the result without world
 or review lighting. An emissive texture lights one window in each variant and
-shows a partially drawn curtain; the other window is dark. This is a simple
-pattern, and the target fraction of lit panes and the final streetscape still
+shows a partially drawn curtain; the other window is dark. About 39.6% of the
+texture pixels are bright (red > 100 and green > 40 on an 8-bit scale). Shutters
+and perspective affect how much is visible in the scene, so this is not a
+measurement of the fraction of visible panes. This is a simple pattern, and the final streetscape still
 need visual review. All eight upper facade GLBs, including LOD1, pass glTF Validator with
 zero errors and warnings; their triangle counts are unchanged and within budget.
 
