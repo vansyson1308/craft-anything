@@ -1,0 +1,77 @@
+{
+  "method": "Sum 3D and UV triangle areas per welded UV island; density = atlas_px * sqrt(UV area / world-space area). Packing gives each island an 8 px border.",
+  "files": [
+    {
+      "file": "den_long_01.glb",
+      "sha256": "df31782fb0935e588b9891cea727449aa11470863f114a6333c96ba45989ad44",
+      "atlas_px": 1024,
+      "target_px_per_m": 512.0,
+      "island_count": 136,
+      "out_of_tolerance_islands": 0,
+      "min_density": 511.973,
+      "max_density": 512.021,
+      "summed_uv_area": 0.1921,
+      "packing_padding_px": 8
+    },
+    {
+      "file": "den_long_02.glb",
+      "sha256": "09be89314a69c0e3185d1e3db872ec9915e0a260787d68e48631954c8c780b20",
+      "atlas_px": 1024,
+      "target_px_per_m": 512.0,
+      "island_count": 124,
+      "out_of_tolerance_islands": 0,
+      "min_density": 511.983,
+      "max_density": 512.021,
+      "summed_uv_area": 0.182,
+      "packing_padding_px": 8
+    },
+    {
+      "file": "den_long_03.glb",
+      "sha256": "3db7c8f9b90e9135d17058b3e9ac337415937c66a88e620de4c4d6988f6a2fbf",
+      "atlas_px": 1024,
+      "target_px_per_m": 512.0,
+      "island_count": 127,
+      "out_of_tolerance_islands": 0,
+      "min_density": 511.988,
+      "max_density": 512.021,
+      "summed_uv_area": 0.1486,
+      "packing_padding_px": 8
+    },
+    {
+      "file": "den_long_01_lod1.glb",
+      "sha256": "9a8b43a33a5449f39f0b56899ebdba2846a18a04396f592694c09331e6f535b5",
+      "atlas_px": 512,
+      "target_px_per_m": 256.0,
+      "island_count": 62,
+      "out_of_tolerance_islands": 0,
+      "min_density": 255.994,
+      "max_density": 256.008,
+      "summed_uv_area": 0.172,
+      "packing_padding_px": 8
+    },
+    {
+      "file": "den_long_02_lod1.glb",
+      "sha256": "9d0139a8b378575cab57c957956b27892759ba3de0e86df501c5aeb9e3b7fb1e",
+      "atlas_px": 512,
+      "target_px_per_m": 256.0,
+      "island_count": 62,
+      "out_of_tolerance_islands": 0,
+      "min_density": 255.997,
+      "max_density": 256.007,
+      "summed_uv_area": 0.1633,
+      "packing_padding_px": 8
+    },
+    {
+      "file": "den_long_03_lod1.glb",
+      "sha256": "dff628dd4c13a0b60590ac47f902aeeca0f2bf253d20b3c0419ada07c4b96be6",
+      "atlas_px": 512,
+      "target_px_per_m": 256.0,
+      "island_count": 73,
+      "out_of_tolerance_islands": 0,
+      "min_density": 255.994,
+      "max_density": 256.015,
+      "summed_uv_area": 0.1312,
+      "packing_padding_px": 8
+    }
+  ]
+}

@@ -23,7 +23,7 @@
       "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
         "Draft red lantern with a bamboo frame, satin body, tassel and lamp_glass bulb. AO and high-to-low normals are baked; silk-only emission supplements the bulb.",
-        "Body UV coverage is about 43.6%; some sampled edges are below 4 px/cm. Packing, density, actual hanging placement, game integration, seams and artistic approval remain pending."
+        "Draft UV update: LOD0 1024 px atlas, 512 px/m per island and 8 px packing border; summed island area is only 14.9–19.2% of the atlas. Hanging placement, game captures, seams, LOD transitions and artistic approval remain pending."
       ]
     },
     {
@@ -48,7 +48,7 @@
       "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
         "Draft yellow lantern. AO and high-to-low normals are baked; silk-only emission supplements the lamp_glass bulb.",
-        "Body UV coverage is about 44.1%; some sampled edges are below 4 px/cm. Packing, density, hanging placement, game integration, day/night captures, seams and artistic approval remain pending."
+        "Draft UV update: LOD0 1024 px atlas, 512 px/m per island and 8 px packing border; summed island area is only 14.9–19.2% of the atlas. Hanging placement, game captures, seams, LOD transitions and artistic approval remain pending."
       ]
     },
     {
@@ -73,7 +73,7 @@
       "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
       "notes": [
         "Draft red diamond lantern. AO and high-to-low normals are baked; silk-only emission supplements the lamp_glass bulb.",
-        "Body UV coverage is about 33.0%; some sampled edges are below 4 px/cm. Packing, density, hanging placement, game integration, day/night captures, seams and artistic approval remain pending."
+        "Draft UV update: LOD0 1024 px atlas, 512 px/m per island and 8 px packing border; summed island area is only 14.9–19.2% of the atlas. Hanging placement, game captures, seams, LOD transitions and artistic approval remain pending."
       ]
     },
     {

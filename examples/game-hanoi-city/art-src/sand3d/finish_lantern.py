@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image,ImageDraw,ImageFilter
 from pack_lantern_uv import pack_uv
 
-p=argparse.ArgumentParser();p.add_argument('source',type=Path);p.add_argument('out',type=Path);p.add_argument('--variant',type=int,required=True);p.add_argument('--size',type=int,default=512);p.add_argument('--high',type=Path);p.add_argument('--scans',type=Path,required=True);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('source',type=Path);p.add_argument('out',type=Path);p.add_argument('--variant',type=int,required=True);p.add_argument('--size',type=int,default=1024);p.add_argument('--density',type=float,default=512);p.add_argument('--high',type=Path);p.add_argument('--scans',type=Path,required=True);a=p.parse_args()
 a.out.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True);bpy.ops.import_scene.gltf(filepath=str(a.source.resolve()))
 meshes=[x for x in bpy.context.scene.objects if x.type=='MESH']
@@ -26,7 +26,7 @@ bpy.ops.object.select_all(action='DESELECT')
 for ob in body:ob.select_set(True)
 bpy.context.view_layer.objects.active=body[0];bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(island_margin=.006);bpy.ops.object.mode_set(mode='OBJECT')
 size=a.size
-print('Lantern UV packing:',pack_uv(body,size,padding=2))
+print('Lantern UV packing:',pack_uv(body,size,padding=8,target_density=a.density))
 masks={x:Image.new('L',(size,size),0) for x in ('silk','tassel')}
 for ob in body:
     typ='silk' if ob.name.startswith('silk_') else 'tassel' if ob.name.startswith('tassel_') else None
@@ -66,7 +66,7 @@ Image.fromarray(emissive).save(a.out/'emissive.png')
 em=texture(a.out/'emissive.png');links.new(em.outputs['Color'],sh.inputs['Emission Color']);sh.inputs['Emission Strength'].default_value=1
 nt=texture(a.out/'normal.png',True);nm=nodes.new('ShaderNodeNormalMap');links.new(nt.outputs['Color'],nm.inputs['Color']);links.new(nm.outputs['Normal'],sh.inputs['Normal'])
 for ob in body:ob.data.materials.clear();ob.data.materials.append(mat)
-scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=16;scene.render.bake.margin=2
+scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=16;scene.render.bake.margin=8
 ao=bpy.data.images.new('lantern_ao',width=size,height=size,alpha=False);target=nodes.new('ShaderNodeTexImage');target.image=ao;nodes.active=target
 bpy.ops.object.select_all(action='DESELECT')
 for ob in body:ob.select_set(True)

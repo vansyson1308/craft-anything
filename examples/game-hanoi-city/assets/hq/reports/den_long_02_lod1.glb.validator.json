@@ -2,7 +2,7 @@
   "uri": "street/den_long_02_lod1.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-06T00:02:15.709Z",
+  "validatedAt": "2026-11-06T06:36:12.407Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
@@ -35,15 +35,15 @@
         "pointer": "/buffers/0",
         "mimeType": "application/gltf-buffer",
         "storage": "glb",
-        "byteLength": 161576
+        "byteLength": 308144
       },
       {
         "pointer": "/images/0",
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -55,8 +55,8 @@
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -68,8 +68,8 @@
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgb",
           "primaries": "srgb",
           "transfer": "srgb",
@@ -81,8 +81,8 @@
         "mimeType": "image/png",
         "storage": "buffer-view",
         "image": {
-          "width": 256,
-          "height": 256,
+          "width": 512,
+          "height": 512,
           "format": "rgba",
           "primaries": "srgb",
           "transfer": "srgb",

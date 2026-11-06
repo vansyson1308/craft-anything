@@ -8,25 +8,25 @@
       "draw_calls": 2,
       "image_sizes": [
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ]
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "e83523459335f282f3bc8d7046ec4a7d7141da498234df44445c2b50e42c1610"
+      "sha256": "df31782fb0935e588b9891cea727449aa11470863f114a6333c96ba45989ad44"
     },
     {
       "file": "street/den_long_01_lod1.glb",
@@ -35,25 +35,25 @@
       "draw_calls": 2,
       "image_sizes": [
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ]
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "5958df1b2c54c175459b4062c0336e4682d259a89e02657a3e0e97a90869368e"
+      "sha256": "9a8b43a33a5449f39f0b56899ebdba2846a18a04396f592694c09331e6f535b5"
     },
     {
       "file": "street/den_long_02.glb",
@@ -62,25 +62,25 @@
       "draw_calls": 2,
       "image_sizes": [
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ]
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "ceddbf250a2bc988423864fcc5f5241d4ad7607ab22be6ba4ab884313c171227"
+      "sha256": "09be89314a69c0e3185d1e3db872ec9915e0a260787d68e48631954c8c780b20"
     },
     {
       "file": "street/den_long_02_lod1.glb",
@@ -89,25 +89,25 @@
       "draw_calls": 2,
       "image_sizes": [
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ]
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "9dcb57e6cd2bf33260b32e35a83a4ca5a89609498b08b34d40b83578703070ff"
+      "sha256": "9d0139a8b378575cab57c957956b27892759ba3de0e86df501c5aeb9e3b7fb1e"
     },
     {
       "file": "street/den_long_03.glb",
@@ -116,25 +116,25 @@
       "draw_calls": 2,
       "image_sizes": [
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ],
         [
-          512,
-          512
+          1024,
+          1024
         ]
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "4d2e5b02a652bf66bcf0e221917cc9191b6fa1786c3f54f2b655ddc31deacdfa"
+      "sha256": "3db7c8f9b90e9135d17058b3e9ac337415937c66a88e620de4c4d6988f6a2fbf"
     },
     {
       "file": "street/den_long_03_lod1.glb",
@@ -143,25 +143,25 @@
       "draw_calls": 2,
       "image_sizes": [
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ],
         [
-          256,
-          256
+          512,
+          512
         ]
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "c6f8b77c65029b864674139946e9e6dd8edaa3578eb60b14aa5fb40e0f2cecac"
+      "sha256": "dff628dd4c13a0b60590ac47f902aeeca0f2bf253d20b3c0419ada07c4b96be6"
     }
   ]
 }
