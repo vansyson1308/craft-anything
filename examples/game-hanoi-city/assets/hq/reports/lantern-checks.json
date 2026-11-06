@@ -26,7 +26,7 @@
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "df31782fb0935e588b9891cea727449aa11470863f114a6333c96ba45989ad44"
+      "sha256": "c92b9d1120a4f87f04c93d16913fc7ec4ef69fe0092e644119ba5ed6d87be148"
     },
     {
       "file": "street/den_long_01_lod1.glb",
@@ -53,7 +53,7 @@
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "9a8b43a33a5449f39f0b56899ebdba2846a18a04396f592694c09331e6f535b5"
+      "sha256": "6c6ea38d2928811d7299621b1633fc74f8ef5e2030cc6a9a2fd9d1139f587b68"
     },
     {
       "file": "street/den_long_02.glb",
@@ -80,7 +80,7 @@
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "09be89314a69c0e3185d1e3db872ec9915e0a260787d68e48631954c8c780b20"
+      "sha256": "92e34a8395abcb8a7e96491b9e92d99fe385462cd11cfd1518478dc6a9b8e271"
     },
     {
       "file": "street/den_long_02_lod1.glb",
@@ -107,7 +107,7 @@
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "9d0139a8b378575cab57c957956b27892759ba3de0e86df501c5aeb9e3b7fb1e"
+      "sha256": "567715a5c4112a1f460d94b6c4290a575bdbd2b30591ce4a46158f10668a6586"
     },
     {
       "file": "street/den_long_03.glb",
@@ -134,7 +134,7 @@
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "3db7c8f9b90e9135d17058b3e9ac337415937c66a88e620de4c4d6988f6a2fbf"
+      "sha256": "65d274c4a65d70ba6a5b2063da3ce815a62c252f22a5400def587ffde4caf52e"
     },
     {
       "file": "street/den_long_03_lod1.glb",
@@ -161,7 +161,7 @@
       ],
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "dff628dd4c13a0b60590ac47f902aeeca0f2bf253d20b3c0419ada07c4b96be6"
+      "sha256": "480c246e5c3d991bc3d769f0ca2e8ba531e5c705a21e127d447115c260735f2a"
     }
   ]
 }

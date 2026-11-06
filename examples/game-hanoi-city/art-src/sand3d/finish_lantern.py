@@ -102,4 +102,9 @@ for f in bulb.data.polygons:f.use_smooth=True
 bpy.ops.object.select_all(action='DESELECT')
 for ob in body:ob.select_set(True)
 bpy.context.view_layer.objects.active=body[0];bpy.ops.object.join()
+# The model root is the top of the suspension, 0.64 m above the bottom of the
+# tassel. Keep the assembly root at zero and translate its meshes so game code
+# can place that origin directly on a hanging wire.
+bpy.context.view_layer.objects.active.location.z -= .64
+bulb.location.z -= .64
 bpy.ops.export_scene.gltf(filepath=str((a.out/'lantern.glb').resolve()),export_format='GLB',export_tangents=True)

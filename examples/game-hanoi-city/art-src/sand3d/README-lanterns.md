@@ -24,6 +24,8 @@ frame remains visible in WebGL; emission approximates light through the thin
 shell. The finish pass bakes AO and selected-to-active geometry normals. This
 is an approximation and needs artistic review and testing in its actual hung
 placement. Its lighting is not switched off during the day by these assets.
+The origin is at the top of the suspension, so the prop can be hung from a
+wire at its root in glTF coordinates.
 The body UV islands are scaled to 512 px/m for LOD0 and packed with an 8 px
 border; LOD1 uses 256 px/m and an 8 px border. Measurements for the exported
 files are in `assets/hq/reports/lantern-uv-density.json`. At the requested

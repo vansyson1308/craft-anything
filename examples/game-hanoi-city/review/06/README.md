@@ -8,7 +8,8 @@ files instead use an opaque shell and a silk-only emissive mask. This is a
 visual approximation rather than physical transmission.
 
 The six `den_long_0{1,2,3}_game_{day,night}.png` images show the revised
-LOD0 GLBs in a locally built WebGL game using the earlier temporary
+LOD0 textures and geometry before the subsequent origin-only change, in a
+locally built WebGL game using the earlier temporary
 `assets/hq/reports/qc-lantern-review-harness.patch`. This local executable is
 from the previous game revision, not a fresh build of current `main`. The
 harness places each prop on the street beside an existing lamp for inspection,
@@ -17,7 +18,9 @@ not in its eventual hanging position. The camera is 1.5 m above the ground and
 views use the existing street light. The 1000 × 750 screenshots were captured
 in Chrome. The harness is not applied to current game source.
 
-The real game does not yet place these props in the lantern strings. The revised
+The delivered GLB origins are at the top of the suspension for hanging; all
+three LOD0 and LOD1 suspension tips are within 0.000001 m of their root. The
+real game does not yet place these props in the lantern strings. The revised
 LOD0 uses 1024 px atlases, 8 px island borders and 512 px/m density; all measured
 body islands fall within the requested ±15% tolerance. LOD1 uses 512 px atlases
 and 256 px/m. Summed UV island areas cover only about 19.2%, 18.2% and 14.9%
