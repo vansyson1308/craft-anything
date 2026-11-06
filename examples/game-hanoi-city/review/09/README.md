@@ -15,7 +15,14 @@ remain 960 and 476 (LOD0/LOD1), within the 2,000/500 street-prop budgets.
 Each uses two materials and three image textures. Metal keeps its normal-map
 tangents; the glass has no normal map and its degenerate tangents are omitted.
 
-The emissive lens currently remains emissive during the day; no automatic
-time-of-day material switching is implemented here. The other part of A4 —
-separating glowing windows from non-emissive facade fittings — is still
-outstanding. Day/night in-game views and artistic approval are also pending.
+The four `upper_0*.png` images show the upper-storey facade variants with
+their window panels separated as `window_glow` and their masonry and joinery
+non-emissive. `upper_01_world_zero.png` demonstrates the result without world
+or review lighting. The panels currently have a flat warm fill and need artistic
+approval. All eight upper facade GLBs, including LOD1, pass glTF Validator with
+zero errors and warnings; their triangle counts are unchanged and within budget.
+
+The emissive lens and windows currently remain emissive during the day; no
+automatic time-of-day material switching is implemented here. The ground-floor
+shopfronts still need their distinct luminous areas separated from the fittings.
+Day/night game views, LOD transitions and artistic approval are also pending.
