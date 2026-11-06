@@ -254,7 +254,10 @@ fn look_from_page(sites: &[hq::Site], facades: &facade::Facades, map: &Map) -> O
         // the side, 1.5 m away at eye height (how a player sees it when they reach it).
         "cage" => {
             let open = render::page_query("door") == "open";
-            let eye = shore - north * 1.3 + right * 0.75 + Vec3::Y * 1.5;
+            // The door swings towards this camera; back away for the open
+            // pose so its outer edge remains visible in the review frame.
+            let distance = if open { 1.8 } else { 1.0 };
+            let eye = shore - north * (1.3 * distance) + right * (0.75 * distance) + Vec3::Y * 1.5;
             Some(Look { eye, target: shore + Vec3::Y * 0.3, lineup: None, cage: Some((shore, open)), spawned: false })
         }
         _ => Some(Look {
