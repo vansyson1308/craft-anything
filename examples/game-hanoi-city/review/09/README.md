@@ -28,8 +28,11 @@ have a separate emissive `shop_light` strip; the closed shutter has no strip.
 All eight ground-floor GLBs pass glTF Validator without errors or warnings,
 and their mesh bounds extend no farther than 0.59 m in the outward +Z direction.
 
-The emissive lens, windows and shop strips currently remain emissive during the
-day; no automatic time-of-day material switching is implemented here. The
-closed shutter retains an unused original emissive image in its GLB, but no
-material references it. Day/night game views, LOD transitions and artistic
-approval are also pending.
+The game now has a draft system intended to switch the streetlight lens, upper
+windows and shop strips off during the day and restore their source emission at
+night, including when a new LOD loads. It scopes this behavior to these asset
+paths so the player's flashlight is unaffected. The Rust test code compiles,
+but the behavior still needs end-to-end day/night verification in a fresh game
+build. The closed shutter retains an unused original emissive image in its GLB,
+but no material references it. LOD transitions and artistic approval remain
+pending.
