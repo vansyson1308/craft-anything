@@ -20,13 +20,19 @@ in Chrome. The harness is not applied to current game source.
 
 The delivered GLB origins are at the top of the suspension for hanging; all
 three LOD0 and LOD1 suspension tips are within 0.000001 m of their root. The
-real game does not yet place these props in the lantern strings. The revised
+game now places these props along Hàng Mã. `hangma_game_day.png` and
+`hangma_game_night.png` show `?gl&look=hangma` in a fresh WebGL build of
+main at PR #25 (commit `5353087`, before PR #26), using its packaged HQ assets.
+All three model variants and their LOD1 files loaded successfully during the
+review; that alone does not verify transition quality. The suspension lines
+are difficult to see at this distance and some silhouettes look faceted.
+The revised
 LOD0 uses 1024 px atlases, 8 px island borders and 512 px/m density; all measured
 body islands fall within the requested ±15% tolerance. LOD1 uses 512 px atlases
 and 256 px/m. Summed UV island areas cover only about 19.2%, 18.2% and 14.9%
 of the LOD0 atlases: the earlier 70% utilization goal remains unmet. See
 `assets/hq/reports/lantern-uv-density.json` for the measurements.
 
-Fresh captures in the latest game, LOD transitions, close seam inspection,
-actual hanging placement and final artistic approval remain outstanding. The
-round lantern outlines still look visibly faceted at this review distance.
+LOD transitions, close seam inspection, the visibility of the suspension lines,
+and final artistic approval remain outstanding. Audio was not assessed during
+these screenshots.
