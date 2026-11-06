@@ -1,0 +1,9 @@
+{
+  "scope": "glTF validation, counts and checksum; see README for sampled animation checks and limits",
+  "file": "dog_motion_study.glb",
+  "triangles": 7586,
+  "animations": 7,
+  "errors": 0,
+  "warnings": 0,
+  "sha256": "8a08bb4893533aab9dee737ba4cd174b4c149722c255e23db1876fc24ec91898"
+}
