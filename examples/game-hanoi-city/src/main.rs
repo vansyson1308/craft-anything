@@ -42,8 +42,11 @@ const CITY_JSON: &str = include_str!("../assets/hoankiem.json");
 const SIGNS_JSON: &str = include_str!("../assets/signs.json");
 const TILE_M: f32 = 2.0;
 
-/// How much may go to the GPU in one frame: one 1024 px texture with all its smaller levels.
-const UPLOAD_BYTES_PER_FRAME: usize = 6 * 1024 * 1024;
+/// How much may go to the GPU in one frame: about six 1024 px textures with their smaller levels.
+/// It splits the burst of a street streaming in (1.7 GB of textures once the whole city has
+/// loaded) into frames of a few milliseconds each on a GPU, without starving: 6 MB was too little,
+/// and at the 1–2 frames a second of a software renderer the delivered art never appeared.
+const UPLOAD_BYTES_PER_FRAME: usize = 32 * 1024 * 1024;
 /// The chapters the story sets after dark ("Đêm mất Bơ"): played at night.
 const NIGHT_CHAPTERS: &[usize] = &[0];
 /// The controls, shown along the bottom during a raid.
