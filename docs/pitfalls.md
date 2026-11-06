@@ -405,9 +405,11 @@ space each address is in.
 **Every texture of a street sent to the GPU in one frame.** Walking into a new street loaded its
 facades' textures together, and Bevy uploaded them all in the frame they were ready: a profile of
 the Hanoi game showed one 10.7 s frame (in a software renderer) that was 94% `texSubImage2D`.
-Capping uploads with `RenderAssetBytesPerFrame` (one 1024 px texture with its mips a frame) brought
-the run's busy time from 11.3 s to 0.5 s and its longest frame to 68 ms. Profile before guessing
-at stutter, and spread uploads over frames.
+Capping uploads with `RenderAssetBytesPerFrame` spreads them over frames, but the first cap
+(6 MB a frame) starved them: at 1–2 frames a second the city's 1.7 GB of textures queued for minutes
+and the delivered art never appeared, live too. The profile that followed showed 0.5 s busy and
+read as a win, because the work it measured had simply not happened. Profile before guessing at
+stutter, and when a change makes a profile faster, check on screen that the work still gets done.
 
 ## Agent tooling
 
