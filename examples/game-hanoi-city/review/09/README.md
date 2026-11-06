@@ -18,8 +18,10 @@ tangents; the glass has no normal map and its degenerate tangents are omitted.
 The four `upper_0*.png` images show the upper-storey facade variants with
 their window panels separated as `window_glow` and their masonry and joinery
 non-emissive. `upper_01_world_zero.png` demonstrates the result without world
-or review lighting. The panels currently have a flat warm fill and need artistic
-approval. All eight upper facade GLBs, including LOD1, pass glTF Validator with
+or review lighting. An emissive texture lights one window in each variant and
+shows a partially drawn curtain; the other window is dark. This is a simple
+pattern, and the target fraction of lit panes and the final streetscape still
+need visual review. All eight upper facade GLBs, including LOD1, pass glTF Validator with
 zero errors and warnings; their triangle counts are unchanged and within budget.
 
 The four `ground_0*.png` images show the ground-floor variants: open shops
@@ -41,6 +43,8 @@ temporary `material-review-harness.patch`: it places one model and the camera
 test prop, so its non-emissive surfaces are very dark at night. Raw GLBs were
 served for these captures; separate packing checks passed. This tests selected
 models and is not a review of the final streetscape or every LOD transition.
+The upper-window pair was refreshed after adding the emission texture; the
+streetlight and shop images predate that texture-only change.
 
 The closed shutter retains an unused original emissive image in its GLB, but
 no material references it. Final streetscape day/night review, LOD transitions
