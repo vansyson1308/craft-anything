@@ -5,6 +5,7 @@
 //! that world in 3D with Bevy and turns touches, the mouse and the keyboard into its controls.
 
 mod actors;
+mod audio;
 mod cage;
 mod crowd;
 mod dressing;
@@ -58,6 +59,8 @@ fn main() {
         }))
         .add_plugins(hq::HqPlugin)
         .init_resource::<Clicked>()
+        .init_resource::<audio::Sounds>()
+        .init_resource::<audio::Cue>()
         .add_systems(Startup, (setup, guide::setup))
         .add_systems(
             Update,
@@ -74,6 +77,7 @@ fn main() {
                 night::wet,
                 night::torch_prop,
                 (cage::settle, cage::swing).chain().after(play),
+                (audio::load, audio::dogs, audio::ui).chain().after(play).after(guide::hud),
             ),
         )
         .run();
@@ -447,6 +451,8 @@ fn setup(
     let mut cam = commands.spawn((
         MainCamera,
         Camera3d::default(),
+        // What the player hears from: sounds in the world come from where they are.
+        SpatialListener::new(0.25),
         Projection::Perspective(PerspectiveProjection { fov: 0.95, ..default() }),
         Transform::from_translation(lake + Vec3::new(0.0, 120.0, 220.0)).looking_at(lake, Vec3::Y),
     ));
@@ -1710,7 +1716,10 @@ fn menus(
             .with_children(|p| {
                 p.spawn(text(f, label, 17.0, if primary { Color::srgb(0.1, 0.07, 0.02) } else { Color::WHITE }));
             })
-            .observe(move |_: On<Activate>, mut c: ResMut<Clicked>| c.0 = Some(kind))
+            .observe(move |_: On<Activate>, mut c: ResMut<Clicked>, mut cue: ResMut<audio::Cue>| {
+                c.0 = Some(kind);
+                cue.click = true;
+            })
             .id();
         commands.entity(parent).add_child(b);
     };

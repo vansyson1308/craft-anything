@@ -1156,6 +1156,69 @@
         "Batch 04 draft: estimated UV coverage 76.3% at 2048-pixel raster resolution. The stools are below the required 70%.",
         "Shared plastic maps and baseColorFactor variants; ORM occlusion is white, not baked. High-poly bake and review across several streets remain outstanding; one daytime review and an underexposed night view are in review/04."
       ]
+    },
+    {
+      "file": "audio/cho_sua_01.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; aunrea, Freesound 495658 (bark) and 495656 (whimper), 48 kHz field recordings; see review/07/README.md",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "Bark 1 of 3 from one recording: de-clipped, denoised, 80 Hz high-pass, faded; noise floor -50.8 dB, true peak -2.1 dBFS."
+      ]
+    },
+    {
+      "file": "audio/cho_sua_02.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; aunrea, Freesound 495658 (bark) and 495656 (whimper), 48 kHz field recordings; see review/07/README.md",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "Bark 2 of 3: noise floor -49.0 dB (just above the -50 dB target), true peak -1.8 dBFS."
+      ]
+    },
+    {
+      "file": "audio/cho_sua_03.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; aunrea, Freesound 495658 (bark) and 495656 (whimper), 48 kHz field recordings; see review/07/README.md",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "Bark 3 of 3: noise floor -52.9 dB, true peak -1.7 dBFS."
+      ]
+    },
+    {
+      "file": "audio/cho_sua_04.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; Sadiquecat, Freesound 850823, 48 kHz; see review/07/README.md",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "A second dog's bark: 80 Hz high-pass, trimmed, short fades; noise floor -50.6 dB, true peak -1.0 dBFS."
+      ]
+    },
+    {
+      "file": "audio/cho_rit.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; aunrea, Freesound 495658 (bark) and 495656 (whimper), 48 kHz field recordings; see review/07/README.md",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "Whimper, 2.3 s, ending in a louder yelp: the game plays it every 3-6 s from a cage rather than looping it."
+      ]
+    },
+    {
+      "file": "audio/ui_bam.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; original synthesized sound",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "Button click; passed QC in batch 05."
+      ]
+    },
+    {
+      "file": "audio/ui_meo.ogg",
+      "kind": "audio",
+      "license": "CC0-1.0; original synthesized sound",
+      "made_with": "FFmpeg (adeclip, afftdn, highpass, fades) and Vorbis; scripts in art-src/audio",
+      "notes": [
+        "Tip chime; passed QC in batch 05."
+      ]
     }
   ],
   "review_status": "draft: technical checks passed; art acceptance pending",

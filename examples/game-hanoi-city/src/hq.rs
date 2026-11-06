@@ -788,10 +788,20 @@ mod tests {
         let source = app.world_mut().resource_mut::<Assets<GltfMaterial>>().add(GltfMaterial { emissive: glow, ..default() });
         let display = app.world_mut().resource_mut::<Assets<StandardMaterial>>().add(StandardMaterial { emissive: glow, ..default() });
         let gltf = Gltf {
-            scenes: vec![], named_scenes: default(), meshes: vec![], named_meshes: default(),
-            materials: vec![source.clone()], named_materials: [("window_glow".into(), source.clone())].into_iter().collect(),
-            nodes: vec![], named_nodes: default(), skins: vec![], named_skins: default(),
-            default_scene: None, animations: vec![], named_animations: default(), source: None,
+            scenes: vec![],
+            named_scenes: default(),
+            meshes: vec![],
+            named_meshes: default(),
+            materials: vec![source.clone()],
+            named_materials: [("window_glow".into(), source.clone())].into_iter().collect(),
+            nodes: vec![],
+            named_nodes: default(),
+            skins: vec![],
+            named_skins: default(),
+            default_scene: None,
+            animations: vec![],
+            named_animations: default(),
+            source: None,
         };
         let asset = app.world_mut().resource_mut::<Assets<Gltf>>().add(gltf);
         // Material and model can arrive after the first update in daytime.
