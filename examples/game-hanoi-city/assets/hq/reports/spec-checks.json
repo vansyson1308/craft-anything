@@ -2397,12 +2397,8 @@
       "file": "street/den_duong_01.glb",
       "triangles": 960,
       "triangle_limit": 2000,
-      "materials": 1,
+      "materials": 2,
       "image_sizes": [
-        [
-          512,
-          512
-        ],
         [
           512,
           512
@@ -2419,19 +2415,16 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "4b32af6370b24be982e8c460f87ac22ede4cb1dba0f6afd2205fc10dd805f51f",
-      "errors": []
+      "sha256": "009dc27959ad7ed9d7d2ec4958503e9debd4115d4e7b5fdc0932dbb93ac3ee7d",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "street/den_duong_01_lod1.glb",
       "triangles": 476,
       "triangle_limit": 500,
-      "materials": 1,
+      "materials": 2,
       "image_sizes": [
-        [
-          256,
-          256
-        ],
         [
           256,
           256
@@ -2448,8 +2441,9 @@
       "exact_original_65_joint_rig": null,
       "validator_errors": 0,
       "validator_warnings": 0,
-      "sha256": "e95fada947cf4a5d3217242580c825f5f897257867e0df66160934d084fa7f17",
-      "errors": []
+      "sha256": "4de3ec0fc0f23dceaf3222bab701baa46d27178fb7a39df130b33b29d9659944",
+      "errors": [],
+      "check_scope": "Updated measurements cover triangles, materials, image dimensions and glTF Validator; other aggregate checks and in-game review have not been rerun for this revision."
     },
     {
       "file": "street/dep_to_ong.glb",
