@@ -6,6 +6,26 @@ use hanoi_rescue::geom::v2;
 use hanoi_rescue::map::{ExitId, Map, Tile};
 use hanoi_rescue::raid::{Controls, Outcome, PlayerStats, Raid, RaidSetup};
 
+#[test]
+fn the_real_quan_chuong_street_passes_through_the_gate() {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../game-hanoi-city/assets/hoankiem.json");
+    let Ok(data) = std::fs::read_to_string(path) else { return };
+    let city = City::from_json(&data).expect("valid city data");
+    let map = Map::from_city(&city, 2.0);
+    let point = |x: f32, y: f32| v2((x - city.bounds[0] as f32) / 20.0, (y - city.bounds[1] as f32) / 20.0);
+    let from = point(-55.0, -9419.0);
+    let to = point(50.0, -9441.0);
+    let mut player = from;
+    for i in 1..=21 {
+        let target = from.lerp(to, i as f32 / 21.0);
+        assert!(map.circle_free(target, hanoi_rescue::raid::PLAYER_R), "blocked at step {i}");
+        player = map.slide(player, target - player, hanoi_rescue::raid::PLAYER_R);
+    }
+    assert!(player.dist(to) < 0.05, "the player reached {player:?}, expected {to:?}");
+    assert_eq!(map.tile_at(point(-5.0, -9400.0)), Tile::Building, "side wall stays blocked");
+    assert_eq!(map.tile_at(point(-5.0, -9460.0)), Tile::Building, "opposite side wall stays blocked");
+}
+
 fn city_map() -> Option<Map> {
     let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../game-hanoi-city/assets/hoankiem.json");
     let city = City::from_json(&std::fs::read_to_string(path).ok()?)?;

@@ -1,0 +1,29 @@
+{
+  "scope": "GLB validation and measurements; the prototype is not ready for gameplay",
+  "files": [
+    {
+      "file": "o_quan_chuong.glb",
+      "triangles": 1400,
+      "materials": 3,
+      "errors": 0,
+      "warnings": 0,
+      "sha256": "d4dd7ea67a2096bd5b520627e26c5e4bb8bc721e87ecb50ff80d4b9805d87ae0"
+    },
+    {
+      "file": "o_quan_chuong_lod1.glb",
+      "triangles": 800,
+      "materials": 3,
+      "errors": 0,
+      "warnings": 0,
+      "sha256": "8738f2b5bd2c32a8d48af29d4893c442402f02113cc0f3699a79bb1a65c8c3b2"
+    },
+    {
+      "file": "o_quan_chuong_lod2.glb",
+      "triangles": 440,
+      "materials": 3,
+      "errors": 0,
+      "warnings": 0,
+      "sha256": "582dc75c95b1be40769baae9ab3b7d9111e25ba14d9afbc0ada1bcd64c9902fd"
+    }
+  ]
+}

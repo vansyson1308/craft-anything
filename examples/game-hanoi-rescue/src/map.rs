@@ -634,6 +634,13 @@ impl Map {
             rings.extend(b.holes.iter().map(|h| ring(h)));
             m.fill_rings(&rings, |_| Tile::Building);
         }
+        // The historic gate is mapped as a building polygon even though its
+        // central arch carries a public street. Preserve that 3 m opening in
+        // the walking raster, but only when the named street passes the gate.
+        if let Some(gate) = c.buildings.iter().find(|b| b.name.as_deref() == Some(places::QUAN_CHUONG)) {
+            let polygon = ring(&gate.outer);
+            m.open_quan_chuong(&polygon, c.roads.iter().filter(|r| r.name.as_deref() == Some("Phố Ô Quan Chưởng")).map(|r| ring(&r.pts)));
+        }
         for r in c.roads.iter().filter(|r| r.bridge) {
             let half = (r.w as f32 / 20.0 / tile_m).max(0.75);
             m.stamp_line(&ring(&r.pts), half, |_| Tile::Bridge);
@@ -798,6 +805,55 @@ impl Map {
         m.scenario = new_scenario;
         m.exits = exits;
         m
+    }
+
+    /// Carves a narrow central passage only inside the named gate's polygon.
+    /// The closest segment of the named street establishes its direction; if
+    /// no segment passes close to the gate, leave the building untouched.
+    fn open_quan_chuong(&mut self, polygon: &[V2], roads: impl Iterator<Item = Vec<V2>>) {
+        if polygon.len() < 3 {
+            return;
+        }
+        let (lo, hi) = polygon.iter().fold((v2(f32::MAX, f32::MAX), v2(f32::MIN, f32::MIN)), |(lo, hi), p| {
+            (v2(lo.x.min(p.x), lo.y.min(p.y)), v2(hi.x.max(p.x), hi.y.max(p.y)))
+        });
+        let centre = (lo + hi) * 0.5;
+        let mut closest: Option<(f32, V2, V2)> = None;
+        for road in roads {
+            for pair in road.windows(2) {
+                let [a, b] = [pair[0], pair[1]];
+                let delta = b - a;
+                let length2 = delta.dot(delta);
+                if length2 <= 1e-6 {
+                    continue;
+                }
+                let t = ((centre - a).dot(delta) / length2).clamp(0.0, 1.0);
+                let anchor = a + delta * t;
+                let distance = centre.dist(anchor);
+                if closest.is_none_or(|(best, _, _)| distance < best) {
+                    closest = Some((distance, anchor, delta.norm()));
+                }
+            }
+        }
+        let Some((distance, anchor, direction)) = closest else { return };
+        if distance > 4.0 / self.tile_m {
+            return;
+        }
+        let normal = v2(-direction.y, direction.x);
+        let outline: Vec<[f32; 2]> = polygon.iter().map(|p| [p.x, p.y]).collect();
+        for y in (lo.y.floor() as i32).max(0)..=(hi.y.ceil() as i32).min(self.h - 1) {
+            for x in (lo.x.floor() as i32).max(0)..=(hi.x.ceil() as i32).min(self.w - 1) {
+                let p = center(x, y);
+                if self.tile(x, y) == Tile::Building && crate::city::in_ring(p.x, p.y, &outline)
+                    // Tile centres near the opening edge need an extra player
+                    // radius so the player does not snag on the coarse,
+                    // two-metre grid at the diagonal entrance.
+                    && (p - anchor).dot(normal).abs() <= (1.5 / self.tile_m + 0.3)
+                {
+                    self.set(x, y, Tile::Street);
+                }
+            }
+        }
     }
 
     /// The centre of the tile nearest the point that the reach map (from distances) gets to.
@@ -1026,7 +1082,30 @@ fn longest_chain(lines: &[Vec<Dm>]) -> Option<Vec<Dm>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::city::{Area, Road};
+    use crate::city::{Area, Building, Road};
+
+    #[test]
+    fn quan_chuong_central_arch_is_walkable_without_opening_the_side_walls() {
+        let square = |x0, y0, x1, y1| vec![[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+        let city = City {
+            version: crate::city::CITY_VERSION,
+            bounds: [0, 0, 400, 400],
+            buildings: vec![
+                Building { outer: square(120, 100, 200, 260), name: Some(places::QUAN_CHUONG.into()), ..Building::default() },
+                Building { outer: square(240, 100, 300, 260), ..Building::default() },
+            ],
+            roads: vec![Road { pts: vec![[80, 180], [320, 180]], w: 65, kind: "residential".into(), name: Some("Phố Ô Quan Chưởng".into()), bridge: false }],
+            ..City::default()
+        };
+        let map = Map::from_city(&city, 2.0);
+        assert!(map.walkable_at(v2(8.0, 9.0)), "the central arch crosses the street");
+        assert!(!map.walkable_at(v2(8.0, 6.0)), "the side wall stays solid");
+        assert!(!map.walkable_at(v2(13.0, 9.0)), "a separate nearby building stays solid");
+        let mut without_road = city.clone();
+        without_road.roads.clear();
+        let closed = Map::from_city(&without_road, 2.0);
+        assert!(!closed.walkable_at(v2(8.0, 9.0)), "no named street means no guessed opening");
+    }
 
     /// A 40 m square pond in a 100 m plaza, with a bridge from its south shore to the middle.
     fn pond() -> City {
