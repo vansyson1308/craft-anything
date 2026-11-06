@@ -2,6 +2,81 @@
   "version": 1,
   "assets": [
     {
+      "file": "street/den_long_01.glb",
+      "lods": [
+        "street/den_long_01_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.306,
+        0.64,
+        0.306
+      ],
+      "triangles": [
+        1832,
+        468
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original construction and Poly Haven crepe_satin scan; see SOURCES.md",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
+      "notes": [
+        "Draft red lantern with a bamboo frame, satin body, tassel and lamp_glass bulb. AO and high-to-low normals are baked; silk-only emission supplements the bulb.",
+        "Body UV coverage is about 43.6%; some sampled edges are below 4 px/cm. Packing, density, actual hanging placement, game integration, seams and artistic approval remain pending."
+      ]
+    },
+    {
+      "file": "street/den_long_02.glb",
+      "lods": [
+        "street/den_long_02_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.296,
+        0.64,
+        0.296
+      ],
+      "triangles": [
+        1832,
+        468
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original construction and Poly Haven crepe_satin scan; see SOURCES.md",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
+      "notes": [
+        "Draft yellow lantern. AO and high-to-low normals are baked; silk-only emission supplements the lamp_glass bulb.",
+        "Body UV coverage is about 44.1%; some sampled edges are below 4 px/cm. Packing, density, hanging placement, game integration, day/night captures, seams and artistic approval remain pending."
+      ]
+    },
+    {
+      "file": "street/den_long_03.glb",
+      "lods": [
+        "street/den_long_03_lod1.glb"
+      ],
+      "kind": "prop",
+      "size_m": [
+        0.317,
+        0.64,
+        0.316
+      ],
+      "triangles": [
+        1304,
+        324
+      ],
+      "textures": 4,
+      "skeleton": "",
+      "animations": [],
+      "license": "CC0-1.0; original construction and Poly Haven crepe_satin scan; see SOURCES.md",
+      "made_with": "sand3d 1.6.2, Blender 4.5.15, Cycles, Python/NumPy, glTF Validator",
+      "notes": [
+        "Draft red diamond lantern. AO and high-to-low normals are baked; silk-only emission supplements the lamp_glass bulb.",
+        "Body UV coverage is about 33.0%; some sampled edges are below 4 px/cm. Packing, density, hanging placement, game integration, day/night captures, seams and artistic approval remain pending."
+      ]
+    },
+    {
       "file": "people/den_pin.glb",
       "lods": [
         "people/den_pin_lod1.glb"

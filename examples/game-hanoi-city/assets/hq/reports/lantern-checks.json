@@ -1,0 +1,167 @@
+{
+  "scope": "glTF Validator and measurements only; visual and in-game placement review remain pending",
+  "files": [
+    {
+      "file": "street/den_long_01.glb",
+      "triangles": 1832,
+      "materials": 2,
+      "draw_calls": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "e83523459335f282f3bc8d7046ec4a7d7141da498234df44445c2b50e42c1610"
+    },
+    {
+      "file": "street/den_long_01_lod1.glb",
+      "triangles": 468,
+      "materials": 2,
+      "draw_calls": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "5958df1b2c54c175459b4062c0336e4682d259a89e02657a3e0e97a90869368e"
+    },
+    {
+      "file": "street/den_long_02.glb",
+      "triangles": 1832,
+      "materials": 2,
+      "draw_calls": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "ceddbf250a2bc988423864fcc5f5241d4ad7607ab22be6ba4ab884313c171227"
+    },
+    {
+      "file": "street/den_long_02_lod1.glb",
+      "triangles": 468,
+      "materials": 2,
+      "draw_calls": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "9dcb57e6cd2bf33260b32e35a83a4ca5a89609498b08b34d40b83578703070ff"
+    },
+    {
+      "file": "street/den_long_03.glb",
+      "triangles": 1304,
+      "materials": 2,
+      "draw_calls": 2,
+      "image_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ],
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "4d2e5b02a652bf66bcf0e221917cc9191b6fa1786c3f54f2b655ddc31deacdfa"
+    },
+    {
+      "file": "street/den_long_03_lod1.glb",
+      "triangles": 324,
+      "materials": 2,
+      "draw_calls": 2,
+      "image_sizes": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "validator_errors": 0,
+      "validator_warnings": 0,
+      "sha256": "c6f8b77c65029b864674139946e9e6dd8edaa3578eb60b14aa5fb40e0f2cecac"
+    }
+  ]
+}
