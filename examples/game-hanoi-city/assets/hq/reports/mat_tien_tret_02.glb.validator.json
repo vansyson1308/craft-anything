@@ -2,13 +2,20 @@
   "uri": "buildings/mat_tien_tret_02.glb",
   "mimeType": "model/gltf-binary",
   "validatorVersion": "2.0.0-dev.3.10",
-  "validatedAt": "2026-11-03T08:42:04.900Z",
+  "validatedAt": "2026-11-06T07:35:41.856Z",
   "issues": {
     "numErrors": 0,
     "numWarnings": 0,
-    "numInfos": 0,
+    "numInfos": 1,
     "numHints": 0,
-    "messages": [],
+    "messages": [
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/textures/4"
+      }
+    ],
     "truncated": false
   },
   "info": {

@@ -22,7 +22,14 @@ or review lighting. The panels currently have a flat warm fill and need artistic
 approval. All eight upper facade GLBs, including LOD1, pass glTF Validator with
 zero errors and warnings; their triangle counts are unchanged and within budget.
 
-The emissive lens and windows currently remain emissive during the day; no
-automatic time-of-day material switching is implemented here. The ground-floor
-shopfronts still need their distinct luminous areas separated from the fittings.
-Day/night game views, LOD transitions and artistic approval are also pending.
+The four `ground_0*.png` images show the ground-floor variants: open shops
+have a separate emissive `shop_light` strip; the closed shutter has no strip.
+`ground_01_world_zero.png` shows the strip with no world or review lighting.
+All eight ground-floor GLBs pass glTF Validator without errors or warnings,
+and their mesh bounds extend no farther than 0.59 m in the outward +Z direction.
+
+The emissive lens, windows and shop strips currently remain emissive during the
+day; no automatic time-of-day material switching is implemented here. The
+closed shutter retains an unused original emissive image in its GLB, but no
+material references it. Day/night game views, LOD transitions and artistic
+approval are also pending.

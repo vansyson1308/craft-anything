@@ -183,13 +183,14 @@
         3836,
         776
       ],
-      "textures": 8,
+      "textures": 7,
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
-      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "made_with": "Blender 4.5.15, Python, glTF Validator; existing reconstructed mesh and scanned textures",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Draft material split: joinery is non-emissive; open shop light strip has separate shop_light emission. Geometry is a reconstruction, not a site survey.",
+        "Maximum +Z geometry projection is at most 0.59 m. Automatic day/night switching, game views and LOD-transition review remain outstanding."
       ],
       "preview": "previews/mat_tien_tret_01.jpg",
       "in_game_preview": "review/mat_tien_tret_01.jpg"
@@ -213,9 +214,10 @@
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
-      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "made_with": "Blender 4.5.15, Python, glTF Validator; existing reconstructed mesh and scanned textures",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Draft material split: joinery is non-emissive; closed shutter has no luminous strip. Geometry is a reconstruction, not a site survey.",
+        "Maximum +Z geometry projection is at most 0.59 m. Automatic day/night switching, game views and LOD-transition review remain outstanding."
       ],
       "preview": "previews/mat_tien_tret_02.jpg",
       "in_game_preview": "review/mat_tien_tret_02.jpg"
@@ -235,13 +237,14 @@
         3930,
         765
       ],
-      "textures": 8,
+      "textures": 7,
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
-      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "made_with": "Blender 4.5.15, Python, glTF Validator; existing reconstructed mesh and scanned textures",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Draft material split: joinery is non-emissive; open shop light strip has separate shop_light emission. Geometry is a reconstruction, not a site survey.",
+        "Maximum +Z geometry projection is at most 0.59 m. Automatic day/night switching, game views and LOD-transition review remain outstanding."
       ],
       "preview": "previews/mat_tien_tret_03.jpg",
       "in_game_preview": "review/mat_tien_tret_03.jpg"
@@ -261,13 +264,14 @@
         3930,
         767
       ],
-      "textures": 8,
+      "textures": 7,
       "skeleton": "",
       "animations": [],
       "license": "CC0-1.0; original work and CC0 sources listed in SOURCES.md",
-      "made_with": "Blender 4.5.3 LTS, Cycles, Python/NumPy, MakeHuman CC0 base, glTF Validator",
+      "made_with": "Blender 4.5.15, Python, glTF Validator; existing reconstructed mesh and scanned textures",
       "notes": [
-        "Art revision candidate; see review/ and reports/ for measured checks. Geometry is artist reconstruction, not a site survey."
+        "Draft material split: joinery is non-emissive; open shop light strip has separate shop_light emission. Geometry is a reconstruction, not a site survey.",
+        "Maximum +Z geometry projection is at most 0.59 m. Automatic day/night switching, game views and LOD-transition review remain outstanding."
       ],
       "preview": "previews/mat_tien_tret_04.jpg",
       "in_game_preview": "review/mat_tien_tret_04.jpg"
