@@ -63,6 +63,22 @@ def hip_roof(name, width, depth, eave, rise, segments):
     return obj
 
 
+def arch_rim(name, x, radius, spring, y, steps):
+    """A thin stone band framing an opening, on either facade."""
+    vertices=[]
+    for i in range(steps+1):
+        angle=math.pi*i/steps
+        for r in (radius, radius+.13):
+            vertices.append((x+r*math.cos(angle),y,spring+r*math.sin(angle)))
+    faces=[(2*i,2*i+1,2*i+3,2*i+2) for i in range(steps)]
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update()
+    obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+    # Both sides must remain visible when viewed from outside the gate.
+    if y > 0:
+        bm=bmesh.new();bm.from_mesh(mesh);bmesh.ops.reverse_faces(bm,faces=list(bm.faces));bm.to_mesh(mesh);bm.free()
+    return obj
+
+
 def scanned_material(name, root, asset, max_size):
     material=bpy.data.materials.new(name)
     material.use_nodes=True
@@ -148,6 +164,11 @@ def main():
         obj=s3d.sweep(name,s3d.polygon(4,diameter),[start,end])
         collection.append(obj)
         return obj
+    for y in (-depth/2-.012,depth/2+.012):
+        for x,radius,spring in ((0,1.5,1.5),(-5.65,.825,1.675),(5.65,.825,1.675)):
+            plaster.append(arch_rim('stone_arch_rim',x,radius,spring,y,steps))
+            for side in (-1,1):
+                box('stone_arch_jamb',.13,.025,spring,x+side*(radius+.065),y,0,plaster)
     box('central_upper_wall',5.65,depth,1.6,0,0,3.8,plaster)
     box('central_cornice',6.0,depth,.18,0,0,5.4,plaster)
     box('central_parapet_floor',5.7,4.8,.24,0,0,5.58,plaster)

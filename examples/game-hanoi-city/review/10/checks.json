@@ -3,27 +3,27 @@
   "files": [
     {
       "file": "o_quan_chuong.glb",
-      "triangles": 2144,
+      "triangles": 2576,
       "materials": 3,
       "errors": 0,
       "warnings": 0,
-      "sha256": "deddfe7c2bfc5227d017fbddc21612f58c024eef41377b91e882aa1603a71d03"
+      "sha256": "4ff492dc20386f5d49c206be7dd4f26fd170ea146ed3d4008142619d2f1babfa"
     },
     {
       "file": "o_quan_chuong_lod1.glb",
-      "triangles": 1256,
+      "triangles": 1544,
       "materials": 3,
       "errors": 0,
       "warnings": 0,
-      "sha256": "735864dc98527e553b8522309567c83e121eef3a158f12576f2f03e96d37177e"
+      "sha256": "ae150d7fe028a2c751ca7e0f24d262e4d890879e3d60a20c0a5fb47f30d1c2d7"
     },
     {
       "file": "o_quan_chuong_lod2.glb",
-      "triangles": 512,
+      "triangles": 728,
       "materials": 3,
       "errors": 0,
       "warnings": 0,
-      "sha256": "c59b5438b4ea547bcf886d949467532f5e12b594cc33149fe87baee1fcd0e95f"
+      "sha256": "a2b1857eff4f340e487bb5ca1963740f0ac458e7bef7917c13a75c680ffe772f"
     }
   ]
 }

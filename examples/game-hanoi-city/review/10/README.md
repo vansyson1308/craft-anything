@@ -4,7 +4,7 @@ This is an early shape study, **not a finished recreation**. The three GLBs are
 kept under `review/10` and are deliberately absent from `assets/hq/manifest.json`,
 so they cannot replace the game landmark until the outstanding work is done.
 
-The blockout has a central arch and two smaller arches, brick walls, parapets,
+The blockout has a central arch and two smaller stone-framed arches, brick walls, parapets,
 and a four-sided tiled pavilion roof. The base is made with sand3d; the arch
 cutters and roof surface use custom Blender meshes. The entrance sizes are
 approximate: 3 m wide/high in the centre and 1.65 m wide / 2.5 m high at the
@@ -13,7 +13,7 @@ measured axis-aligned world bounds are about 11.26 × 17.96 m, with a height of
 8.64 m; this is an interpretation of the map footprint, not a site survey.
 
 `gate_front.png` and `gate_diagonal.png` are Cycles views. All three LOD GLBs
-pass glTF Validator with no errors or warnings, at 2,144 / 1,256 / 512 triangles.
+pass glTF Validator with no errors or warnings, at 2,576 / 1,544 / 728 triangles.
 Their nine embedded maps are 1,024 / 512 / 256 pixels per side respectively.
 Eight geometry ray checks per LOD verify that the openings are clear at sample
 heights and that a wall sample is solid. This does not prove the installed game
